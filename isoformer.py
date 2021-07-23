@@ -2,11 +2,15 @@ import argparse
 import itertools
 import korflib
 
+loopcount = 0
+
 def isoforms(don, acc, imin, emin):
+	global loopcount
 	for d in range(0, len(don)):
 		for dsites in itertools.combinations(don, d):
 			for a in range(0, len(acc)):
 				for asites in itertools.combinations(acc, a):
+					loopcount += 1
 		
 					# same number of sites both sides required
 					if len(dsites) != len(asites): continue
@@ -62,22 +66,24 @@ if __name__ == '__main__':
 		don = []
 		for i in range(arg.exon, len(seq) -arg.exon):
 			if seq[i:i+2] == 'GT': don.append(i)
-		
+	
 		# find acceptor sites
 		acc = []
 		for i in range(arg.exon, len(seq) -arg.exon):
 			if seq[i:i+2] == 'AG': acc.append(i+1)
-		
+	
 		# find non-redundant isoforms
 		isoform = {}
+		isocount = 0
 		for tx in isoforms(don, acc, arg.intron, arg.exon):
 			txs = f'{tx}'
+			isocount += 1
 			if txs not in isoform:
 				isoform[txs] = tx
-		
-		# report for this sequence
-		print(id, len(isoform))
+	
+		# output	
+		print(id, len(isoform), isocount, loopcount)
 		if arg.full:
 			for iso in isoform:
 				print(iso)
-		
+	
