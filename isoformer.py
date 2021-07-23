@@ -46,7 +46,8 @@ if __name__ == '__main__':
 
 	## Command Line Interface ##
 
-	parser = argparse.ArgumentParser(description='all_possible_splices.py')
+	parser = argparse.ArgumentParser(
+		description='Theoretical isoform enumerator')
 	parser.add_argument('fasta', type=str, metavar='<file>', help='fasta file')                
 	parser.add_argument('--intron', required=False, type=int, default=35,
 		metavar='<int>', help='minimum length of intron [%(default)i]')
@@ -80,5 +81,3 @@ if __name__ == '__main__':
 			for iso in isoform:
 				print(iso)
 		
-
-
