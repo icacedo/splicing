@@ -9,44 +9,60 @@ parser.add_argument('--fasta', required=True, type=str,
 
 arg=parser.parse_args()
 
-#print(arg.fasta)
-
-don_acc_pos={}
-gt=0
-ag=0
+don=[]
+acc=[]
 for i,j in sl.read_fasta(arg.fasta):
 	for p in range(len(j)):
 		if j[p:p+2]=='GT':
-			don_acc_pos[p]='GT'
-			gt+=1
+			don.append(p)
 		if j[p:p+2]=='AG':
-			don_acc_pos[p]='AG'
-			ag+=1
+			acc.append(p)
 		else:continue
-#print(don_acc_pos, len(don_acc_pos), gt+ag)
-'''
-for i,j in don_acc_pos.items():
-	print(i,j)
-	print(don_acc_pos[i])
-	print(i)
-	print(don_acc_pos)
-	break
-	
-pos = don_acc_pos.keys()
-print(pos)
-type = don_acc_pos.values()
-print(type)
-'''
-# start with this loop after to include all lengths of tuples
-# replace 2 with i in second loop
-#for i in range(len(don_acc_pos)):
-for j in it.combinations(don_acc_pos.keys(), 2):
-	#print(j)
-	for k in j:
-		#print(don_acc_pos[k])
-		if don_acc_pos[k]=='AG':print('############')
-		else: print('@@@@@@@@@')
-		break
+
+def convert(tup_don,tup_acc):
+	#don={}
+	#acc={}
+	combos={}
+	for p in tup_don:
+		#don[p]='GT'
+		combos[p]='GT'
+	for p in tup_acc:
+		#acc[p]='AG'
+		combos[p]='AC'
+	#yield don,acc
+	yield combos
+	#### need to filter out libraries with UNPAIRED GT/AG sites
+for i in range(len(don)):
+	for j in it.combinations(don, 2):
+		for k in it.combinations(acc, 2):
+			for c in convert(j,k):
+				c_list=sorted(c)
+				key_first=c_list[0]
+				key_last=c_list[2+2]
+				# filter out combos starting with an acceptor site
+				if c[key_first]=='AG': continue
+				if c[key_last]=='GC': continue
+				break
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+				
+			
 
 	
 		
