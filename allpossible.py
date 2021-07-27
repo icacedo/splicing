@@ -19,19 +19,16 @@ for i,j in sl.read_fasta(arg.fasta):
 			acc.append(p)
 		else:continue
 
+# convert output of combinations() to a dictionary
 def convert(tup_don,tup_acc):
-	#don={}
-	#acc={}
 	combos={}
 	for p in tup_don:
-		#don[p]='GT'
 		combos[p]='GT'
 	for p in tup_acc:
-		#acc[p]='AG'
-		combos[p]='AC'
-	#yield don,acc
+		combos[p]='AG'
 	yield combos
-	#### need to filter out libraries with UNPAIRED GT/AG sites
+
+'''
 for i in range(len(don)):
 	for j in it.combinations(don, 2):
 		for k in it.combinations(acc, 2):
@@ -41,10 +38,39 @@ for i in range(len(don)):
 				key_last=c_list[2+2]
 				# filter out combos starting with an acceptor site
 				if c[key_first]=='AG': continue
-				if c[key_last]=='GC': continue
+				if c[key_last]=='GT': continue
 				break
-			
-			
+'''
+total=0
+for d in range(len(don)):
+	for dsites in it.combinations(don, d):
+		for asites in it.combinations(acc, d):
+			for c in convert(dsites,asites):
+				sorted_positions=sorted(c)	
+				splice_sites={}
+				prev=''
+				for p in range(len(sorted_positions)):
+					if c[sorted_positions[p]]=='AG' and prev=='': 
+						prev='AG'
+					if c[sorted_positions[p]]=='GT' and prev=='': 
+						splice_sites[sorted_positions[p]]='GT'
+						prev='GT'
+					if c[sorted_positions[p]]=='GT' and prev=='AG': 
+						splice_sites[sorted_positions[p]]='GT'
+						prev='GT'
+					if c[sorted_positions[p]]=='AG' and prev=='GT': 
+						splice_sites[sorted_positions[p]]='AG'
+						prev='AG'
+					if c[sorted_positions[p]]=='GT' and prev=='GT':
+						prev='GT'
+					if c[sorted_positions[p]]=='AG' and prev=='AG':
+						prev='AG'
+					if len(splice_sites)>=2:
+						# there are a lot of duplicates
+						#print(splice_sites)
+						total+=1
+print(total)
+
 			
 			
 			
