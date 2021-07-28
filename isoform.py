@@ -16,7 +16,7 @@ def short_exon(dons, accs, minexon):
 	return False
 
 """
-def all_probable(seq, minin, minex, dpwm, apwm, dt, at):
+def all_probable_pwm(seq, minin, minex, dpwm, apwm, dt, at):
 	dons = []
 	accs = []
 	for i in range(minex, len(seq) -minex):
@@ -24,7 +24,7 @@ def all_probable(seq, minin, minex, dpwm, apwm, dt, at):
 		acc = seq[i:i+len(apwm)]
 		if pwmscore(don, dpwm) > dt: dons.append(i)
 		if pwmscore(acc, apwm) > at: accs.append(i)	
-	# rest of code follows all_possible
+	return generate_isoforms(dons, accs, minin, minex)
 """
 
 def all_possible(seq, minin, minex):
@@ -33,7 +33,9 @@ def all_possible(seq, minin, minex):
 	for i in range(minex, len(seq) -minex):
 		if seq[i:i+2] == 'GT': dons.append(i)
 		if seq[i:i+2] == 'AG': accs.append(i+1)
+	return generate_isoforms(dons, accs, minin, minex)
 
+def generate_isoforms(dons, accs, minin, minex):
 	info = {
 		'trials' : 0,
 		'donors': len(dons),
