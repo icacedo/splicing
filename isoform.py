@@ -38,25 +38,19 @@ def all_possible(seq, minin, minex):
 		'trials' : 0,
 		'donors': len(dons),
 		'acceptors': len(accs),
-		'no_intron' : 0,
 		'unequal_count' : 0,
 		'short_intron': 0,
 		'short_exon': 0,
-		'redundant': 0,
 	}
 	
 	isoforms = []
-	for n in range(0, len(dons)):
+	for n in range(1, len(dons)):
 		for dsites in itertools.combinations(dons, n):
-			for m in range(0, len(accs)):
+			for m in range(1, len(accs)):
 				for asites in itertools.combinations(accs, m):
 					info['trials'] += 1
 					
 					# sanity checks
-					if len(dsites) == 0 or len(asites) == 0:
-						info['no_intron'] += 1
-						continue
-					
 					if len(dsites) != len(asites):
 						info['unequal_count'] += 1
 						continue
@@ -74,12 +68,5 @@ def all_possible(seq, minin, minex):
 					for d, a in zip(dsites, asites):
 						tx.append({'beg':d, 'end':a})
 					isoforms.append(tx)
-
-	# redundancy check -- shouldn't be any
-	check = {}
-	for iso in isoforms:
-		shape = f'{iso}'
-		if shape not in check: check[shape] = True
-		else: info['redundant'] += 1
 
 	return isoforms, info
