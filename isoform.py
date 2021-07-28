@@ -40,7 +40,6 @@ def generate_isoforms(dons, accs, minin, minex):
 		'trials' : 0,
 		'donors': len(dons),
 		'acceptors': len(accs),
-		'unequal_count' : 0,
 		'short_intron': 0,
 		'short_exon': 0,
 	}
@@ -48,27 +47,22 @@ def generate_isoforms(dons, accs, minin, minex):
 	isoforms = []
 	for n in range(1, len(dons)):
 		for dsites in itertools.combinations(dons, n):
-			for m in range(1, len(accs)):
-				for asites in itertools.combinations(accs, m):
-					info['trials'] += 1
-					
-					# sanity checks
-					if len(dsites) != len(asites):
-						info['unequal_count'] += 1
-						continue
-					
-					if short_intron(dsites, asites, minin):
-						info['short_intron'] += 1
-						continue
-					
-					if short_exon(dsites, asites, minex):
-						info['short_exon'] += 1
-						continue
-					
-					# create isoform and save
-					tx = []
-					for d, a in zip(dsites, asites):
-						tx.append({'beg':d, 'end':a})
-					isoforms.append(tx)
+			for asites in itertools.combinations(accs, n):
+				info['trials'] += 1
+				
+				# sanity checks
+				if short_intron(dsites, asites, minin):
+					info['short_intron'] += 1
+					continue
+				
+				if short_exon(dsites, asites, minex):
+					info['short_exon'] += 1
+					continue
+				
+				# create isoform and save
+				tx = []
+				for d, a in zip(dsites, asites):
+					tx.append({'beg':d, 'end':a})
+				isoforms.append(tx)
 
 	return isoforms, info
