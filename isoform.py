@@ -15,6 +15,18 @@ def short_exon(dons, accs, minexon):
 		if exon_len < minexon: return True
 	return False
 
+"""
+def all_probable(seq, minin, minex, dpwm, apwm, dt, at):
+	dons = []
+	accs = []
+	for i in range(minex, len(seq) -minex):
+		don = seq[i:i+len(dpwm)]
+		acc = seq[i:i+len(apwm)]
+		if pwmscore(don, dpwm) > dt: dons.append(i)
+		if pwmscore(acc, apwm) > at: accs.append(i)	
+	# rest of code follows all_possible
+"""
+
 def all_possible(seq, minin, minex):
 	dons = []
 	accs = []
