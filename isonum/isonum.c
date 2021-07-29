@@ -61,7 +61,6 @@ static void all_possible(const char *seq, int min_intron, int min_exon) {
 	int nsites;
 	ik_ivec dons = ik_ivec_new();
 	ik_ivec accs = ik_ivec_new();
-	//ik_ivec iv;
 	
 	for (int i = min_exon; i < len - min_exon; i++) {
 		if      (seq[i  ] == 'G' && seq[i+1] == 'T') ik_ivec_push(dons, i);
@@ -104,6 +103,8 @@ static void all_possible(const char *seq, int min_intron, int min_exon) {
 	}
 	
 	printf("%d %d %d %d\n", trials, ishort, eshort, passed);
+	
+	// THERE IS NO GARBAGE COLLECTION! //
 }
 
 static char *usage = "\
