@@ -1,23 +1,67 @@
 #include "toolbox.h"
 #include "sequence.h"
 
-/*
-static go(int offset, int k, const ik_vec people, ik_ivec combos) {
-	if (k == 0) return;
-	for (int i = offset; i <= people->size -k ; i++) {
-		ik_vec_push(combos, people->elem[i]);
-		go(i+1, k-1, people, combos)
-		int trash = ik_vec_pop(combos);
+
+void make_combi_util(ik_vec ans, ik_ivec tmp, int n, int left, int k) {
+	if (k == 0) {
+		ik_ivec keep = ik_ivec_new();
+		for (int i = 0; i < tmp->size; i++) {
+			ik_ivec_push(keep, tmp->elem[i]);
+		}
+		ik_vec_push(ans, (void*)keep);
+		return;
+	}
+	
+	for (int i = left; i <= n; i++) {
+		ik_ivec_push(tmp, i - 1);
+		make_combi_util(ans, tmp, n, i + 1, k - 1);
+		ik_ivec_pop(tmp);
 	}
 }
-*/
 
+ik_vec make_combinations(const ik_ivec sites, int k) {
+	int idx, val;
+	ik_ivec iv;
+	ik_vec  indexes = ik_vec_new();
+	ik_ivec tmp = ik_ivec_new();
+	make_combi_util(indexes, tmp, sites->size, 1, k);
+	
+	for (int i = 0; i < indexes->size; i++) {
+		iv = indexes->elem[i];
+		for (int j = 0; j < iv->size; j++) {
+			idx = iv->elem[j];
+			val = sites->elem[idx];
+			iv->elem[j] = val;
+		}
+	}
+	
+	return indexes;
+}
+
+int short_intron(ik_ivec dons, ik_ivec accs, int min_intron) {
+	for (int i = 0; i < dons->size; i++) {
+		int len = accs->elem[i] - dons->elem[i];
+		if (len < min_intron) return 1;
+	}
+	return 0;
+}
+
+int short_exon(ik_ivec dons, ik_ivec accs, int min_exon) {
+	for (int i = 1; i < dons->size; i++) {
+		int beg = accs->elem[i-1] + 1;
+		int end = dons->elem[i] -1;
+		int len = end - beg;
+		if (len < min_exon) return 1;
+	}
+	return 0;
+}
 
 static void all_possible(const char *seq, int min_intron, int min_exon) {
 	int len = strlen(seq);
 	int nsites;
 	ik_ivec dons = ik_ivec_new();
 	ik_ivec accs = ik_ivec_new();
+	//ik_ivec iv;
 	
 	for (int i = min_exon; i < len - min_exon; i++) {
 		if      (seq[i  ] == 'G' && seq[i+1] == 'T') ik_ivec_push(dons, i);
@@ -25,12 +69,41 @@ static void all_possible(const char *seq, int min_intron, int min_exon) {
 	}
 	
 	nsites = dons->size < accs->size ? dons->size : accs->size;
+	printf("min %d, don %d, acc %d\n", nsites, dons->size, accs->size);
 	
+	int trials = 0;
+	int ishort = 0;
+	int eshort = 0;
+	int passed = 0;
+	for (int k = 1; k <= nsites; k++) {
+		ik_vec dcs = make_combinations(dons, k);
+		ik_vec acs = make_combinations(accs, k);
+		
+		for (int i = 0; i < dcs->size; i++) {
+			for (int j = 0; j < acs->size; j++) {
+				ik_ivec dv = dcs->elem[i];
+				ik_ivec av = acs->elem[j];
+				
+				trials += 1;
+				if (short_intron(dv, av, min_intron)) {
+					ishort++;
+					continue;
+				}
+				if (short_exon(dv, av, min_exon)) {
+					eshort++;
+					continue;	
+				}
+				passed++;
+				
+				for (int a = 0; a < k; a++) {
+					printf("%d..%d ", dv->elem[a], av->elem[a]);
+				}
+				printf("\n");
+			}
+		}
+	}
 	
-
-
-	printf("%d sites %d %d\n", nsites, dons->size, accs->size);
-	
+	printf("%d %d %d %d\n", trials, ishort, eshort, passed);
 }
 
 static char *usage = "\
@@ -70,13 +143,6 @@ int main(int argc, char **argv) {
 		all_possible(ff->seq, intron, exon);
 		ik_fasta_free(ff);
 	}
-	
-	// testing new functions
-	ik_ivec iv = ik_ivec_new();
-	for (int i = 1; i <= 5; i++) ik_ivec_push(iv, i);
-	
-	for (int i = 0; i < iv->size; i++) printf("%d ", iv->elem[i]);
-	printf("\n");
 
 	return 0;
 }
