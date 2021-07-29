@@ -3,11 +3,12 @@
 # seq, minin, minex, dons, accs
 # output should be the same as isoform.py/isoformer.py
 
-#import argparse
+import argparse
 import itertools as it
 import seqlib as sl
 
-'''
+# use this chunk if reading in a fasta file
+
 parser=argparse.ArgumentParser(description='splice this sequence')
 parser.add_argument('--fasta', required=True, type=str, 
 	help='fasta file to splice')
@@ -18,13 +19,14 @@ arg=parser.parse_args()
 don_sites=[]
 acc_sites=[]
 for i,j in sl.read_fasta(arg.fasta):
-	for p in range(len(j)):
+	# range needs to take into account minimum exon size
+	for p in range(25,len(j)-25):
 		if j[p:p+2]=='GT':
 			don_sites.append(p)
 		if j[p:p+2]=='AG':
-			acc_sites.append(p)
+			# +1 added to get to the end of the acceptor sequence
+			acc_sites.append(p+1)
 		else:continue
-'''
 
 def makesnosense(dons,accs):
 
@@ -53,6 +55,7 @@ def short_exons(dons,accs,minexon):
 def all_possible(don_sites,acc_sites,minintron,minexon):
 
 	info={
+	'total_isoforms':0,
 	'trials':0,
 	'n_dsites':len(don_sites),
 	'n_asites':len(acc_sites),
@@ -60,7 +63,7 @@ def all_possible(don_sites,acc_sites,minintron,minexon):
 	'intron_fails':0,
 	'exon_fails':0
 	}	
-
+	
 	for n in range(1,len(don_sites)+1):
 		for d in it.combinations(don_sites,n):
 			for a in it.combinations(acc_sites,n):
@@ -75,6 +78,7 @@ def all_possible(don_sites,acc_sites,minintron,minexon):
 					info['exon_fails']+=1
 					continue				
 				#print(d,a)
+				info['total_isoforms']+=1
 	return info
 
 def ranseq_test(min_seq,max_seq,seq_step,n_seqs):
@@ -95,10 +99,15 @@ def find_sites(seq):
 			acc_sites.append(i)
 		else:continue
 	yield don_sites,acc_sites
-	
+
+'''	
 for seq in ranseq_test(100,300,50,10):
 	for d,a in find_sites(seq):
 		print(all_possible(d,a,20,40))
+'''
+
+# use this if reading in a fasta file
+print(all_possible(don_sites,acc_sites,35,25))
 
 
 					
