@@ -45,7 +45,8 @@ def generate_isoforms(dons, accs, minin, minex):
 	}
 	
 	isoforms = []
-	for n in range(1, len(dons)):
+	sites = min(len(dons), len(accs))
+	for n in range(1, sites):
 		for dsites in itertools.combinations(dons, n):
 			for asites in itertools.combinations(accs, n):
 				info['trials'] += 1
