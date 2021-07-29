@@ -1,3 +1,8 @@
+# rewrite/methods check of code using combinations()
+# need to integrate the following parameters:
+# seq, minin, minex, dons, accs
+# output should be the same as isoform.py/isoformer.py
+
 import itertools as it
 
 # all sites need to be sorted
@@ -26,30 +31,25 @@ def short_exons(dons,accs,minexon):
 	return False
 
 trials=0
-len_fails=0
 coor_fails=0
 intron_fails=0
 exon_fails=0
-for na in range(1,len(acc_sites)+1):
-	for a in it.combinations(acc_sites,na):
-		for nd in range(1,len(don_sites)+1):
-			for d in it.combinations(don_sites,nd):
-				trials+=1
-				if len(d)!=len(a):
-					len_fails+=1
-					continue
-				if makesnosense(d,a): 
-					coor_fails+=1
-					continue
-				if short_introns(d,a,4):
-					intron_fails+=1
-					continue	
-				if short_exons(d,a,1):
-					exon_fails+=1
-					continue					
-				print(d,a)
+for n in range(1,len(don_sites)+1):
+	for d in it.combinations(don_sites,n):
+		for a in it.combinations(acc_sites,n):
+			trials+=1
+			if makesnosense(d,a): 
+				coor_fails+=1
+				continue	
+			if short_introns(d,a,4):
+				intron_fails+=1
+				continue	
+			if short_exons(d,a,1):
+				exon_fails+=1
+				continue				
+			print(d,a)
 				
-print(trials,len_fails,coor_fails,intron_fails,exon_fails)	
+print('trials:',trials,'coor_fails:',coor_fails,'intron_fails:',intron_fails,'exon_fails:',exon_fails)	
 
 # next: generate random sequences of various lengths
 # plot the number of trials 
