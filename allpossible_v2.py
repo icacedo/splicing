@@ -1,32 +1,48 @@
-# rewrite/methods check of code using combinations()
-# need to integrate the following parameters:
-# seq, minin, minex, dons, accs
-# output should be the same as isoform.py/isoformer.py
-
 import argparse
 import itertools as it
 import seqlib as sl
 
-# use this chunk if reading in a fasta file
-
 parser=argparse.ArgumentParser(description='splice this sequence')
-parser.add_argument('--fasta', required=True, type=str, 
+parser.add_argument('--fasta', required=False, type=str, 
 	help='fasta file to splice')
+parser.add_argument('--minexon', required=False, type=int, 
+	default=25, help='minimum exon length')
+parser.add_argument('--minintron', required=False, type=int,
+	default=35, help='minimum intron length')
 arg=parser.parse_args()
 
-# all sites need to be sorted by order of position
-# this method naturally sorts sites
-don_sites=[]
-acc_sites=[]
-for i,j in sl.read_fasta(arg.fasta):
-	# range needs to take into account minimum exon size
-	for p in range(25,len(j)-25):
-		if j[p:p+2]=='GT':
-			don_sites.append(p)
-		if j[p:p+2]=='AG':
-			# +1 added to get to the end of the acceptor sequence
-			acc_sites.append(p+1)
+fasta=arg.fasta
+minexon=arg.minexon
+minintron=arg.minintron
+
+def find_sites_fasta(seq,minexon):
+
+	don_sites=[]
+	acc_sites=[]
+	for i,j in sl.read_fasta(seq):
+		# range needs to take into account minimum exon size
+		for p in range(minexon,len(j)-minexon):
+			if j[p:p+2]=='GT':
+				don_sites.append(p)
+			if j[p:p+2]=='AG':
+				# +1 added to get to the end of the acceptor sequence
+				acc_sites.append(p+1)
+			else:continue
+		yield i,don_sites,acc_sites
+		don_sites=[]
+		acc_sites=[]
+	
+def find_sites(seq,minexon):
+	
+	don_sites=[]
+	acc_sites=[]
+	for i in range(minexon,len(seq)-minexon):
+		if seq[i:i+2]=='GT':
+			don_sites.append(i)
+		if seq[i:i+2]=='AG':
+			acc_sites.append(i)
 		else:continue
+	yield don_sites,acc_sites
 
 def makesnosense(dons,accs):
 
@@ -52,7 +68,7 @@ def short_exons(dons,accs,minexon):
 			return True
 	return False
 
-def all_possible(don_sites,acc_sites,minintron,minexon):
+def all_possible(don_sites,acc_sites,minexon,minintron):
 
 	info={
 	'total_isoforms':0,
@@ -87,27 +103,18 @@ def ranseq_test(min_seq,max_seq,seq_step,n_seqs):
 		for amount in range(n_seqs):
 			# 60% GC content
 			yield sl.random_dna(length,0.20,0.30,0.30,0.20)
-
-def find_sites(seq):
-	
-	don_sites=[]
-	acc_sites=[]
-	for i in range(len(seq)):
-		if seq[i:i+2]=='GT':
-			don_sites.append(i)
-		if seq[i:i+2]=='AG':
-			acc_sites.append(i)
-		else:continue
-	yield don_sites,acc_sites
-
-'''	
+# use this chunk to test using many random sequences
+'''
+id=0
 for seq in ranseq_test(100,300,50,10):
-	for d,a in find_sites(seq):
-		print(all_possible(d,a,20,40))
+	for d,a in find_sites(seq,minexon):
+		id+=1
+		print(id,len(seq),all_possible(d,a,minexon,minintron))
 '''
 
-# use this if reading in a fasta file
-print(all_possible(don_sites,acc_sites,35,25))
+# use this chunk to test using a fasta file
+for i,d,a in find_sites_fasta(fasta,minexon):
+	print(i,all_possible(d,a,minexon,minintron))
 
 
 					
