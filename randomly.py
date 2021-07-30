@@ -13,7 +13,6 @@ for length in range(300, 1000, 50):
 	isos = []
 	dons = []
 	accs = []
-	secs = []
 	
 	t0 = time.time_ns()
 	for t in range(trials):
