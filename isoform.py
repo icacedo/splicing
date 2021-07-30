@@ -27,15 +27,15 @@ def all_probable_pwm(seq, minin, minex, dpwm, apwm, dt, at):
 	return generate_isoforms(dons, accs, minin, minex)
 """
 
-def all_possible(seq, minin, minex):
+def all_possible(seq, minin, minex, maxn):
 	dons = []
 	accs = []
 	for i in range(minex, len(seq) -minex):
-		if seq[i:i+2] == 'GT': dons.append(i)
-		if seq[i:i+2] == 'AG': accs.append(i+1)
-	return generate_isoforms(dons, accs, minin, minex)
+		if seq[i:i+2]   == 'GT': dons.append(i)
+		if seq[i-1:i+1] == 'AG': accs.append(i)
+	return generate_isoforms(dons, accs, minin, minex, maxn)
 
-def generate_isoforms(dons, accs, minin, minex):
+def generate_isoforms(dons, accs, minin, minex, maxn):
 	info = {
 		'trials' : 0,
 		'donors': len(dons),
@@ -45,8 +45,8 @@ def generate_isoforms(dons, accs, minin, minex):
 	}
 	
 	isoforms = []
-	sites = min(len(dons), len(accs))
-	for n in range(1, sites):
+	sites = min(len(dons), len(accs), maxn)
+	for n in range(1, sites+1):
 		for dsites in itertools.combinations(dons, n):
 			for asites in itertools.combinations(accs, n):
 				info['trials'] += 1
