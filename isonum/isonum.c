@@ -56,19 +56,20 @@ int short_exon(ik_ivec dons, ik_ivec accs, int min_exon) {
 	return 0;
 }
 
-static void all_possible(const char *seq, int min_intron, int min_exon) {
+static void all_possible(const char *seq, int min_intron, int min_exon, int max) {
 	int len = strlen(seq);
 	int nsites;
 	ik_ivec dons = ik_ivec_new();
 	ik_ivec accs = ik_ivec_new();
 	
 	for (int i = min_exon; i < len - min_exon; i++) {
-		if      (seq[i  ] == 'G' && seq[i+1] == 'T') ik_ivec_push(dons, i);
-		else if (seq[i-1] == 'A' && seq[i  ] == 'G') ik_ivec_push(accs, i);
+		if (seq[i]   == 'G' && seq[i+1] == 'T') ik_ivec_push(dons, i);
+		if (seq[i-1] == 'A' && seq[i]   == 'G') ik_ivec_push(accs, i);
 	}
 	
 	nsites = dons->size < accs->size ? dons->size : accs->size;
-	printf("min %d, don %d, acc %d\n", nsites, dons->size, accs->size);
+	if (nsites > max) nsites = max;
+	//printf("min %d, don %d, acc %d\n", nsites, dons->size, accs->size);
 	
 	int trials = 0;
 	int ishort = 0;
@@ -113,13 +114,15 @@ usage: isonum <fasta file> [options]\n\
 options:\n\
   -intron <int>  minimum intron size [35]\n\
   -exon   <int>  minimum exon size   [15]\n\
+  -max    <int>  maximum # introns   [5]\n\
   -full          generate full report\n\
 ";
 
 int main(int argc, char **argv) {
 	char *file = NULL;  // path to fasta file
 	int   intron = 35;  // minimum intron size
-	int   exon   = 15;  // minimum exon size
+	int   exon   = 25;  // minimum exon size
+	int   max    = 5;   // maximum number of introns
 	int   full   = 0;   // full report?
 	ik_pipe io;
 	ik_fasta ff;
@@ -128,6 +131,7 @@ int main(int argc, char **argv) {
 	ik_set_program_name(argv[0]);
 	ik_register_option("-intron", 1);
 	ik_register_option("-exon", 1);
+	ik_register_option("-max", 1);
 	ik_register_option("-full", 0);
 	ik_parse_options(&argc, argv);
 	
@@ -136,12 +140,13 @@ int main(int argc, char **argv) {
 	file = argv[1];
 	if (ik_option("-intron")) intron = atoi(ik_option("-intron"));
 	if (ik_option("-exon"))   exon   = atoi(ik_option("-exon"));
+	if (ik_option("-max"))    max    = atoi(ik_option("-max"));
 	if (ik_option("-full"))   full = 1;
 	
 	// main loop
 	io = ik_pipe_open(file, "r");
 	while ((ff = ik_fasta_read(io->stream)) != NULL) {
-		all_possible(ff->seq, intron, exon);
+		all_possible(ff->seq, intron, exon, max);
 		ik_fasta_free(ff);
 	}
 
