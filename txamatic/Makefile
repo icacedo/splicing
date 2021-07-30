@@ -1,4 +1,4 @@
-# Makefile for isonum
+# Makefile for txamatic
 
 LIB = -lm -lik
 LINC = -Lik
@@ -6,8 +6,8 @@ INC = -Iik
 CFLAGS = -O2 -Wall -Werror
 OBJECTS = 
 
-APP = isonum
-OBJ = isonum.o
+APP = txamatic
+OBJ = txamatic.o
 
 default:
 	make $(APP)

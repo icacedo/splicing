@@ -1,5 +1,94 @@
 import itertools
+import random
 import sys
+
+#####################
+## UTILITY SECTION ##
+#####################
+
+def randseq(n):
+	seq = ''
+	for i in range(n):
+		seq += random.choice('ACGT')
+	return seq
+
+#################
+## PWM SECTION ##
+#################
+
+def create_pwm(seqs):
+	# build pwm from seqs
+	# return pwm
+	pass
+
+def read_pwm(file):
+	# open file
+	# read pwm
+	# return pwm
+	pass
+
+def write_pwm(file, pwm):
+	# open file for writing
+	# write pwm
+	pass
+
+def score_pwm(seq, pwm):
+	# assert seq is same length as pwm
+	# return score
+	pass
+
+####################
+## LENGTH SECTION ##
+####################
+
+def create_hist(seqs):
+	# build hist from seq lengths
+	# return hist
+	pass
+
+def read_hist(file):
+	# open file
+	# read hist
+	# return hist
+	pass
+
+def write_hist(file, hist):
+	# open file for writing
+	# write hist
+	pass
+
+def score_hist(seq, pwm):
+	# return score
+	pass
+
+##########################
+## MARKOV MODEL SECTION ##
+##########################
+
+def create_markov(seqs, order):
+	# build markov model from seqs
+	# return model
+	pass
+
+def read_markov(seqs):
+	# open file
+	# read model
+	# return model
+	pass
+
+def write_markov(file, mm):
+	# open file for writing
+	# write model
+	pass
+
+def score_makov(seq, mm):
+	# build score
+	# return score
+	pass
+
+################################
+## ISOFORM GENERATION SECTION ##
+################################
 
 def short_intron(dons, accs, minintron):
 	for d, a in zip(dons, accs):
@@ -15,27 +104,22 @@ def short_exon(dons, accs, minexon):
 		if exon_len < minexon: return True
 	return False
 
-"""
-def all_probable_pwm(seq, minin, minex, dpwm, apwm, dt, at):
-	dons = []
-	accs = []
-	for i in range(minex, len(seq) -minex):
-		don = seq[i:i+len(dpwm)]
-		acc = seq[i:i+len(apwm)]
-		if pwmscore(don, dpwm) > dt: dons.append(i)
-		if pwmscore(acc, apwm) > at: accs.append(i)	
-	return generate_isoforms(dons, accs, minin, minex)
-"""
+def all_probable(seq, mini, mine, maxs, ignore,
+		ihist=None, ehist=None, dpwm=None, apwm=None, imm=None, emm=None):
+	# looks like all_possible but with optional filters
+		# for acceptor and donor matches to pwms
+		# for probabilistic lengths of introns and exons
+		# for markov models of intron and exon composition
+		# for final build?
+	pass
 
-def all_possible(seq, minin, minex, maxn):
+def all_possible(seq, minin, minex, maxs, ignore):
 	dons = []
 	accs = []
-	for i in range(minex, len(seq) -minex):
+	for i in range(ignore, len(seq) -ignore):
 		if seq[i:i+2]   == 'GT': dons.append(i)
 		if seq[i-1:i+1] == 'AG': accs.append(i)
-	return generate_isoforms(dons, accs, minin, minex, maxn)
 
-def generate_isoforms(dons, accs, minin, minex, maxn):
 	info = {
 		'trials' : 0,
 		'donors': len(dons),
@@ -45,7 +129,7 @@ def generate_isoforms(dons, accs, minin, minex, maxn):
 	}
 	
 	isoforms = []
-	sites = min(len(dons), len(accs), maxn)
+	sites = min(len(dons), len(accs), maxs)
 	for n in range(1, sites+1):
 		for dsites in itertools.combinations(dons, n):
 			for asites in itertools.combinations(accs, n):
