@@ -1,4 +1,6 @@
+
 import itertools
+import math
 import random
 import sys
 
@@ -17,9 +19,22 @@ def randseq(n):
 #################
 
 def create_pwm(seqs):
-	# build pwm from seqs
-	# return pwm
-	pass
+	count = []
+	for seq in seqs:
+		for i, nt in enumerate(seq):
+			if len(count) <= i:
+				count.append({'A':0, 'C': 0, 'G': 0, 'T': 0})
+			count[i][nt] += 1
+
+	pwm = [{} for i in range(len(count))]
+	for i in range(len(count)):
+		for nt in count[i]:
+			p = count[i][nt] / len(seqs)
+			if p == 0:
+				pwm[i][nt] = -99
+			else:
+				pwm[i][nt] = math.log2(p/0.25)
+	return pwm
 
 def read_pwm(file):
 	# open file
@@ -42,9 +57,20 @@ def score_pwm(seq, pwm):
 ####################
 
 def create_hist(seqs):
-	# build hist from seq lengths
-	# return hist
-	pass
+	hist = []
+	h2 = {}
+	for seq in seqs:
+		n = len(seq)
+		while len(hist) < n+1 :
+			hist.append(0)
+		if n not in h2: h2[n] = 0
+		h2[n] += 1
+		hist[n] += 1
+	for i in range(len(hist)):
+		v = None
+		if i not in h2: v = '*'
+		else: v = h2[i]
+		print(i, hist[i], v)
 
 def read_hist(file):
 	# open file
@@ -65,10 +91,15 @@ def score_hist(seq, pwm):
 ## MARKOV MODEL SECTION ##
 ##########################
 
-def create_markov(seqs, order):
-	# build markov model from seqs
-	# return model
-	pass
+def create_markov(seqs, order, beg, end):
+	mm = {}
+	for seq in seqs:
+		for i in range(beg+order, len(seq) - end):
+			ctx = seq[i-order:i]
+			nt = seq[i]
+			if ctx not in mm: mm[ctx] = {'A':0, 'C':0, 'G':0, 'T':0}
+			mm[ctx][nt] += 1
+	return mm
 
 def read_markov(seqs):
 	# open file
@@ -151,3 +182,4 @@ def all_possible(seq, minin, minex, maxs, ignore):
 				isoforms.append(tx)
 
 	return isoforms, info
+
