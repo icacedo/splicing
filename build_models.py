@@ -12,33 +12,33 @@ def get_seqs(filename):
 	return seqs
 
 exons = get_seqs('data/exon.txt.gz')
+introns = get_seqs('data/intron.txt.gz')
+accs = get_seqs('data/acceptor.txt.gz')
+dons = get_seqs('data/donor.txt.gz')
 
 # Exon Lengths
-ehist = isoform.create_hist(exons)
-print(ehist)
+elen = isoform.create_len(exons, 25, 1000)
+isoform.write_len('data/exon.len', elen)
 
 # Intron Lengths
-ihist = isoform.create_hist(introns)
-print(ihist)
+ilen = isoform.create_len(introns, 5, 1000)
+isoform.write_len('data/intron.len', ilen)
 
 # Acceptor PWM
-accs = get_seqs('data/acceptor.txt.gz')
 apwm = isoform.create_pwm(accs)
-print(apwm)
+isoform.write_pwm('data/acceptor.pwm', apwm)
 
 # Donor PWM
-dons = get_seqs('data/donor.txt.gz')
 dpwm = isoform.create_pwm(dons)
-print(dpwm)
+isoform.write_pwm('data/donor.pwm', dpwm)
 
 # Exon Markov model
 emm = isoform.create_markov(exons, 3, 0, 0)
-print(emm)
+isoform.write_markov('data/exon.mm', emm)
 
 # Intron Markov model
-introns = get_seqs('data/intron.txt.gz')
 imm = isoform.create_markov(introns, 3, 5, 6)
-print(imm)
+isoform.write_markov('data/intron.mm', imm)
 
 
 

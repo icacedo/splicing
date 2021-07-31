@@ -29,11 +29,7 @@ def create_pwm(seqs):
 	pwm = [{} for i in range(len(count))]
 	for i in range(len(count)):
 		for nt in count[i]:
-			p = count[i][nt] / len(seqs)
-			if p == 0:
-				pwm[i][nt] = -99
-			else:
-				pwm[i][nt] = math.log2(p/0.25)
+			pwm[i][nt] = count[i][nt] / len(seqs)
 	return pwm
 
 def read_pwm(file):
@@ -56,34 +52,46 @@ def score_pwm(seq, pwm):
 ## LENGTH SECTION ##
 ####################
 
-def create_hist(seqs):
-	hist = []
-	h2 = {}
+def create_len(seqs, floor, limit):
+	count = []
 	for seq in seqs:
 		n = len(seq)
-		while len(hist) < n+1 :
-			hist.append(0)
-		if n not in h2: h2[n] = 0
-		h2[n] += 1
-		hist[n] += 1
-	for i in range(len(hist)):
-		v = None
-		if i not in h2: v = '*'
-		else: v = h2[i]
-		print(i, hist[i], v)
+		while len(count) < n+1 :
+			count.append(0)
 
-def read_hist(file):
+		count[n] += 1
+	
+	# rectangular smoothing
+	r = 5 # 5 on each side
+	smooth = [0 for i in range(len(count))]
+	for i in range(r, len(count) -r):
+		for j in range(-r, r+1):
+			smooth[i+j] += count[i]
+	
+	for i in range(floor):
+		smooth[i] = 0
+	smooth = smooth[:limit]
+	
+	# model
+	model = []
+	total = 0
+	for v in smooth: total += v
+	for v in smooth: model.append(v/total)
+	
+	return model
+
+def read_len(file):
 	# open file
 	# read hist
 	# return hist
 	pass
 
-def write_hist(file, hist):
+def write_len(file, hist):
 	# open file for writing
 	# write hist
 	pass
 
-def score_hist(seq, pwm):
+def score_len(seq, pwm):
 	# return score
 	pass
 
@@ -92,13 +100,22 @@ def score_hist(seq, pwm):
 ##########################
 
 def create_markov(seqs, order, beg, end):
-	mm = {}
+	count = {}
 	for seq in seqs:
 		for i in range(beg+order, len(seq) - end):
 			ctx = seq[i-order:i]
 			nt = seq[i]
-			if ctx not in mm: mm[ctx] = {'A':0, 'C':0, 'G':0, 'T':0}
-			mm[ctx][nt] += 1
+			if ctx not in count: count[ctx] = {'A':0, 'C':0, 'G':0, 'T':0}
+			count[ctx][nt] += 1
+	
+	# these need to be probabilities
+	mm = {}
+	for kmer in count:
+		mm[kmer] = {}
+		total = 0
+		for nt in count[kmer]: total += count[kmer][nt]
+		for nt in count[kmer]: mm[kmer][nt] = count[kmer][nt] / total
+	
 	return mm
 
 def read_markov(seqs):
@@ -136,7 +153,7 @@ def short_exon(dons, accs, minexon):
 	return False
 
 def all_probable(seq, mini, mine, maxs, ignore,
-		ihist=None, ehist=None, dpwm=None, apwm=None, imm=None, emm=None):
+		ilen=None, elen=None, dpwm=None, apwm=None, imm=None, emm=None):
 	# looks like all_possible but with optional filters
 		# for acceptor and donor matches to pwms
 		# for probabilistic lengths of introns and exons
