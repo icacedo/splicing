@@ -1,0 +1,22 @@
+import seqlib 
+import random
+
+random.seed(2)
+# https://en.wikipedia.org/wiki/Position_weight_matrix
+# rows for each letter, columns for each position
+# get frequencies at each position first, then probability
+# use log odds probabilites for pwm
+
+# generate 10 random sequences to test
+def simple_seqgen():
+	for i in range(1,11):
+		id='>s'+str(i)
+		seq=seqlib.random_dna(100,0.20,0.30,0.30,0.20)
+		yield id,seq
+		
+for id,seq in simple_seqgen():
+	nuc_counts={'A':0,'C':0,'G':0,'T':0}
+	for nuc in seq:
+		position[nuc]+=1
+	print(nuc_counts)
+	
