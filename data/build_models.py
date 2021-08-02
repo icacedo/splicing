@@ -17,11 +17,11 @@ accs = get_seqs('acceptor.txt.gz')
 dons = get_seqs('donor.txt.gz')
 
 # Exon Lengths
-elen = isoform.create_len(exons, 25, 1000)
+elen = isoform.create_len(exons, 15, 500)
 isoform.write_len('exon.len', elen)
 
 # Intron Lengths
-ilen = isoform.create_len(introns, 5, 1000)
+ilen = isoform.create_len(introns, 5, 500)
 isoform.write_len('intron.len', ilen)
 
 # Acceptor PWM

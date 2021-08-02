@@ -4,8 +4,9 @@
 // some of this may go into ik library
 
 struct ik_PWM {
-	int      length;
-	double **value;
+	char    *name;   // acceptor, donor
+	int      length; // eg. 6
+	double **value;  // value[pos][nt]
 };
 typedef struct ik_PWM * ik_pwm;
 
@@ -14,9 +15,16 @@ ik_pwm ik_read_pwm(const char *filename) {
 	return model;
 }
 
+double ik_score_pwm(const ik_pwm pwm, const char *seq, int pos) {
+	double p = 1.0;
+	// do stuff
+	return p;
+}
+
 struct ik_MM {
-	int     order;
-	double *value;
+	char   *name;   // exon, intron
+	int     order;  // eg. 5
+	double *value;  // value[256]
 };
 typedef struct ik_MM * ik_mm;
 
@@ -25,17 +33,29 @@ ik_mm ik_read_mm(const char *filename) {
 	return model;
 }
 
+double ik_score_mm(const ik_mm mm, const char *seq, int pos, int len) {
+	double p = 1.0;
+	// do stuff
+	return p;
+}
+
 struct ik_LEN {
-	int     min;
-	int     max;
-	double *value;
-	double  tail;
+	char   *name;   // exon, intron
+	int     size;   // the defined region
+	double *value;  // the values for defined region
+	double  tail;   // the geometric tail
 };
 typedef struct ik_LEN * ik_len;
 
 ik_len ik_read_len(const char *filename) {
 	ik_len model = NULL;
 	return model;
+}
+
+double ik_score_len(const ik_len len, int size) {
+	double p = 1.0;
+	// do stuff
+	return p;
 }
 
 static void combo(ik_vec ans, ik_ivec tmp, int n, int left, int k) {

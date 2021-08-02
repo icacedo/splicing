@@ -32,15 +32,18 @@ def create_pwm(seqs):
 			pwm[i][nt] = count[i][nt] / len(seqs)
 	return pwm
 
+def write_pwm(file, pwm):
+	with open(file, 'w') as fp:
+		fp.write(f'# PWM {file} {len(pwm)}\n')
+		for pos in pwm:
+			for nt in pos:
+				fp.write(f'{pos[nt]:.6f} ')
+			fp.write('\n')
+
 def read_pwm(file):
 	# open file
 	# read pwm
 	# return pwm
-	pass
-
-def write_pwm(file, pwm):
-	# open file for writing
-	# write pwm
 	pass
 
 def score_pwm(seq, pwm):
@@ -80,15 +83,16 @@ def create_len(seqs, floor, limit):
 	
 	return model
 
+def write_len(file, hist):
+	with open(file, 'w') as fp:
+		fp.write(f'# LEN {file} {len(hist)}\n')
+		for val in hist:
+			fp.write(f'{val:.6f}\n')
+
 def read_len(file):
 	# open file
 	# read hist
 	# return hist
-	pass
-
-def write_len(file, hist):
-	# open file for writing
-	# write hist
 	pass
 
 def score_len(seq, pwm):
@@ -118,15 +122,19 @@ def create_markov(seqs, order, beg, end):
 	
 	return mm
 
+def write_markov(file, mm):
+	with open(file, 'w') as fp:
+		fp.write(f'# MM {file} {len(mm)}\n')
+		for kmer in sorted(mm):
+			fp.write(f'{kmer} ')
+			for v in mm[kmer]:
+				fp.write(f'{mm[kmer][v]:.6f} ')
+			fp.write('\n')
+
 def read_markov(seqs):
 	# open file
 	# read model
 	# return model
-	pass
-
-def write_markov(file, mm):
-	# open file for writing
-	# write model
 	pass
 
 def score_makov(seq, mm):
