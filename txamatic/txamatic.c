@@ -24,7 +24,7 @@ double ik_score_pwm(const ik_pwm pwm, const char *seq, int pos) {
 struct ik_MM {
 	char   *name;   // exon, intron
 	int     order;  // eg. 5
-	double *value;  // value[256]
+	ik_tvec prob;   // prob[GACTC] = value
 };
 typedef struct ik_MM * ik_mm;
 
@@ -42,8 +42,7 @@ double ik_score_mm(const ik_mm mm, const char *seq, int pos, int len) {
 struct ik_LEN {
 	char   *name;   // exon, intron
 	int     size;   // the defined region
-	double *value;  // the values for defined region
-	double  tail;   // the geometric tail
+	ik_ivec prob;   // the values for defined region, ik_fvec
 };
 typedef struct ik_LEN * ik_len;
 
@@ -55,6 +54,8 @@ ik_len ik_read_len(const char *filename) {
 double ik_score_len(const ik_len len, int size) {
 	double p = 1.0;
 	// do stuff
+	// assert length > 0
+	// if size > length use geometric tail
 	return p;
 }
 

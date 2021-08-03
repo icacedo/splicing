@@ -57,8 +57,12 @@ def score_pwm(seq, pwm):
 
 def create_len(seqs, floor, limit):
 	count = []
+	sum = 0
+	icount = 0
 	for seq in seqs:
 		n = len(seq)
+		sum += n
+		icount += 1
 		while len(count) < n+1 :
 			count.append(0)
 
@@ -80,6 +84,9 @@ def create_len(seqs, floor, limit):
 	total = 0
 	for v in smooth: total += v
 	for v in smooth: model.append(v/total)
+	
+	# save the mean length as zero-th element
+	model[0] = sum/icount
 	
 	return model
 
