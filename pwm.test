@@ -13,10 +13,21 @@ def simple_seqgen():
 		id='>s'+str(i)
 		seq=seqlib.random_dna(100,0.20,0.30,0.30,0.20)
 		yield id,seq
-		
+	
 for id,seq in simple_seqgen():
-	nuc_counts={'A':0,'C':0,'G':0,'T':0}
-	for nuc in seq:
-		position[nuc]+=1
-	print(nuc_counts)
+	n_counts={}
+	counter=0
+	for n in seq:
+		if n not in n_counts:
+			n_counts[n]=1
+		else:
+			n_counts[n]+=1
+		counter+=1	
+	n_freqs={}
+	for n in n_counts:
+		freq=n_counts[n]/counter
+		n_freqs[n]=freq
+	print(n_freqs)
+	
+
 	
