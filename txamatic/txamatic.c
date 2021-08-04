@@ -82,7 +82,13 @@ static double score_elen(const ik_len len,
 
 static double score_ilen(const ik_len len,
 		const ik_ivec dons, const ik_ivec accs) {
-	return 0;
+	double score = 0;
+	for (int i = 0; i < dons->size; i++) {
+		int n = accs->elem[i] - dons->elem[i] + 1;
+		double s = ik_score_len(len, n);
+		score += s; // is that right or is it odds?
+	}
+	return score;
 }
 
 static double score_emm(const char *seq, const ik_mm mm,
@@ -147,7 +153,7 @@ static void all_possible(const char *seq,
 				if (emm)  score += score_emm(seq, emm, dv, av);
 				if (imm)  score += score_imm(seq, imm, dv, av);
 				
-				printf("%g", score);
+				printf("score: %g introns:", score);
 				for (int a = 0; a < k; a++) {
 					printf(" %d..%d", dv->elem[a], av->elem[a]);
 				}
