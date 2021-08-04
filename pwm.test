@@ -1,33 +1,49 @@
 import seqlib 
 import random
+import isoform
 
 random.seed(2)
-# https://en.wikipedia.org/wiki/Position_weight_matrix
-# rows for each letter, columns for each position
-# get frequencies at each position first, then probability
-# use log odds probabilites for pwm
 
-# generate 10 random sequences to test
-def simple_seqgen():
-	for i in range(1,11):
-		id='>s'+str(i)
-		seq=seqlib.random_dna(100,0.20,0.30,0.30,0.20)
-		yield id,seq
-	
-for id,seq in simple_seqgen():
-	n_counts={}
-	counter=0
-	for n in seq:
-		if n not in n_counts:
-			n_counts[n]=1
+def simple_seqgen(n,N):
+	seq_list=[]
+	for i in range(1,N+1):
+		#id='>s'+str(i)
+		seq=seqlib.random_dna(n,0.20,0.30,0.30,0.20)
+		seq_list.append(seq)
+	return(seq_list)
+
+n=10
+N=5
+pwm=[{} for i in range(n)]
+
+seqs=simple_seqgen(10,5)
+
+#for seq in simple_seqgen(n,N):
+for seq in seqs:
+	position=0
+	for nt in seq:
+		if nt not in pwm[position]:
+			pwm[position][nt]=1
 		else:
-			n_counts[n]+=1
-		counter+=1	
-	n_freqs={}
-	for n in n_counts:
-		freq=n_counts[n]/counter
-		n_freqs[n]=freq
-	print(n_freqs)
-	
+			pwm[position][nt]+=1
+		position+=1
+for i in range(len(pwm)):
+	for nt in pwm[i]:
+		pwm[i][nt]=pwm[i][nt]/N
+print(pwm)
+		
+# compare output to ian's code
+print(isoform.create_pwm(seqs))
+print(seqs)
+
+
+
+
+
+
+
+
+
+
 
 	
