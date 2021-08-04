@@ -85,9 +85,6 @@ def create_len(seqs, floor, limit):
 	for v in smooth: total += v
 	for v in smooth: model.append(v/total)
 	
-	# save the mean length as zero-th element
-	model[0] = sum/icount
-	
 	return model
 
 def write_len(file, hist):
@@ -131,11 +128,11 @@ def create_markov(seqs, order, beg, end):
 
 def write_markov(file, mm):
 	with open(file, 'w') as fp:
-		fp.write(f'# MM {file} {len(mm)}\n')
+		fp.write(f'# MM {file} {len(mm)*4}\n')
 		for kmer in sorted(mm):
-			fp.write(f'{kmer} ')
+			#fp.write(f'{kmer} ')
 			for v in mm[kmer]:
-				fp.write(f'{mm[kmer][v]:.6f} ')
+				fp.write(f'{kmer}{v} {mm[kmer][v]:.6f}\n')
 			fp.write('\n')
 
 def read_markov(seqs):
