@@ -1,6 +1,7 @@
 #include "toolbox.h"
 #include "sequence.h"
 #include "model.h"
+#include "feature.h"
 
 static void combo(ik_vec ans, ik_ivec tmp, int n, int left, int k) {
 	if (k == 0) {
@@ -55,49 +56,28 @@ static int short_exon(ik_ivec dons, ik_ivec accs, int min_exon) {
 	return 0;
 }
 
-static double score_apwm(const char *seq, const ik_pwm pwm,
-		const ik_ivec accs) {
-	double score = 0;
-	for (int i = 0; i < accs->size; i++) {
-		int pos = accs->elem[i] - pwm->size +1;
-		score += ik_score_pwm(pwm, seq, pos);
-	}
-	return score - (-2 * pwm->size);
-}
-
-static double score_dpwm(const char *seq, const ik_pwm pwm,
-		const ik_ivec dons) {
-	double score = 0;
-	for (int i = 0; i < dons->size; i++) {
-		int pos = dons->elem[i];
-		score += ik_score_pwm(pwm, seq, pos);
-	}
-	return score - (-2 * pwm->size);
-}
-
-static double score_elen(const ik_len len,
-		const ik_ivec dons, const ik_ivec accs) {
+static double score_apwm(const ik_mRNA tx) {
 	return 0;
 }
 
-static double score_ilen(const ik_len len,
-		const ik_ivec dons, const ik_ivec accs) {
-	double score = 0;
-	for (int i = 0; i < dons->size; i++) {
-		int n = accs->elem[i] - dons->elem[i] + 1;
-		double s = ik_score_len(len, n);
-		score += s; // is that right or is it odds?
-	}
-	return score;
-}
-
-static double score_emm(const char *seq, const ik_mm mm,
-		const ik_ivec dons, const ik_ivec accs) {
+static double score_dpwm(const ik_mRNA tx) {
 	return 0;
 }
 
-static double score_imm(const char *seq, const ik_mm mm,
-		const ik_ivec dons, const ik_ivec accs) {
+
+static double score_elen(const ik_mRNA tx) {
+	return 0;
+}
+
+static double score_ilen(const ik_mRNA tx) {
+	return 0;
+}
+
+static double score_emm(const ik_mRNA tx) {
+	return 0;
+}
+
+static double score_imm(const ik_mRNA tx) {
 	return 0;
 }
 
@@ -144,14 +124,16 @@ static void all_possible(const char *seq,
 				}
 				passed++;
 				
+				ik_mRNA tx = ik_mRNA_new(dv, av, seq, 1);
+				
 				// output
 				double score = 0;
-				if (apwm) score += score_apwm(seq, apwm, av);
-				if (dpwm) score += score_dpwm(seq, dpwm, dv);
-				if (elen) score += score_elen(elen, dv, av);
-				if (ilen) score += score_ilen(ilen, dv, av);
-				if (emm)  score += score_emm(seq, emm, dv, av);
-				if (imm)  score += score_imm(seq, imm, dv, av);
+				if (apwm) score += score_apwm(tx);
+				if (dpwm) score += score_dpwm(tx);
+				if (elen) score += score_elen(tx);
+				if (ilen) score += score_ilen(tx);
+				if (emm)  score += score_emm(tx);
+				if (imm)  score += score_imm(tx);
 				
 				printf("score: %g introns:", score);
 				for (int a = 0; a < k; a++) {
