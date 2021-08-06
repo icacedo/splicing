@@ -38,7 +38,7 @@ static ik_vec get_combinations(const ik_ivec sites, int k) {
 	return indexes;
 }
 
-static int short_intron(ik_ivec dons, ik_ivec accs, int min_intron) {
+static int short_intron(const ik_ivec dons, const ik_ivec accs, int min_intron) {
 	for (int i = 0; i < dons->size; i++) {
 		int len = accs->elem[i] - dons->elem[i];
 		if (len < min_intron) return 1;
@@ -46,7 +46,7 @@ static int short_intron(ik_ivec dons, ik_ivec accs, int min_intron) {
 	return 0;
 }
 
-static int short_exon(ik_ivec dons, ik_ivec accs, int min_exon) {
+static int short_exon(const ik_ivec dons, const ik_ivec accs, int min_exon) {
 	for (int i = 1; i < dons->size; i++) {
 		int beg = accs->elem[i-1] + 1;
 		int end = dons->elem[i] -1;
@@ -107,26 +107,31 @@ static void all_possible(const char *seq,
 	for (int k = 1; k <= nsites; k++) {
 		ik_vec dcs = get_combinations(dons, k);
 		ik_vec acs = get_combinations(accs, k);
-		
 		for (int i = 0; i < dcs->size; i++) {
 			for (int j = 0; j < acs->size; j++) {
 				ik_ivec dv = dcs->elem[i];
 				ik_ivec av = acs->elem[j];
 				
+				// sanity checks
 				trials += 1;
 				if (short_intron(dv, av, min_intron)) {
 					ishort++;
 					continue;
 				}
-				if (short_exon(dv, av, min_exon)) {
+				if (short_exon(dv, av, min_exon)) { // should include flank?
 					eshort++;
 					continue;	
 				}
 				passed++;
 				
-				ik_mRNA tx = ik_mRNA_new(dv, av, seq, 1);
+				printf("making transcript %d %d %d\n", j, dv->size, av->size);
+				ik_mRNA tx = ik_mRNA_new(seq, 100, len -100, dv, av);
+				printf("done making transcript\n");
+				ik_feat intron = tx->introns->elem[0];
+				char *s = ik_feat_seq(intron);
+				printf("fina: %s\n", s);
 				
-				// output
+				
 				double score = 0;
 				if (apwm) score += score_apwm(tx);
 				if (dpwm) score += score_dpwm(tx);
@@ -135,20 +140,14 @@ static void all_possible(const char *seq,
 				if (emm)  score += score_emm(tx);
 				if (imm)  score += score_imm(tx);
 				
-				printf("score: %g introns:", score);
-				for (int a = 0; a < k; a++) {
-					printf(" %d..%d", dv->elem[a], av->elem[a]);
-				}
-				printf("\n");
-				
-				//ik_exit("testing");
 			}
 		}
-		
+		/*
 		for (int i = 0; i < dcs->size; i++) ik_ivec_free(dcs->elem[i]);
 		ik_vec_free(dcs);
 		for (int i = 0; i < acs->size; i++) ik_ivec_free(acs->elem[i]);
 		ik_vec_free(acs);
+		*/
 	}
 	
 	fprintf(stderr, "don:%d acc:%d n:%d in:%d ex:%d ok:%d\n",
