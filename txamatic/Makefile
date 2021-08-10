@@ -3,7 +3,7 @@
 LIB = -lm -lik
 LINC = -Lik
 INC = -Iik
-CFLAGS = -O2 -Wall -Werror
+CFLAGS = -O2 
 OBJECTS = 
 
 APP = txamatic

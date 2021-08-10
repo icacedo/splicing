@@ -10,7 +10,7 @@ static void combo(ik_vec ans, ik_ivec tmp, int n, int left, int k) {
 		ik_vec_push(ans, (void*)keep);
 		return;
 	}
-	
+
 	for (int i = left; i <= n; i++) {
 		ik_ivec_push(tmp, i - 1);
 		combo(ans, tmp, n, i + 1, k - 1);
@@ -23,9 +23,9 @@ static ik_vec get_combinations(const ik_ivec sites, int k) {
 	ik_ivec iv;
 	ik_vec  indexes = ik_vec_new();
 	ik_ivec tmp = ik_ivec_new();
-	
+
 	combo(indexes, tmp, sites->size, 1, k);
-	
+
 	for (int i = 0; i < indexes->size; i++) {
 		iv = indexes->elem[i];
 		for (int j = 0; j < iv->size; j++) {
@@ -34,7 +34,7 @@ static ik_vec get_combinations(const ik_ivec sites, int k) {
 			iv->elem[j] = val;
 		}
 	}
-	
+
 	return indexes;
 }
 
@@ -56,28 +56,39 @@ static int short_exon(const ik_ivec dons, const ik_ivec accs, int min_exon) {
 	return 0;
 }
 
-static double score_apwm(const ik_mRNA tx) {
+static double score_apwm(const ik_pwm pwm, const ik_mRNA tx) {
+	double score = 0;
+	for (int i = 0; i < tx->introns->size; i++) {
+		ik_feat f = tx->introns->elem[i];
+		double s = ik_score_pwm(pwm, f->seq, f->end -pwm->size +1);
+		score += s;
+	}
+	return score;
+}
+
+static double score_dpwm(const ik_pwm pwm, const ik_mRNA tx) {
+	double score = 0;
+	for (int i = 0; i < tx->introns->size; i++) {
+		ik_feat f = tx->introns->elem[i];
+		double s = ik_score_pwm(pwm, f->seq, f->beg);
+		score += s;
+	}
+	return score;
+}
+
+static double score_elen(const ik_len model, const ik_mRNA tx) {
 	return 0;
 }
 
-static double score_dpwm(const ik_mRNA tx) {
+static double score_ilen(const ik_len model, const ik_mRNA tx) {
 	return 0;
 }
 
-
-static double score_elen(const ik_mRNA tx) {
+static double score_emm(const ik_mm mm, const ik_mRNA tx) {
 	return 0;
 }
 
-static double score_ilen(const ik_mRNA tx) {
-	return 0;
-}
-
-static double score_emm(const ik_mRNA tx) {
-	return 0;
-}
-
-static double score_imm(const ik_mRNA tx) {
+static double score_imm(const ik_mm mm, const ik_mRNA tx) {
 	return 0;
 }
 
@@ -91,72 +102,59 @@ static void all_possible(const char *seq,
 	int nsites;
 	ik_ivec dons = ik_ivec_new();
 	ik_ivec accs = ik_ivec_new();
-	
+
 	for (int i = flank; i < len - flank; i++) {
 		if (seq[i] == 'G' && seq[i+1] == 'T') ik_ivec_push(dons, i);
 		if (seq[i] == 'A' && seq[i+1] == 'G') ik_ivec_push(accs, i+1);
 	}
-	
+
 	nsites = dons->size < accs->size ? dons->size : accs->size;
 	if (nsites > max) nsites = max;
-	
+
 	int trials = 0;
 	int ishort = 0;
 	int eshort = 0;
 	int passed = 0;
-	for (int k = 1; k <= nsites; k++) {
-		ik_vec dcs = get_combinations(dons, k);
-		ik_vec acs = get_combinations(accs, k);
-		for (int i = 0; i < dcs->size; i++) {
-			for (int j = 0; j < acs->size; j++) {
-				ik_ivec dv = dcs->elem[i];
-				ik_ivec av = acs->elem[j];
-				
-				// sanity checks
+	for (int n = 1; n <= nsites; n++) {
+		ik_vec dcombos = get_combinations(dons, n);
+		ik_vec acombos = get_combinations(accs, n);
+
+		for (int i = 0; i < dcombos->size; i++) {
+			for (int j = 0; j < acombos->size; j++) {
+				ik_ivec dsites = dcombos->elem[i];
+				ik_ivec asites = acombos->elem[j];
+				assert(dsites->size == asites->size);
+
 				trials += 1;
-				if (short_intron(dv, av, min_intron)) {
+				if (short_intron(dsites, asites, min_intron)) {
 					ishort++;
 					continue;
 				}
-				if (short_exon(dv, av, min_exon)) { // should include flank?
-					eshort++;
-					continue;	
+				if (short_exon(dsites, asites, min_exon)) {
+					eshort++; // what about short flanks?
+					continue;
 				}
 				passed++;
-				
-				printf("making transcript %d %d %d\n", j, dv->size, av->size);
-				ik_mRNA tx = ik_mRNA_new(seq, 100, len -100, dv, av);
-				printf("done making transcript\n");
-				ik_feat intron = tx->introns->elem[0];
-				char *s = ik_feat_seq(intron);
-				printf("fina: %s\n", s);
-				
-				
+
+				ik_mRNA tx = ik_mRNA_new(seq, flank, len -flank, dsites, asites);
+
 				double score = 0;
-				if (apwm) score += score_apwm(tx);
-				if (dpwm) score += score_dpwm(tx);
-				if (elen) score += score_elen(tx);
-				if (ilen) score += score_ilen(tx);
-				if (emm)  score += score_emm(tx);
-				if (imm)  score += score_imm(tx);
-				
+				if (apwm) score += score_apwm(apwm, tx);
+				if (dpwm) score += score_dpwm(dpwm, tx);
+				if (elen) score += score_elen(elen, tx);
+				if (ilen) score += score_ilen(ilen, tx);
+				if (emm)  score += score_emm(emm, tx);
+				if (imm)  score += score_imm(emm, tx);
+
+				ik_mRNA_free(tx);
+
 			}
 		}
-		/*
-		for (int i = 0; i < dcs->size; i++) ik_ivec_free(dcs->elem[i]);
-		ik_vec_free(dcs);
-		for (int i = 0; i < acs->size; i++) ik_ivec_free(acs->elem[i]);
-		ik_vec_free(acs);
-		*/
 	}
-	
+
 	fprintf(stderr, "don:%d acc:%d n:%d in:%d ex:%d ok:%d\n",
 		dons->size, accs->size,
 		trials, ishort, eshort, passed);
-	
-	ik_ivec_free(dons);
-	ik_ivec_free(accs);
-	
 }
 
 static char *usage = "\
@@ -181,17 +179,17 @@ int main(int argc, char **argv) {
 	int   exon   = 25;   // minimum exon size
 	int   max    = 3;    // maximum number of introns
 	int   flank  = 100;  // promoter and such
-	
+
 	ik_pwm apwm = NULL; // acceptor pwm
 	ik_pwm dpwm = NULL; // donor pwm
 	ik_mm  emm  = NULL; // exon Markov model
 	ik_mm  imm  = NULL; // intron Markov model
 	ik_len elen = NULL; // exon length model
 	ik_len ilen = NULL; // intron length model
-	
+
 	ik_pipe  io = NULL; // for reading fasta files
 	ik_fasta ff = NULL; // for individual fasta entries
-	
+
 	// CLI - setup
 	ik_set_program_name(argv[0]);
 	ik_register_option("-intron", 1);
@@ -206,8 +204,8 @@ int main(int argc, char **argv) {
 	ik_register_option("-ilen", 1);
 	ik_parse_options(&argc, argv);
 	if (argc == 1) ik_exit("%s", usage);
-	
-	// CLI - harvest 
+
+	// CLI - harvest
 	file = argv[1];
 	if (ik_option("-intron")) intron = atoi(ik_option("-intron"));
 	if (ik_option("-exon"))   exon   = atoi(ik_option("-exon"));
@@ -219,7 +217,7 @@ int main(int argc, char **argv) {
 	if (ik_option("-imm"))    imm    = ik_read_mm(ik_option("-imm"));
 	if (ik_option("-elen"))   elen   = ik_read_len(ik_option("-elen"));
 	if (ik_option("-ilen"))   ilen   = ik_read_len(ik_option("-ilen"));
-	
+
 	// main loop
 	io = ik_pipe_open(file, "r");
 	while ((ff = ik_fasta_read(io->stream)) != NULL) {
