@@ -35,6 +35,8 @@ static ik_vec get_combinations(const ik_ivec sites, int k) {
 		}
 	}
 
+	ik_ivec_free(tmp);
+
 	return indexes;
 }
 
@@ -77,11 +79,25 @@ static double score_dpwm(const ik_pwm pwm, const ik_mRNA tx) {
 }
 
 static double score_elen(const ik_len model, const ik_mRNA tx) {
-	return 0;
+	double score = 0;
+	for (int i = 0; i < tx->exons->size; i++) {
+		ik_feat f = tx->exons->elem[i];
+		int len = f->end - f->beg + 1;
+		double s = ik_score_len(model, len);
+		score += s;
+	}
+	return score;
 }
 
 static double score_ilen(const ik_len model, const ik_mRNA tx) {
-	return 0;
+	double score = 0;
+	for (int i = 0; i < tx->introns->size; i++) {
+		ik_feat f = tx->introns->elem[i];
+		int len = f->end - f->beg + 1;
+		double s = ik_score_len(model, len);
+		score += s;
+	}
+	return score;
 }
 
 static double score_emm(const ik_mm mm, const ik_mRNA tx) {
@@ -115,6 +131,7 @@ static void all_possible(const char *seq,
 	int ishort = 0;
 	int eshort = 0;
 	int passed = 0;
+	ik_vec txs = ik_vec_new();
 	for (int n = 1; n <= nsites; n++) {
 		ik_vec dcombos = get_combinations(dons, n);
 		ik_vec acombos = get_combinations(accs, n);
@@ -137,7 +154,6 @@ static void all_possible(const char *seq,
 				passed++;
 
 				ik_mRNA tx = ik_mRNA_new(seq, flank, len -flank, dsites, asites);
-
 				double score = 0;
 				if (apwm) score += score_apwm(apwm, tx);
 				if (dpwm) score += score_dpwm(dpwm, tx);
@@ -145,17 +161,39 @@ static void all_possible(const char *seq,
 				if (ilen) score += score_ilen(ilen, tx);
 				if (emm)  score += score_emm(emm, tx);
 				if (imm)  score += score_imm(emm, tx);
-
-				ik_mRNA_free(tx);
-
+				tx->score = score;
+				ik_vec_push(txs, tx);
 			}
 		}
+
+		// free combos
+		for (int i = 0; i < dcombos->size; i++) {
+			ik_ivec v = dcombos->elem[i];
+			ik_ivec_free(v);
+		}
+		ik_vec_free(dcombos);
+		for (int i = 0; i < acombos->size; i++) {
+			ik_ivec v = acombos->elem[i];
+			ik_ivec_free(v);
+		}
+		ik_vec_free(acombos);
 	}
 
 	fprintf(stderr, "don:%d acc:%d n:%d in:%d ex:%d ok:%d\n",
 		dons->size, accs->size,
 		trials, ishort, eshort, passed);
+
+	// clean up
+	ik_ivec_free(dons);
+	ik_ivec_free(accs);
+	for (int i = 0; i < txs->size; i++) {
+		ik_mRNA m = txs->elem[i];
+		ik_mRNA_free(m);
+	}
+	ik_vec_free(txs);
 }
+
+
 
 static char *usage = "\
 txamatic - generate all possible transcripts from sequences\n\n\
