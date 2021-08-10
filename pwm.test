@@ -14,27 +14,26 @@ def simple_seqgen(n,N):
 
 n=10
 N=5
-pwm=[{} for i in range(n)]
 
 seqs=simple_seqgen(10,5)
 
-#for seq in simple_seqgen(n,N):
-for seq in seqs:
-	position=0
-	for nt in seq:
-		if nt not in pwm[position]:
-			pwm[position][nt]=1
-		else:
-			pwm[position][nt]+=1
-		position+=1
-for i in range(len(pwm)):
-	for nt in pwm[i]:
-		pwm[i][nt]=pwm[i][nt]/N
-print(pwm)
-		
-# compare output to ian's code
-print(isoform.create_pwm(seqs))
-print(seqs)
+def make_pwm(seqs,n):
+	pwm=[{} for i in range(n)]
+	for seq in seqs:
+		position=0
+		for nt in seq:
+			if nt not in pwm[position]:
+				pwm[position][nt]=1
+			else:
+				pwm[position][nt]+=1
+			position+=1
+	for i in range(len(pwm)):
+		for nt in pwm[i]:
+			pwm[i][nt]=pwm[i][nt]/N
+	return(pwm)
+
+print(make_pwm(seqs,n))
+
 
 
 
