@@ -3,8 +3,8 @@
 LIB = -lm -lik
 LINC = -Lik
 INC = -Iik
-CFLAGS = -O2 
-OBJECTS = 
+CFLAGS = -O2
+OBJECTS =
 
 APP = txamatic
 OBJ = txamatic.o

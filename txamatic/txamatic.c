@@ -101,14 +101,47 @@ static double score_ilen(const ik_len model, const ik_mRNA tx) {
 }
 
 static double score_emm(const ik_mm mm, const ik_mRNA tx) {
-	return 0;
+	double score = 0;
+	for (int i = 0; i < tx->exons->size; i++) {
+		ik_feat f = tx->exons->elem[i];
+		double s = ik_score_mm(mm, f->seq, f->beg, f->end);
+		score += s;
+	}
+	return score;
 }
 
-static double score_imm(const ik_mm mm, const ik_mRNA tx) {
-	return 0;
+static double score_imm(const ik_mm mm, const ik_mRNA tx,
+		const ik_pwm dpwm, const ik_pwm apwm) {
+	double score = 0;
+	for (int i = 0; i < tx->introns->size; i++) {
+		ik_feat f = tx->introns->elem[i];
+		double s = ik_score_mm(mm, f->seq, f->beg + dpwm->size,
+			f->end - apwm->size);
+		score += s;
+	}
+	return score;
 }
 
-static void all_possible(const char *seq,
+static int cmptx(const ik_mRNA a, const ik_mRNA b) {
+	if      (a->score < b->score) return -1;
+	else if (a->score > b->score) return  1;
+	else                          return  0;
+}
+
+static int mysort(const void *a, const void *b) {
+	return cmptx( *(ik_mRNA *)b, *(ik_mRNA *)a );
+}
+
+struct isoret {
+	int     dons;
+	int     accs;
+	int     trials;
+	int     ishort;
+	int     eshort;
+	ik_vec  mRNAs;
+};
+
+static struct isoret isoforms(const char *seq,
 		int min_intron, int min_exon,
 		int max, int flank,
 		ik_pwm apwm, ik_pwm dpwm,
@@ -118,7 +151,9 @@ static void all_possible(const char *seq,
 	int nsites;
 	ik_ivec dons = ik_ivec_new();
 	ik_ivec accs = ik_ivec_new();
+	struct isoret ret;
 
+	/* init */
 	for (int i = flank; i < len - flank; i++) {
 		if (seq[i] == 'G' && seq[i+1] == 'T') ik_ivec_push(dons, i);
 		if (seq[i] == 'A' && seq[i+1] == 'G') ik_ivec_push(accs, i+1);
@@ -130,7 +165,8 @@ static void all_possible(const char *seq,
 	int trials = 0;
 	int ishort = 0;
 	int eshort = 0;
-	int passed = 0;
+
+	// main loop
 	ik_vec txs = ik_vec_new();
 	for (int n = 1; n <= nsites; n++) {
 		ik_vec dcombos = get_combinations(dons, n);
@@ -151,7 +187,6 @@ static void all_possible(const char *seq,
 					eshort++; // what about short flanks?
 					continue;
 				}
-				passed++;
 
 				ik_mRNA tx = ik_mRNA_new(seq, flank, len -flank, dsites, asites);
 				double score = 0;
@@ -160,11 +195,19 @@ static void all_possible(const char *seq,
 				if (elen) score += score_elen(elen, tx);
 				if (ilen) score += score_ilen(ilen, tx);
 				if (emm)  score += score_emm(emm, tx);
-				if (imm)  score += score_imm(emm, tx);
+				if (imm)  score += score_imm(emm, tx, dpwm, apwm);
 				tx->score = score;
 				ik_vec_push(txs, tx);
 			}
 		}
+		qsort(txs->elem, txs->size, sizeof(ik_mRNA), mysort);
+
+		ret.dons   = dons->size;
+		ret.accs   = accs->size;
+		ret.trials = trials;
+		ret.ishort = ishort;
+		ret.eshort = eshort;
+		ret.mRNAs  = txs;
 
 		// free combos
 		for (int i = 0; i < dcombos->size; i++) {
@@ -179,25 +222,16 @@ static void all_possible(const char *seq,
 		ik_vec_free(acombos);
 	}
 
-	fprintf(stderr, "don:%d acc:%d n:%d in:%d ex:%d ok:%d\n",
-		dons->size, accs->size,
-		trials, ishort, eshort, passed);
-
 	// clean up
 	ik_ivec_free(dons);
 	ik_ivec_free(accs);
-	for (int i = 0; i < txs->size; i++) {
-		ik_mRNA m = txs->elem[i];
-		ik_mRNA_free(m);
-	}
-	ik_vec_free(txs);
+
+	return ret;
 }
 
-
-
 static char *usage = "\
-txamatic - generate all possible transcripts from sequences\n\n\
-usage: isonum <fasta file> [options]\n\
+txamatic - generate all possible isoforms from sequences\n\n\
+usage: txamatic <fasta file> [options]\n\
 options:\n\
   -intron <int>  minimum intron size [35]\n\
   -exon   <int>  minimum exon size   [25]\n\
@@ -206,9 +240,10 @@ options:\n\
   -apwm   <file> use acceptor pwm\n\
   -dpwm   <file> use donor pwm\n\
   -emm    <file> use exon Markov model\n\
-  -imm    <file> use intron Markov model\n\
+  -imm    <file> use intron Markov model (requires -dpwm & -apwm)\n\
   -elen   <file> use exon length model\n\
   -ilen   <file> use intron length model\n\
+  -full          full report\n\
 ";
 
 int main(int argc, char **argv) {
@@ -240,6 +275,7 @@ int main(int argc, char **argv) {
 	ik_register_option("-imm", 1);
 	ik_register_option("-elen", 1);
 	ik_register_option("-ilen", 1);
+	ik_register_option("-full", 0);
 	ik_parse_options(&argc, argv);
 	if (argc == 1) ik_exit("%s", usage);
 
@@ -259,10 +295,37 @@ int main(int argc, char **argv) {
 	// main loop
 	io = ik_pipe_open(file, "r");
 	while ((ff = ik_fasta_read(io->stream)) != NULL) {
-		all_possible(ff->seq, intron, exon, max, flank,
-			apwm, dpwm, emm, imm, elen, ilen
-		);
+		struct isoret iso = isoforms(ff->seq, intron, exon, max, flank,
+			apwm, dpwm, emm, imm, elen, ilen);
+
+		// output
+		ik_vec txs = iso.mRNAs;
+		printf("seq: %s\n", ff->def);
+		printf("dons: %d\n", iso.dons);
+		printf("accs: %d\n", iso.accs);
+		printf("trials: %d\n", iso.trials);
+		printf("ishort: %d\n", iso.ishort);
+		printf("eshort: %d\n", iso.eshort);
+		printf("mRNAs: %d\n", iso.mRNAs->size);
+		if (ik_option("-full")) {
+			for (int i = 0; i < txs->size; i++) {
+				ik_mRNA tx = txs->elem[i];
+				printf("%f", tx->score);
+				for (int j = 0; j < tx->exons->size; j++) {
+					ik_feat f = tx->exons->elem[j];
+					printf(" %d..%d", f->beg, f->end);
+				}
+				printf("\n");
+			}
+		}
+
+		// clean up
 		ik_fasta_free(ff);
+		for (int i = 0; i < txs->size; i++) {
+			ik_mRNA m = txs->elem[i];
+			ik_mRNA_free(m);
+		}
+		ik_vec_free(txs);
 	}
 
 	return 0;
