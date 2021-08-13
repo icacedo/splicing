@@ -1,6 +1,7 @@
 import seqlib 
 import random
 import isoform
+import numpy as np
 
 random.seed(2)
 
@@ -32,7 +33,78 @@ def make_pwm(seqs,n):
 			pwm[i][nt]=pwm[i][nt]/N
 	return(pwm)
 
-print(make_pwm(seqs,n))
+#print(make_pwm(seqs,n))
+
+pfm_arr=np.zeros(shape=(4,n))
+A=0
+C=0
+G=0
+T=0
+for seq in seqs:
+	position=0
+	for nt in seq:
+		if nt.upper()=='A':
+			pfm_arr[0][position]+=1
+			A+=1
+		if nt.upper()=='C':
+			pfm_arr[1][position]+=1
+			C+=1
+		if nt.upper()=='G':
+			pfm_arr[2][position]+=1
+			G+=1
+		if nt.upper()=='T':
+			pfm_arr[3][position]+=1
+			T+=1
+		#else: 
+		#	print('unknown character')
+		#	sys.exit()
+		position+=1
+pfm_arr=np.divide(pfm_arr,N)
+print(pfm_arr)
+
+background=A+C+G+T
+Af=A/background
+Cf=C/background
+Gf=G/background
+Tf=T/background
+
+pwm_arr=np.zeros(shape=(4,n))
+pseudo=0.001
+r=0
+for x in pfm_arr:
+	c=0
+	for y in x:
+		if r==0:
+			if pfm_arr[r][c]==0:
+				pfm_arr[r][c]+=0.001
+			pwm_arr[r][c]=np.log2(pfm_arr[r][c]/Af)
+		if r==1:
+			if pfm_arr[r][c]==0:
+				pfm_arr[r][c]+=0.001
+			pwm_arr[r][c]=np.log2(pfm_arr[r][c]/Cf)
+		if r==2:
+			if pfm_arr[r][c]==0:
+				pfm_arr[r][c]+=0.001
+			pwm_arr[r][c]=np.log2(pfm_arr[r][c]/Gf)
+		if r==3:
+			if pfm_arr[r][c]==0:
+				pfm_arr[r][c]+=0.001
+			pwm_arr[r][c]=np.log2(pfm_arr[r][c]/Tf)
+		c+=1
+	r+=1
+print(pwm_arr)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
