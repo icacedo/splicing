@@ -156,26 +156,23 @@ struct isoret {
 	ik_vec  mRNAs;
 };
 
-static struct isoret isoforms(const char *seq,
-		int min_intron, int min_exon,
-		int max, int flank,
-		ik_pwm apwm, ik_pwm dpwm,
-		ik_mm emm, ik_mm imm,
-		ik_len elen, ik_len ilen) {
-	int len = strlen(seq);
-	int nsites;
+static struct isoret isoforms(const char *seq, int emin, int imin, int smax,
+		int gen, ik_pwm apwm, ik_pwm dpwm, ik_mm emm, ik_mm imm, ik_len elen,
+		ik_len ilen) {
+	
 	ik_ivec dons = ik_ivec_new();
 	ik_ivec accs = ik_ivec_new();
 	struct isoret ret;
 
-	/* init */
-	for (int i = flank + min_exon; i < len - flank - min_exon; i++) {
+	// get canonical splice sites
+	int len = strlen(seq);
+	for (int i = gen + emin; i < len - gen - emin; i++) {
 		if (seq[i] == 'G' && seq[i+1] == 'T') ik_ivec_push(dons, i);
 		if (seq[i] == 'A' && seq[i+1] == 'G') ik_ivec_push(accs, i+1);
 	}
 
-	nsites = dons->size < accs->size ? dons->size : accs->size;
-	if (nsites > max) nsites = max;
+	int nsites = dons->size < accs->size ? dons->size : accs->size;
+	if (nsites > smax) nsites = smax;
 
 	int trials = 0;
 	int ishort = 0;
@@ -184,9 +181,12 @@ static struct isoret isoforms(const char *seq,
 	// main loop
 	ik_vec txs = ik_vec_new();
 	for (int n = 1; n <= nsites; n++) {
+	
+		// create combos
 		ik_vec dcombos = get_combinations(dons, n);
 		ik_vec acombos = get_combinations(accs, n);
 
+		// create isoforms
 		for (int i = 0; i < dcombos->size; i++) {
 			for (int j = 0; j < acombos->size; j++) {
 				ik_ivec dsites = dcombos->elem[i];
@@ -194,17 +194,17 @@ static struct isoret isoforms(const char *seq,
 				assert(dsites->size == asites->size);
 
 				trials += 1;
-				if (short_intron(dsites, asites, min_intron)) {
+				if (short_intron(dsites, asites, imin)) {
 					ishort++;
 					continue;
 				}
-				if (short_exon(dsites, asites, len, flank, min_exon)) {
-					eshort++; // what about short flanks?
+				if (short_exon(dsites, asites, len, gen, emin)) {
+					eshort++;
 					continue;
 				}
 
-				ik_mRNA tx = ik_mRNA_new(seq, flank, len -flank,
-						dsites, asites);
+				// save isoform
+				ik_mRNA tx = ik_mRNA_new(seq, gen, len - gen, dsites, asites);
 				double score = 0;
 				if (apwm) score += score_apwm(apwm, tx);
 				if (dpwm) score += score_dpwm(dpwm, tx);
@@ -216,15 +216,7 @@ static struct isoret isoforms(const char *seq,
 				ik_vec_push(txs, tx);
 			}
 		}
-		qsort(txs->elem, txs->size, sizeof(ik_mRNA), mysort);
-
-		ret.dons   = dons->size;
-		ret.accs   = accs->size;
-		ret.trials = trials;
-		ret.ishort = ishort;
-		ret.eshort = eshort;
-		ret.mRNAs  = txs;
-
+		
 		// free combos
 		for (int i = 0; i < dcombos->size; i++) {
 			ik_ivec v = dcombos->elem[i];
@@ -237,6 +229,15 @@ static struct isoret isoforms(const char *seq,
 		}
 		ik_vec_free(acombos);
 	}
+	
+	// final values
+	qsort(txs->elem, txs->size, sizeof(ik_mRNA), mysort);
+	ret.dons   = dons->size;
+	ret.accs   = accs->size;
+	ret.trials = trials;
+	ret.ishort = ishort;
+	ret.eshort = eshort;
+	ret.mRNAs  = txs;
 
 	// clean up
 	ik_ivec_free(dons);
@@ -249,25 +250,29 @@ static char *usage = "\
 txamatic - generate all possible isoforms from sequences\n\n\
 usage: txamatic <fasta file> [options]\n\
 options:\n\
-  -intron <int>  minimum intron size [35]\n\
-  -exon   <int>  minimum exon size   [25]\n\
-  -max    <int>  maximum # introns   [3]\n\
-  -flank  <int>  flank to ignore     [99]\n\
-  -apwm   <file> use acceptor pwm\n\
-  -dpwm   <file> use donor pwm\n\
-  -emm    <file> use exon Markov model\n\
-  -imm    <file> use intron Markov model (requires -dpwm & -apwm)\n\
-  -elen   <file> use exon length model\n\
-  -ilen   <file> use intron length model\n\
-  -full          full report\n\
+  -emin  <int>  minimum exon length   [25]\n\
+  -emax  <int>  maximum exon length   [999]\n\
+  -imin  <int>  minimum intron length [35]\n\
+  -imax  <int>  maximum intron length [999]\n\
+  -smax  <int>  maximum splices       [3]\n\
+  -gen   <int>  genomic flank lengths [99]\n\
+  -apwm  <file> use acceptor pwm\n\
+  -dpwm  <file> use donor pwm\n\
+  -emm   <file> use exon Markov model\n\
+  -imm   <file> use intron Markov model (requires -dpwm & -apwm)\n\
+  -elen  <file> use exon length model\n\
+  -ilen  <file> use intron length model\n\
+  -full         full report\n\
 ";
 
 int main(int argc, char **argv) {
-	char *file   = NULL; // path to fasta file
-	int   intron = 35;   // minimum intron size
-	int   exon   = 25;   // minimum exon size
-	int   max    = 3;    // maximum number of introns
-	int   flank  = 99;  // promoter and such
+	char *file = NULL; // path to fasta file
+	int   emin = 25;   // min exon size
+	int   emax = 999;  // max exon size
+	int   imin = 35;   // min intron size
+	int   imax = 999;  // max intron size
+	int   smax = 3;    // max splices
+	int   gen  = 99;   // genomic flank (promoter, downstream)
 
 	ik_pwm apwm = NULL; // acceptor pwm
 	ik_pwm dpwm = NULL; // donor pwm
@@ -281,10 +286,12 @@ int main(int argc, char **argv) {
 
 	// CLI - setup
 	ik_set_program_name(argv[0]);
-	ik_register_option("-intron", 1);
-	ik_register_option("-exon", 1);
-	ik_register_option("-max", 1);
-	ik_register_option("-flank", 1);
+	ik_register_option("-emin", 1);
+	ik_register_option("-emax", 1);
+	ik_register_option("-imin", 1);
+	ik_register_option("-imax", 1);
+	ik_register_option("-smin", 1);
+	ik_register_option("-gen", 1);
 	ik_register_option("-apwm", 1);
 	ik_register_option("-dpwm", 1);
 	ik_register_option("-emm", 1);
@@ -297,21 +304,23 @@ int main(int argc, char **argv) {
 
 	// CLI - harvest
 	file = argv[1];
-	if (ik_option("-intron")) intron = atoi(ik_option("-intron"));
-	if (ik_option("-exon"))   exon   = atoi(ik_option("-exon"));
-	if (ik_option("-max"))    max    = atoi(ik_option("-max"));
-	if (ik_option("-flank"))  flank  = atoi(ik_option("-flank"));
-	if (ik_option("-apwm"))   apwm   = ik_pwm_read(ik_option("-apwm"));
-	if (ik_option("-dpwm"))   dpwm   = ik_pwm_read(ik_option("-dpwm"));
-	if (ik_option("-emm"))    emm    = ik_mm_read(ik_option("-emm"));
-	if (ik_option("-imm"))    imm    = ik_mm_read(ik_option("-imm"));
-	if (ik_option("-elen"))   elen   = ik_len_read(ik_option("-elen"));
-	if (ik_option("-ilen"))   ilen   = ik_len_read(ik_option("-ilen"));
+	if (ik_option("-emin")) emin  = atoi(ik_option("-emin"));
+	if (ik_option("-emax")) emax  = atoi(ik_option("-emax"));
+	if (ik_option("-imin")) imin  = atoi(ik_option("-imin"));
+	if (ik_option("-imax")) imax  = atoi(ik_option("-imax"));
+	if (ik_option("-smax")) smax  = atoi(ik_option("-smax"));
+	if (ik_option("-gen"))  gen   = atoi(ik_option("-gen"));
+	if (ik_option("-apwm")) apwm  = ik_pwm_read(ik_option("-apwm"));
+	if (ik_option("-dpwm")) dpwm  = ik_pwm_read(ik_option("-dpwm"));
+	if (ik_option("-emm"))  emm   = ik_mm_read(ik_option("-emm"));
+	if (ik_option("-imm"))  imm   = ik_mm_read(ik_option("-imm"));
+	if (ik_option("-elen")) elen  = ik_len_read(ik_option("-elen"), emax);
+	if (ik_option("-ilen")) ilen  = ik_len_read(ik_option("-ilen"), imax);
 
 	// main loop
 	io = ik_pipe_open(file, "r");
 	while ((ff = ik_fasta_read(io->stream)) != NULL) {
-		struct isoret iso = isoforms(ff->seq, intron, exon, max, flank,
+		struct isoret iso = isoforms(ff->seq, emin, imin, smax, gen,
 			apwm, dpwm, emm, imm, elen, ilen);
 
 		// output
