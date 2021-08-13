@@ -40,20 +40,35 @@ static ik_vec get_combinations(const ik_ivec sites, int k) {
 	return indexes;
 }
 
-static int short_intron(const ik_ivec dons, const ik_ivec accs, int min_intron) {
+static int short_intron(const ik_ivec dons, const ik_ivec accs, int min) {
 	for (int i = 0; i < dons->size; i++) {
-		int len = accs->elem[i] - dons->elem[i];
-		if (len < min_intron) return 1;
+		int len = accs->elem[i] - dons->elem[i] + 1;
+		if (len < min) return 1;
 	}
 	return 0;
 }
 
-static int short_exon(const ik_ivec dons, const ik_ivec accs, int min_exon) {
+static int short_exon(const ik_ivec dons, const ik_ivec accs,
+		int seqlen, int flank, int min) {
+	
+	// first exon
+	int exon_beg = flank + 1;
+	int exon_end = dons->elem[0] -1;
+	int exon_len = exon_end - exon_beg + 1;
+	if (exon_len < min) return 1;
+	
+	// last exon
+	exon_beg = accs->elem[accs->size -1] + 1;
+	exon_end = seqlen - flank -1;
+	exon_len = exon_end - exon_beg + 1;
+	if (exon_len < min) return 1;
+	
+	// internal exons
 	for (int i = 1; i < dons->size; i++) {
 		int beg = accs->elem[i-1] + 1;
 		int end = dons->elem[i] -1;
 		int len = end - beg;
-		if (len < min_exon) return 1;
+		if (len < min) return 1;
 	}
 	return 0;
 }
@@ -62,7 +77,7 @@ static double score_apwm(const ik_pwm pwm, const ik_mRNA tx) {
 	double score = 0;
 	for (int i = 0; i < tx->introns->size; i++) {
 		ik_feat f = tx->introns->elem[i];
-		double s = ik_score_pwm(pwm, f->seq, f->end -pwm->size +1);
+		double s = ik_pwm_score(pwm, f->seq, f->end -pwm->size +1);
 		score += s;
 	}
 	return score;
@@ -72,7 +87,7 @@ static double score_dpwm(const ik_pwm pwm, const ik_mRNA tx) {
 	double score = 0;
 	for (int i = 0; i < tx->introns->size; i++) {
 		ik_feat f = tx->introns->elem[i];
-		double s = ik_score_pwm(pwm, f->seq, f->beg);
+		double s = ik_pwm_score(pwm, f->seq, f->beg);
 		score += s;
 	}
 	return score;
@@ -83,7 +98,7 @@ static double score_elen(const ik_len model, const ik_mRNA tx) {
 	for (int i = 0; i < tx->exons->size; i++) {
 		ik_feat f = tx->exons->elem[i];
 		int len = f->end - f->beg + 1;
-		double s = ik_score_len(model, len);
+		double s = ik_len_score(model, len);
 		score += s;
 	}
 	return score;
@@ -94,7 +109,7 @@ static double score_ilen(const ik_len model, const ik_mRNA tx) {
 	for (int i = 0; i < tx->introns->size; i++) {
 		ik_feat f = tx->introns->elem[i];
 		int len = f->end - f->beg + 1;
-		double s = ik_score_len(model, len);
+		double s = ik_len_score(model, len);
 		score += s;
 	}
 	return score;
@@ -104,7 +119,7 @@ static double score_emm(const ik_mm mm, const ik_mRNA tx) {
 	double score = 0;
 	for (int i = 0; i < tx->exons->size; i++) {
 		ik_feat f = tx->exons->elem[i];
-		double s = ik_score_mm(mm, f->seq, f->beg, f->end);
+		double s = ik_mm_score(mm, f->seq, f->beg, f->end);
 		score += s;
 	}
 	return score;
@@ -115,7 +130,7 @@ static double score_imm(const ik_mm mm, const ik_mRNA tx,
 	double score = 0;
 	for (int i = 0; i < tx->introns->size; i++) {
 		ik_feat f = tx->introns->elem[i];
-		double s = ik_score_mm(mm, f->seq, f->beg + dpwm->size,
+		double s = ik_mm_score(mm, f->seq, f->beg + dpwm->size,
 			f->end - apwm->size);
 		score += s;
 	}
@@ -154,7 +169,7 @@ static struct isoret isoforms(const char *seq,
 	struct isoret ret;
 
 	/* init */
-	for (int i = flank; i < len - flank; i++) {
+	for (int i = flank + min_exon; i < len - flank - min_exon; i++) {
 		if (seq[i] == 'G' && seq[i+1] == 'T') ik_ivec_push(dons, i);
 		if (seq[i] == 'A' && seq[i+1] == 'G') ik_ivec_push(accs, i+1);
 	}
@@ -183,12 +198,13 @@ static struct isoret isoforms(const char *seq,
 					ishort++;
 					continue;
 				}
-				if (short_exon(dsites, asites, min_exon)) {
+				if (short_exon(dsites, asites, len, flank, min_exon)) {
 					eshort++; // what about short flanks?
 					continue;
 				}
 
-				ik_mRNA tx = ik_mRNA_new(seq, flank, len -flank, dsites, asites);
+				ik_mRNA tx = ik_mRNA_new(seq, flank, len -flank,
+						dsites, asites);
 				double score = 0;
 				if (apwm) score += score_apwm(apwm, tx);
 				if (dpwm) score += score_dpwm(dpwm, tx);
@@ -236,7 +252,7 @@ options:\n\
   -intron <int>  minimum intron size [35]\n\
   -exon   <int>  minimum exon size   [25]\n\
   -max    <int>  maximum # introns   [3]\n\
-  -flank  <int>  flank to ignore     [100]\n\
+  -flank  <int>  flank to ignore     [99]\n\
   -apwm   <file> use acceptor pwm\n\
   -dpwm   <file> use donor pwm\n\
   -emm    <file> use exon Markov model\n\
@@ -251,7 +267,7 @@ int main(int argc, char **argv) {
 	int   intron = 35;   // minimum intron size
 	int   exon   = 25;   // minimum exon size
 	int   max    = 3;    // maximum number of introns
-	int   flank  = 100;  // promoter and such
+	int   flank  = 99;  // promoter and such
 
 	ik_pwm apwm = NULL; // acceptor pwm
 	ik_pwm dpwm = NULL; // donor pwm
@@ -285,12 +301,12 @@ int main(int argc, char **argv) {
 	if (ik_option("-exon"))   exon   = atoi(ik_option("-exon"));
 	if (ik_option("-max"))    max    = atoi(ik_option("-max"));
 	if (ik_option("-flank"))  flank  = atoi(ik_option("-flank"));
-	if (ik_option("-apwm"))   apwm   = ik_read_pwm(ik_option("-apwm"));
-	if (ik_option("-dpwm"))   dpwm   = ik_read_pwm(ik_option("-dpwm"));
-	if (ik_option("-emm"))    emm    = ik_read_mm(ik_option("-emm"));
-	if (ik_option("-imm"))    imm    = ik_read_mm(ik_option("-imm"));
-	if (ik_option("-elen"))   elen   = ik_read_len(ik_option("-elen"));
-	if (ik_option("-ilen"))   ilen   = ik_read_len(ik_option("-ilen"));
+	if (ik_option("-apwm"))   apwm   = ik_pwm_read(ik_option("-apwm"));
+	if (ik_option("-dpwm"))   dpwm   = ik_pwm_read(ik_option("-dpwm"));
+	if (ik_option("-emm"))    emm    = ik_mm_read(ik_option("-emm"));
+	if (ik_option("-imm"))    imm    = ik_mm_read(ik_option("-imm"));
+	if (ik_option("-elen"))   elen   = ik_len_read(ik_option("-elen"));
+	if (ik_option("-ilen"))   ilen   = ik_len_read(ik_option("-ilen"));
 
 	// main loop
 	io = ik_pipe_open(file, "r");
@@ -301,6 +317,7 @@ int main(int argc, char **argv) {
 		// output
 		ik_vec txs = iso.mRNAs;
 		printf("seq: %s\n", ff->def);
+		printf("len: %lu\n", strlen(ff->seq));
 		printf("dons: %d\n", iso.dons);
 		printf("accs: %d\n", iso.accs);
 		printf("trials: %d\n", iso.trials);
@@ -313,7 +330,7 @@ int main(int argc, char **argv) {
 				printf("%f", tx->score);
 				for (int j = 0; j < tx->exons->size; j++) {
 					ik_feat f = tx->exons->elem[j];
-					printf(" %d..%d", f->beg, f->end);
+					printf(" %d..%d", f->beg+1, f->end+1);
 				}
 				printf("\n");
 			}

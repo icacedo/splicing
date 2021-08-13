@@ -4,7 +4,6 @@ LIB = -lm -lik
 LINC = -Lik
 INC = -Iik
 CFLAGS = -O2
-OBJECTS =
 
 APP = txamatic
 OBJ = txamatic.o
@@ -14,6 +13,9 @@ default:
 
 $(APP): $(OBJ) $(OBJECTS)
 	$(CC) -o $(APP) $(OBJ) $(OBJECTS) $(LINC) $(LIB)
+
+test: $(APP)
+	echo "test here"
 
 clean:
 	rm -f *.o $(APP)
