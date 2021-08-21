@@ -1,6 +1,6 @@
 import seqlib 
 import random
-import isoform
+import numpy
 
 random.seed(2)
 
