@@ -15,7 +15,7 @@ if __name__ == '__main__':
 		metavar='<int>', help='minimum length exon [%(default)i]')
 	parser.add_argument('--splice', required=False, type=int, default=3,
 		metavar='<int>', help='maximum number of introns [%(default)i]')
-	parser.add_argument('--flank', required=False, type=int, default=100,
+	parser.add_argument('--flank', required=False, type=int, default=99,
 		metavar='<int>', help='distance to ignore on each side [%(default)i]')
 	parser.add_argument('--full', action='store_true',
 		help='see all splice forms')

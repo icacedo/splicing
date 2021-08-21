@@ -150,18 +150,32 @@ def score_makov(seq, mm):
 ## ISOFORM GENERATION SECTION ##
 ################################
 
-def short_intron(dons, accs, minintron):
+def short_intron(dons, accs, min):
 	for d, a in zip(dons, accs):
-		intron_length = a - d
-		if intron_length < minintron: return True
+		intron_length = a - d + 1
+		if intron_length < min: return True
 	return False
 	
-def short_exon(dons, accs, minexon):
+def short_exon(dons, accs, seqlen, flank, min):
+	
+	# first exon
+	exon_beg = flank + 1
+	exon_end = dons[0] -1
+	exon_len = exon_end - exon_beg + 1
+	if exon_len < min: return True
+	
+	# last exon
+	exon_beg = accs[-1] + 1
+	exon_end = seqlen - flank + 1
+	exon_len = exon_end - exon_beg + 1
+	if exon_len < min: return True
+
+	# interior exons
 	for i in range(1, len(dons)):
 		exon_beg = accs[i-1] + 1
 		exon_end = dons[i] - 1
 		exon_len = exon_end - exon_beg
-		if exon_len < minexon: return True
+		if exon_len < min: return True
 	return False
 
 def all_probable(seq, mini, mine, maxs, ignore,
@@ -176,7 +190,7 @@ def all_probable(seq, mini, mine, maxs, ignore,
 def all_possible(seq, minin, minex, maxs, ignore):
 	dons = []
 	accs = []
-	for i in range(ignore, len(seq) -ignore):
+	for i in range(ignore + minex, len(seq) -ignore -minex):
 		if seq[i:i+2]   == 'GT': dons.append(i)
 		if seq[i-1:i+1] == 'AG': accs.append(i)
 
@@ -200,7 +214,7 @@ def all_possible(seq, minin, minex, maxs, ignore):
 					info['short_intron'] += 1
 					continue
 				
-				if short_exon(dsites, asites, minex):
+				if short_exon(dsites, asites, len(seq), ignore, minex):
 					info['short_exon'] += 1
 					continue
 				
