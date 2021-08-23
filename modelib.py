@@ -16,7 +16,7 @@ def simple_seqgen(n,N):
 
 # first version of pwm code, actually only gets nucleotide frequencies
 # dictionary entries are not in alphabetical order
-def make_simple_pwm(seqs,n):
+def make_simple_pwm(seqs,n,N):
 
 	pwm=[{} for i in range(n)]
 	for seq in seqs:
@@ -32,7 +32,7 @@ def make_simple_pwm(seqs,n):
 			pwm[i][nt]=pwm[i][nt]/N
 	return(pwm)
 
-def make_pwm(seqs,n):
+def make_pwm(seqs,n,N):
 
 	pfm_arr=np.zeros(shape=(4,n))
 	A=0
@@ -94,11 +94,13 @@ def make_pwm(seqs,n):
 		r+=1
 	return(pwm_arr)
 
+# if modelib is imported with active code, it will run
+'''
 n=100
 N=10
 seqs=simple_seqgen(n,N)
 print(make_pwm(seqs,n))
-
+'''
 
 
 
