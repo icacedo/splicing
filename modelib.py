@@ -32,6 +32,19 @@ def make_simple_pwm(seqs,n,N):
 			pwm[i][nt]=pwm[i][nt]/N
 	return(pwm)
 
+n=8
+N=4
+seqs=simple_seqgen(n,N)
+pfm=[{'A':0,'C':0,'G':0,'T':0} for i in range(n)]
+position=0
+for seq in seqs:
+	for nt in seq:
+		if nt.upper()=='A':
+			pfm[position][nt]+=1
+	position+=1
+print(pfm)
+
+
 def make_pwm(seqs,n,N):
 
 	pfm_arr=np.zeros(shape=(4,n))

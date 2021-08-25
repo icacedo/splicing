@@ -12,7 +12,16 @@ for line in fp.readlines():
 	seqs.append(line)
 
 
-np.savetxt(sys.argv[2],ml.make_pwm(seqs,6,len(seqs)))
+#np.savetxt(sys.argv[2],ml.make_pwm(seqs,6,len(seqs)))
 
+# re-write make_simple_pwm to output in ACGT order
+for i in ml.make_simple_pwm(seqs,6,len(seqs)):
+	print(i)
+
+'''
+file=open(sys.argv[2],'w')
+file.write(str(content))
+file.close()
+'''
 
 	
