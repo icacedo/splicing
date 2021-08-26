@@ -1,0 +1,48 @@
+13593	WormBase	five_prime_UTR	100	117	.	+	.	Parent=Transcript:C36C5.5.1
+13593	WormBase	exon	100	258	.	+	.	Parent=Transcript:C36C5.5.1
+13593	WormBase	gene	100	893	.	+	.	ID=Gene:WBGene00016474
+13593	WormBase	mRNA	100	893	.	+	.	ID=Transcript:C36C5.5.1;Parent=Gene:WBGene00016474
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	109	250	100.0	+	.	ID=young_adult_Nanopore_Roach_108259.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	109	258	100.0	+	.	ID=L2_Nanopore_Roach_5066.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	109	258	100.0	+	.	ID=male_Nanopore_Roach_5076.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	110	258	100.0	+	.	ID=adult_Nanopore_Roach_4426.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	112	258	100.0	+	.	ID=L4_Nanopore_Roach_3001.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	115	258	100.0	+	.	ID=L3_Nanopore_Roach_4666.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	115	258	100.0	+	.	ID=young_adult_Nanopore_Roach_5181.1
+13593	WormBase	CDS	118	258	.	+	.	ID=CDS:C36C5.5;Parent=Transcript:C36C5.5.1
+13593	WormBase	intron	259	308	.	+	.	Parent=Transcript:C36C5.5.1
+13593	RNASeq_splice	intron	259	308	126908.0	+	.	
+13593	RNASeq_splice	intron	259	315	96.0	+	.	
+13593	RNASeq_splice	intron	259	347	3.0	+	.	
+13593	WormBase	CDS	309	722	.	+	.	ID=CDS:C36C5.5;Parent=Transcript:C36C5.5.1
+13593	WormBase	exon	309	722	.	+	.	Parent=Transcript:C36C5.5.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	309	722	100.0	+	.	ID=young_adult_Nanopore_Roach_108259.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	309	722	100.0	+	.	ID=L2_Nanopore_Roach_5066.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	309	722	100.0	+	.	ID=male_Nanopore_Roach_5076.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	309	722	100.0	+	.	ID=adult_Nanopore_Roach_4426.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	309	722	100.0	+	.	ID=L4_Nanopore_Roach_3001.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	309	722	100.0	+	.	ID=L3_Nanopore_Roach_4666.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	309	722	100.0	+	.	ID=young_adult_Nanopore_Roach_5181.1
+13593	RNASeq_splice	intron	436	490	1366.0	+	.	
+13593	BLAT_Nanopore_OTHER	expressed_sequence_match	561	576	8.7	+	.	ID=L3_Nanopore_Roach_60884.2
+13593	BLAT_Nanopore_OTHER	expressed_sequence_match	561	576	8.9	+	.	ID=L3_Nanopore_Roach_15035.2
+13593	BLAT_Nanopore_OTHER	expressed_sequence_match	604	617	8.7	+	.	ID=L3_Nanopore_Roach_60884.2
+13593	BLAT_Nanopore_OTHER	expressed_sequence_match	604	617	8.9	+	.	ID=L3_Nanopore_Roach_15035.2
+13593	BLAT_Nanopore_OTHER	expressed_sequence_match	634	670	4.6	+	.	ID=L4_Nanopore_Roach_27288.1
+13593	BLAT_Nanopore_OTHER	expressed_sequence_match	634	670	7.5	+	.	ID=young_adult_Nanopore_Roach_104478.1
+13593	BLAT_Nanopore_OTHER	expressed_sequence_match	643	672	8.7	+	.	ID=L3_Nanopore_Roach_60884.2
+13593	BLAT_Nanopore_OTHER	expressed_sequence_match	643	672	8.9	+	.	ID=L3_Nanopore_Roach_15035.2
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	671	726	100.0	+	.	ID=male_Nanopore_Roach_120439.1
+13593	WormBase	intron	723	771	.	+	.	Parent=Transcript:C36C5.5.1
+13593	RNASeq_splice	intron	723	771	121435.0	+	.	
+13593	WormBase	CDS	772	831	.	+	.	ID=CDS:C36C5.5;Parent=Transcript:C36C5.5.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	772	844	100.0	+	.	ID=male_Nanopore_Roach_120439.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	772	873	100.0	+	.	ID=young_adult_Nanopore_Roach_5181.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	772	876	100.0	+	.	ID=young_adult_Nanopore_Roach_108259.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	772	884	100.0	+	.	ID=L2_Nanopore_Roach_5066.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	772	886	100.0	+	.	ID=adult_Nanopore_Roach_4426.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	772	890	100.0	+	.	ID=L3_Nanopore_Roach_4666.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	772	891	100.0	+	.	ID=male_Nanopore_Roach_5076.1
+13593	BLAT_Nanopore_BEST	expressed_sequence_match	772	891	100.0	+	.	ID=L4_Nanopore_Roach_3001.1
+13593	WormBase	exon	772	893	.	+	.	Parent=Transcript:C36C5.5.1
+13593	WormBase	three_prime_UTR	832	893	.	+	.	Parent=Transcript:C36C5.5.1

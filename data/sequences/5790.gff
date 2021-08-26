@@ -1,0 +1,134 @@
+5790	WormBase	five_prime_UTR	100	141	.	+	.	Parent=Transcript:R02F2.9.1
+5790	WormBase	exon	100	192	.	+	.	Parent=Transcript:R02F2.9.1
+5790	WormBase	gene	100	886	.	+	.	ID=Gene:WBGene00019838
+5790	WormBase	mRNA	100	886	.	+	.	ID=Transcript:R02F2.9.1;Parent=Gene:WBGene00019838
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	123	192	100.0	+	.	ID=adult_Nanopore_Roach_24096.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	134	192	100.0	+	.	ID=adult_Nanopore_Roach_107011.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	134	192	100.0	+	.	ID=young_adult_Nanopore_Roach_15023.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	136	196	100.0	+	.	ID=male_Nanopore_Roach_88521.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	139	181	100.0	+	.	ID=L2_Nanopore_Roach_5620.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	139	192	100.0	+	.	ID=adult_Nanopore_Roach_12515.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	139	192	100.0	+	.	ID=adult_Nanopore_Roach_16277.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	139	192	100.0	+	.	ID=L1_Nanopore_Roach_12953.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	139	192	100.0	+	.	ID=L2_Nanopore_Roach_13937.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	139	192	100.0	+	.	ID=L3_Nanopore_Roach_13691.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	139	192	100.0	+	.	ID=L3_Nanopore_Roach_53814.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	139	192	100.0	+	.	ID=L4_Nanopore_Roach_8688.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	139	192	100.0	+	.	ID=male_Nanopore_Roach_148664.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	139	192	100.0	+	.	ID=young_adult_Nanopore_Roach_14803.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	139	196	100.0	+	.	ID=L4_Nanopore_Roach_36514.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	140	192	100.0	+	.	ID=male_Nanopore_Roach_15596.1
+5790	WormBase	CDS	142	192	.	+	.	ID=CDS:R02F2.9;Parent=Transcript:R02F2.9.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	166	192	100.0	+	.	ID=L3_Nanopore_Roach_77240.1
+5790	WormBase	intron	193	242	.	+	.	Parent=Transcript:R02F2.9.1
+5790	RNASeq_splice	intron	193	242	328970.0	+	.	
+5790	RNASeq_splice	intron	197	242	16.0	+	.	
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	443	100.0	+	.	ID=L3_Nanopore_Roach_53814.1
+5790	WormBase	CDS	243	455	.	+	.	ID=CDS:R02F2.9;Parent=Transcript:R02F2.9.1
+5790	WormBase	exon	243	455	.	+	.	Parent=Transcript:R02F2.9.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=young_adult_Nanopore_Roach_15023.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=male_Nanopore_Roach_88521.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=L2_Nanopore_Roach_5620.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=adult_Nanopore_Roach_12515.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=adult_Nanopore_Roach_16277.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=L1_Nanopore_Roach_12953.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=L2_Nanopore_Roach_13937.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=L3_Nanopore_Roach_13691.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=L4_Nanopore_Roach_8688.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=male_Nanopore_Roach_148664.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=young_adult_Nanopore_Roach_14803.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=L4_Nanopore_Roach_36514.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	455	100.0	+	.	ID=male_Nanopore_Roach_15596.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	243	647	100.0	+	.	ID=L3_Nanopore_Roach_77240.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	247	455	100.0	+	.	ID=adult_Nanopore_Roach_24096.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	247	455	100.0	+	.	ID=adult_Nanopore_Roach_107011.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	251	453	100.0	+	.	ID=male_Nanopore_Roach_126702.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	252	455	100.0	+	.	ID=L3_Nanopore_Roach_92311.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	260	455	100.0	+	.	ID=male_Nanopore_Roach_150037.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	266	455	100.0	+	.	ID=L4_Nanopore_Roach_63916.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	300	455	100.0	+	.	ID=L1_Nanopore_Roach_98102.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	312	455	100.0	+	.	ID=young_adult_Nanopore_Roach_123376.1
+5790	RNASeq_splice	intron	313	408	3.0	+	.	
+5790	RNASeq_splice	intron	354	413	4.0	+	.	
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	372	424	100.0	+	.	ID=L1_Nanopore_Roach_55106.1
+5790	RNASeq_splice	intron	372	503	135.0	+	.	
+5790	RNASeq_splice	intron	389	424	3.0	+	.	
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	396	455	100.0	+	.	ID=L2_Nanopore_Roach_97251.1
+5790	RNASeq_splice	intron	402	526	20.0	-	.	
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	404	455	100.0	+	.	ID=adult_Nanopore_Roach_101521.1
+5790	RNASeq_splice	intron	425	503	3.0	+	.	
+5790	RNASeq_splice	intron	435	537	7.0	+	.	
+5790	RNASeq_splice	intron	445	573	3.0	+	.	
+5790	WormBase	intron	456	503	.	+	.	Parent=Transcript:R02F2.9.1
+5790	RNASeq_splice	intron	456	503	473748.0	+	.	
+5790	RNASeq_splice	intron	456	517	9.0	+	.	
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	573	100.0	+	.	ID=L1_Nanopore_Roach_55106.1
+5790	WormBase	CDS	504	647	.	+	.	ID=CDS:R02F2.9;Parent=Transcript:R02F2.9.1
+5790	WormBase	exon	504	647	.	+	.	Parent=Transcript:R02F2.9.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=adult_Nanopore_Roach_24096.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=male_Nanopore_Roach_88521.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=L2_Nanopore_Roach_5620.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=adult_Nanopore_Roach_12515.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=L1_Nanopore_Roach_12953.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=L2_Nanopore_Roach_13937.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=L3_Nanopore_Roach_13691.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=L3_Nanopore_Roach_53814.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=L4_Nanopore_Roach_8688.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=young_adult_Nanopore_Roach_14803.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=L4_Nanopore_Roach_36514.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=male_Nanopore_Roach_15596.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=L3_Nanopore_Roach_92311.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=male_Nanopore_Roach_150037.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=L4_Nanopore_Roach_63916.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=L1_Nanopore_Roach_98102.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=young_adult_Nanopore_Roach_123376.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=L2_Nanopore_Roach_97251.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	647	100.0	+	.	ID=adult_Nanopore_Roach_101521.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	651	100.0	+	.	ID=adult_Nanopore_Roach_107011.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	651	100.0	+	.	ID=young_adult_Nanopore_Roach_15023.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	651	100.0	+	.	ID=adult_Nanopore_Roach_16277.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	504	651	100.0	+	.	ID=male_Nanopore_Roach_148664.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	563	647	100.0	+	.	ID=young_adult_Nanopore_Roach_128898.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	582	647	100.0	+	.	ID=male_Nanopore_Roach_155114.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	591	647	100.0	+	.	ID=L2_Nanopore_Roach_101485.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	620	647	100.0	+	.	ID=adult_Nanopore_Roach_106090.1
+5790	WormBase	intron	648	699	.	+	.	Parent=Transcript:R02F2.9.1
+5790	RNASeq_splice	intron	648	699	410515.0	+	.	
+5790	RNASeq_splice	intron	648	701	49.0	+	.	
+5790	RNASeq_splice	intron	648	703	3.0	+	.	
+5790	RNASeq_splice	intron	652	699	154.0	+	.	
+5790	RNASeq_splice	intron	652	701	3.0	+	.	
+5790	RNASeq_splice	intron	652	703	8.0	+	.	
+5790	WormBase	CDS	700	789	.	+	.	ID=CDS:R02F2.9;Parent=Transcript:R02F2.9.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	801	100.0	+	.	ID=L2_Nanopore_Roach_101485.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	807	100.0	+	.	ID=L3_Nanopore_Roach_77240.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	816	100.0	+	.	ID=L2_Nanopore_Roach_5620.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	823	100.0	+	.	ID=male_Nanopore_Roach_155114.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	849	100.0	+	.	ID=adult_Nanopore_Roach_107011.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	852	100.0	+	.	ID=L3_Nanopore_Roach_92311.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	856	100.0	+	.	ID=young_adult_Nanopore_Roach_14803.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	862	100.0	+	.	ID=L2_Nanopore_Roach_13937.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	865	100.0	+	.	ID=L3_Nanopore_Roach_53814.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	865	100.0	+	.	ID=male_Nanopore_Roach_148664.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	865	100.0	+	.	ID=male_Nanopore_Roach_15596.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	865	100.0	+	.	ID=adult_Nanopore_Roach_101521.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	871	100.0	+	.	ID=L1_Nanopore_Roach_12953.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	884	100.0	+	.	ID=adult_Nanopore_Roach_24096.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	884	100.0	+	.	ID=male_Nanopore_Roach_88521.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	884	100.0	+	.	ID=adult_Nanopore_Roach_12515.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	884	100.0	+	.	ID=male_Nanopore_Roach_150037.1
+5790	WormBase	exon	700	886	.	+	.	Parent=Transcript:R02F2.9.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	886	100.0	+	.	ID=L3_Nanopore_Roach_13691.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	886	100.0	+	.	ID=L4_Nanopore_Roach_8688.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	886	100.0	+	.	ID=L4_Nanopore_Roach_63916.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	886	100.0	+	.	ID=L2_Nanopore_Roach_97251.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	887	100.0	+	.	ID=L1_Nanopore_Roach_98102.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	887	100.0	+	.	ID=young_adult_Nanopore_Roach_123376.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	887	100.0	+	.	ID=young_adult_Nanopore_Roach_128898.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	887	100.0	+	.	ID=adult_Nanopore_Roach_106090.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	700	888	100.0	+	.	ID=L4_Nanopore_Roach_36514.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	704	886	100.0	+	.	ID=adult_Nanopore_Roach_16277.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	713	865	100.0	+	.	ID=young_adult_Nanopore_Roach_15023.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	756	885	100.0	+	.	ID=adult_Nanopore_Roach_87844.1
+5790	WormBase	three_prime_UTR	790	886	.	+	.	Parent=Transcript:R02F2.9.1
+5790	BLAT_Nanopore_BEST	expressed_sequence_match	809	856	100.0	+	.	ID=young_adult_Nanopore_Roach_106914.1

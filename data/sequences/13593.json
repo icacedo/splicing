@@ -1,0 +1,20 @@
+{
+    "region": 13593,
+    "chrom": "V",
+    "beg": 3156977,
+    "end": 3157970,
+    "length": 994,
+    "genes": 1,
+    "gene_names": [
+        "Gene:WBGene00016474"
+    ],
+    "pc_genes": 1,
+    "nc_genes": 0,
+    "pc_issues": 0,
+    "introns": 2,
+    "strand": "+",
+    "RNASeq_splice": 5,
+    "max_splices": 126908.0,
+    "RNASeq_reads": 0,
+    "max_reads": 0
+}
