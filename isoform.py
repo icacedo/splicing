@@ -14,6 +14,36 @@ def randseq(n):
 		seq += random.choice('ACGT')
 	return seq
 
+def get_filepointer(filename):
+	fp = None
+	if   filename.endswith('.gz'): fp = gzip.open(filename, 'rt')
+	elif filename == '-':          fp = sys.stdin
+	else:                          fp = open(filename)
+	return fp
+
+def read_fasta(filename):
+
+	name = None
+	seqs = []
+
+	fp = get_filepointer(filename)
+
+	for line in fp.readlines(): # consider changing this
+		line = line.rstrip()
+		if line.startswith('>'):
+			if len(seqs) > 0:
+				seq = ''.join(seqs)
+				yield(name, seq)
+				name = line[1:]
+				seqs = []
+			else:
+				name = line[1:]
+		else:
+			seqs.append(line)
+	yield(name, ''.join(seqs))
+	fp.close()
+
+
 #################
 ## PWM SECTION ##
 #################
@@ -67,24 +97,24 @@ def create_len(seqs, floor, limit):
 			count.append(0)
 
 		count[n] += 1
-	
+
 	# rectangular smoothing
 	r = 5 # 5 on each side
 	smooth = [0 for i in range(len(count))]
 	for i in range(r, len(count) -r):
 		for j in range(-r, r+1):
 			smooth[i+j] += count[i]
-	
+
 	for i in range(floor):
 		smooth[i] = 0
 	smooth = smooth[:limit]
-	
+
 	# model
 	model = []
 	total = 0
 	for v in smooth: total += v
 	for v in smooth: model.append(v/total)
-	
+
 	return model
 
 def write_len(file, hist):
@@ -115,7 +145,7 @@ def create_markov(seqs, order, beg, end):
 			nt = seq[i]
 			if ctx not in count: count[ctx] = {'A':0, 'C':0, 'G':0, 'T':0}
 			count[ctx][nt] += 1
-	
+
 	# these need to be probabilities
 	mm = {}
 	for kmer in count:
@@ -123,7 +153,7 @@ def create_markov(seqs, order, beg, end):
 		total = 0
 		for nt in count[kmer]: total += count[kmer][nt]
 		for nt in count[kmer]: mm[kmer][nt] = count[kmer][nt] / total
-	
+
 	return mm
 
 def write_markov(file, mm):
@@ -147,6 +177,28 @@ def score_makov(seq, mm):
 	pass
 
 ################################
+## TRANSCRIPT SCORING SECTION ##
+################################
+
+def score_apwm(tx, pwm):
+	pass
+
+def score_dpwm(tx, pwm):
+	pass
+
+def score_elen(tx, model):
+	pass
+
+def score_ilen(tx, model):
+	pass
+
+def score_emm(tx, mm):
+	pass
+
+def score_imm(tx, mm):
+	pass
+
+################################
 ## ISOFORM GENERATION SECTION ##
 ################################
 
@@ -155,15 +207,15 @@ def short_intron(dons, accs, min):
 		intron_length = a - d + 1
 		if intron_length < min: return True
 	return False
-	
+
 def short_exon(dons, accs, seqlen, flank, min):
-	
+
 	# first exon
 	exon_beg = flank + 1
 	exon_end = dons[0] -1
 	exon_len = exon_end - exon_beg + 1
 	if exon_len < min: return True
-	
+
 	# last exon
 	exon_beg = accs[-1] + 1
 	exon_end = seqlen - flank + 1
@@ -178,21 +230,67 @@ def short_exon(dons, accs, seqlen, flank, min):
 		if exon_len < min: return True
 	return False
 
-def all_probable(seq, mini, mine, maxs, ignore,
-		ilen=None, elen=None, dpwm=None, apwm=None, imm=None, emm=None):
-	# looks like all_possible but with optional filters
-		# for acceptor and donor matches to pwms
-		# for probabilistic lengths of introns and exons
-		# for markov models of intron and exon composition
-		# for final build?
-	pass
-
-def all_possible(seq, minin, minex, maxs, ignore):
+def gtag_sites(seq, flank, minex):
 	dons = []
 	accs = []
-	for i in range(ignore + minex, len(seq) -ignore -minex):
+	for i in range(flank + minex, len(seq) -flank -minex):
 		if seq[i:i+2]   == 'GT': dons.append(i)
 		if seq[i-1:i+1] == 'AG': accs.append(i)
+	return dons, accs
+
+def gff_sites(seq, gff):
+	dond = {}
+	accd = {}
+	with open(gff) as fp:
+		for line in fp.readlines():
+			f = line.split()
+			if f[2] != 'intron': continue
+			dond[int(f[3]) -1] = True
+			accd[int(f[4]) -1] = True
+
+	dons = list(dond.keys())
+	accs = list(accd.keys())
+	dons.sort()
+	accs.sort()
+
+	return dons, accs
+
+def build_mRNA(seq, beg, end, dons, accs):
+	assert(beg <= end)
+	assert(len(dons) == len(accs))
+
+	tx = {
+		'seq': seq,
+		'beg': beg,
+		'end': end,
+		'exons': [],
+		'introns': [],
+		'score': 0
+	}
+
+	if len(dons) == 0:
+		tx['exons'].append((beg, end))
+		return tx
+
+	# introns
+	for a, b in zip(dons, accs):
+		tx['introns'].append((a, b))
+
+	# exons
+	tx['exons'].append((beg, dons[0] -1))
+	for i in range(1, len(dons)):
+		a = accs[i-1] + 1
+		b = dons[i] -1
+		tx['exons'].append((a, b))
+	tx['exons'].append((accs[-1] +1, end))
+
+	return tx
+
+def all_possible(seq, minin, minex, maxs, flank, dpwm=None, apwm=None,
+		emm=None, imm=None, elen=None, ilen=None, gff=None):
+
+	if gff: dons, accs = gff_sites(seq, gff)
+	else:   dons, accs = gtag_sites(seq, flank, minex)
 
 	info = {
 		'trials' : 0,
@@ -201,28 +299,33 @@ def all_possible(seq, minin, minex, maxs, ignore):
 		'short_intron': 0,
 		'short_exon': 0,
 	}
-	
+
 	isoforms = []
 	sites = min(len(dons), len(accs), maxs)
 	for n in range(1, sites+1):
 		for dsites in itertools.combinations(dons, n):
 			for asites in itertools.combinations(accs, n):
 				info['trials'] += 1
-				
+
 				# sanity checks
 				if short_intron(dsites, asites, minin):
 					info['short_intron'] += 1
 					continue
-				
-				if short_exon(dsites, asites, len(seq), ignore, minex):
+
+				if short_exon(dsites, asites, len(seq), flank, minex):
 					info['short_exon'] += 1
 					continue
-				
+
 				# create isoform and save
-				tx = []
-				for d, a in zip(dsites, asites):
-					tx.append({'beg':d, 'end':a})
+				score = 0
+				tx = build_mRNA(seq, flank, len(seq) -flank, dsites, asites)
+				if apwm: score += score_apwm(apwm, tx)
+				if dpwm: score += score_dpwm(dpwm, tx)
+				if elen: score += score_elen(elen, tx)
+				if ilen: score += score_ilen(ilen, tx)
+				if emm:  score += score_emm(emm, tx)
+				if imm:  score += score_imm(imm, tx)
+				tx['score'] = score
 				isoforms.append(tx)
 
 	return isoforms, info
-
