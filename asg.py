@@ -36,27 +36,30 @@ if __name__ == '__main__':
 		help='limit full report')
 	arg = parser.parse_args()
 
-	for id, seq in isoform.read_fasta(arg.fasta):
-		txs, info = isoform.all_possible(seq, arg.intron, arg.exon,
-			arg.splice, arg.flank, gff=arg.gff)
-		print('seq:', id)
-		print('len:', len(seq))
-		print('donors:', info['donors'])
-		print('acceptors:', info['acceptors'])
-		print('trials:', info['trials'])
-		print('isoforms:', len(txs))
+	dpwm = isoform.read_pwm(arg.dpwm) if arg.dpwm else None
+	apwm = isoform.read_pwm(arg.apwm) if arg.apwm else None
 
-		if arg.full:
-			deets = arg.limit if arg.limit else len(txs)
-			print('details:', deets)
+	name, seq = next(isoform.read_fasta(arg.fasta))
+	txs, info = isoform.all_possible(seq, arg.intron, arg.exon,
+		arg.splice, arg.flank, gff=arg.gff, dpwm=dpwm, apwm=apwm)
+	print('seq:', name)
+	print('len:', len(seq))
+	print('donors:', info['donors'])
+	print('acceptors:', info['acceptors'])
+	print('trials:', info['trials'])
+	print('isoforms:', len(txs))
 
-			# sort by score first
+	if arg.full:
+		deets = arg.limit if arg.limit else len(txs)
+		print('details:', deets)
 
-			for i in range(deets):
-				tx = txs[i]
-				for intron in tx['introns']:
-					print(intron[0], '..', intron[1], ' ', sep='', end = '')
-				print()
+		txs = sorted(txs, key=lambda item: item['score'], reverse=True)
+		for i in range(deets):
+			tx = txs[i]
+			print(tx['score'], end =' ')
+			for exon in tx['exons']:
+				print(exon[0]+1, '..', exon[1]+1, ' ', sep='', end = '')
+			print()
 
-				# output might rather be GFF or something
+
 

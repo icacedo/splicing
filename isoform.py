@@ -28,7 +28,7 @@ def read_fasta(filename):
 
 	fp = get_filepointer(filename)
 
-	for line in fp.readlines(): # consider changing this
+	for line in fp.readlines():
 		line = line.rstrip()
 		if line.startswith('>'):
 			if len(seqs) > 0:
@@ -43,6 +43,9 @@ def read_fasta(filename):
 	yield(name, ''.join(seqs))
 	fp.close()
 
+def prob2score(p):
+	if p == 0: return -100
+	return math.log2(p/0.25)
 
 #################
 ## PWM SECTION ##
@@ -71,15 +74,32 @@ def write_pwm(file, pwm):
 			fp.write('\n')
 
 def read_pwm(file):
-	# open file
-	# read pwm
-	# return pwm
-	pass
+	nts = ('A', 'C', 'G', 'T')
+	pwm = []
 
-def score_pwm(seq, pwm):
-	# assert seq is same length as pwm
-	# return score
-	pass
+	# read raw values
+	with open(file) as fp:
+		for line in fp.readlines():
+			if line.startswith('#'): continue
+			f = line.split()
+			d = {}
+			for nt, val in zip(nts, f):
+				d[nt] = float(val)
+			pwm.append(d)
+
+	# convert to log-odds
+	for i in range(len(pwm)):
+		for nt in nts:
+			pwm[i][nt] = prob2score(pwm[i][nt])
+
+	return pwm
+
+def score_pwm(pwm, seq, pos):
+	score = 0
+	for i in range(len(pwm)):
+		nt = seq[pos+i]
+		score += pwm[i][nt]
+	return score
 
 ####################
 ## LENGTH SECTION ##
@@ -180,11 +200,17 @@ def score_makov(seq, mm):
 ## TRANSCRIPT SCORING SECTION ##
 ################################
 
-def score_apwm(tx, pwm):
-	pass
+def score_apwm(pwm, tx):
+	score = 0
+	for intron in tx['introns']:
+		score += score_pwm(pwm, tx['seq'], intron[1] - len(pwm) +1)
+	return score
 
-def score_dpwm(tx, pwm):
-	pass
+def score_dpwm(pwm, tx):
+	score = 0
+	for intron in tx['introns']:
+		score += score_pwm(pwm, tx['seq'], intron[0])
+	return score
 
 def score_elen(tx, model):
 	pass
@@ -245,6 +271,7 @@ def gff_sites(seq, gff):
 		for line in fp.readlines():
 			f = line.split()
 			if f[2] != 'intron': continue
+			if f[6] != '+': continue
 			dond[int(f[3]) -1] = True
 			accd[int(f[4]) -1] = True
 
