@@ -143,15 +143,46 @@ def write_len(file, hist):
 		for val in hist:
 			fp.write(f'{val:.6f}\n')
 
-def read_len(file):
-	# open file
-	# read hist
-	# return hist
-	pass
+def find_tail(val, x):
+	lo = 0
+	hi = 1000
 
-def score_len(seq, pwm):
-	# return score
-	pass
+	while hi - lo > 1:
+		m = (hi + lo) / 2;
+		p = 1 / m
+		f = (1 - p)**(x-1) * p
+		if f < val: lo += (m - lo) / 2
+		else:       hi -= (hi - m) / 2
+
+	return m
+
+def read_len(file, limit=1000):
+	model = []
+	with open(file) as fp:
+		for line in fp.readlines():
+			if line.startswith('#'): continue
+			line = line.rstrip()
+			model.append(float(line))
+
+	tail = find_tail(model[-1], limit) # why is 1000 the default?
+
+	expect = 1 / limit;
+	for i in range(len(model)):
+		if model[i] == 0: model[i] = -100
+		else:             model[i] = math.log2(model[i] / expect)
+
+	return {'tail': tail, 'size':len(model), 'val': model}
+
+def score_len(model, x):
+	assert(x > 0)
+	if x >= model['size']:
+		p = 1 / model['tail']
+		q = (1-p)**(x-1) * p
+		expect = 1 / model['size']
+		s = math.log2(q/expect)
+		return s
+	else:
+		return model['val'][x]
 
 ##########################
 ## MARKOV MODEL SECTION ##
@@ -191,7 +222,7 @@ def read_markov(seqs):
 	# return model
 	pass
 
-def score_makov(seq, mm):
+def score_markov(seq, mm):
 	# build score
 	# return score
 	pass
@@ -212,17 +243,23 @@ def score_dpwm(pwm, tx):
 		score += score_pwm(pwm, tx['seq'], intron[0])
 	return score
 
-def score_elen(tx, model):
-	pass
+def score_elen(model, tx):
+	score = 0
+	for exon in tx['exons']:
+		score += score_len(model, exon[1] - exon[0] + 1)
+	return score
 
-def score_ilen(tx, model):
-	pass
+def score_ilen(model, tx):
+	score = 0
+	for intron in tx['introns']:
+		score += score_len(model, intron[1] - intron[0] + 1)
+	return score
 
-def score_emm(tx, mm):
-	pass
+def score_emm(mm, tx):
+	return 0
 
-def score_imm(tx, mm):
-	pass
+def score_imm(mm, tx):
+	return 0
 
 ################################
 ## ISOFORM GENERATION SECTION ##

@@ -38,10 +38,15 @@ if __name__ == '__main__':
 
 	dpwm = isoform.read_pwm(arg.dpwm) if arg.dpwm else None
 	apwm = isoform.read_pwm(arg.apwm) if arg.apwm else None
+	elen = isoform.read_len(arg.elen) if arg.elen else None
+	ilen = isoform.read_len(arg.ilen) if arg.ilen else None
+	emm  = isoform.read_mm(arg.emm)   if arg.emm  else None
+	imm  = isoform.read_mm(arg.imm)   if arg.imm  else None
 
 	name, seq = next(isoform.read_fasta(arg.fasta))
 	txs, info = isoform.all_possible(seq, arg.intron, arg.exon,
-		arg.splice, arg.flank, gff=arg.gff, dpwm=dpwm, apwm=apwm)
+		arg.splice, arg.flank, gff=arg.gff, dpwm=dpwm, apwm=apwm,
+		elen=elen, ilen=ilen, emm=emm, imm=imm)
 	print('seq:', name)
 	print('len:', len(seq))
 	print('donors:', info['donors'])
