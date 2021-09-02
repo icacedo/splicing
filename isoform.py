@@ -156,7 +156,7 @@ def find_tail(val, x):
 
 	return m
 
-def read_len(file, limit=1000):
+def read_len(file):
 	model = []
 	with open(file) as fp:
 		for line in fp.readlines():
@@ -164,9 +164,9 @@ def read_len(file, limit=1000):
 			line = line.rstrip()
 			model.append(float(line))
 
-	tail = find_tail(model[-1], limit) # why is 1000 the default?
-
-	expect = 1 / limit;
+	size = len(model)
+	tail = find_tail(model[-1], size)
+	expect = 1 / size;
 	for i in range(len(model)):
 		if model[i] == 0: model[i] = -100
 		else:             model[i] = math.log2(model[i] / expect)
@@ -211,21 +211,32 @@ def write_markov(file, mm):
 	with open(file, 'w') as fp:
 		fp.write(f'# MM {file} {len(mm)*4}\n')
 		for kmer in sorted(mm):
-			#fp.write(f'{kmer} ')
 			for v in mm[kmer]:
 				fp.write(f'{kmer}{v} {mm[kmer][v]:.6f}\n')
 			fp.write('\n')
 
-def read_markov(seqs):
-	# open file
-	# read model
-	# return model
-	pass
+def read_markov(file):
+	mm = {}
+	k = None
+	with open(file) as fp:
+		for line in fp.readlines():
+			if line.startswith('#'): continue
+			f = line.split()
+			if len(f) == 2:
+				mm[f[0]] = prob2score(float(f[1]))
+				if k == None: k = len(f[0])
+	return {'k': k, 'mm': mm}
 
-def score_markov(seq, mm):
-	# build score
-	# return score
-	pass
+def score_markov(model, seq, beg, end):
+	score = 0
+	k = model['k']
+	mm = model['mm']
+
+	for i in range(beg, end -k + 2):
+		kmer = seq[i:i+k]
+		score += mm[kmer]
+
+	return score
 
 ################################
 ## TRANSCRIPT SCORING SECTION ##
@@ -256,10 +267,20 @@ def score_ilen(model, tx):
 	return score
 
 def score_emm(mm, tx):
-	return 0
+	score = 0
+	for exon in tx['exons']:
+		score += score_markov(mm, tx['seq'], exon[0], exon[1])
+	return score
 
-def score_imm(mm, tx):
-	return 0
+def score_imm(mm, tx, dpwm, apwm):
+	score = 0
+	for intron in tx['introns']:
+		beg = intron[0] + len(dpwm)
+		end = intron[1] - len(apwm)
+		score += score_markov(mm, tx['seq'], beg, end)
+	return score
+
+
 
 ################################
 ## ISOFORM GENERATION SECTION ##
@@ -388,7 +409,7 @@ def all_possible(seq, minin, minex, maxs, flank, dpwm=None, apwm=None,
 				if elen: score += score_elen(elen, tx)
 				if ilen: score += score_ilen(ilen, tx)
 				if emm:  score += score_emm(emm, tx)
-				if imm:  score += score_imm(imm, tx)
+				if imm:  score += score_imm(imm, tx, dpwm, apwm)
 				tx['score'] = score
 				isoforms.append(tx)
 

@@ -36,12 +36,12 @@ if __name__ == '__main__':
 		help='limit full report')
 	arg = parser.parse_args()
 
-	dpwm = isoform.read_pwm(arg.dpwm) if arg.dpwm else None
-	apwm = isoform.read_pwm(arg.apwm) if arg.apwm else None
-	elen = isoform.read_len(arg.elen) if arg.elen else None
-	ilen = isoform.read_len(arg.ilen) if arg.ilen else None
-	emm  = isoform.read_mm(arg.emm)   if arg.emm  else None
-	imm  = isoform.read_mm(arg.imm)   if arg.imm  else None
+	dpwm = isoform.read_pwm(arg.dpwm)   if arg.dpwm else None
+	apwm = isoform.read_pwm(arg.apwm)   if arg.apwm else None
+	elen = isoform.read_len(arg.elen)   if arg.elen else None
+	ilen = isoform.read_len(arg.ilen)   if arg.ilen else None
+	emm  = isoform.read_markov(arg.emm) if arg.emm  else None
+	imm  = isoform.read_markov(arg.imm) if arg.imm  else None
 
 	name, seq = next(isoform.read_fasta(arg.fasta))
 	txs, info = isoform.all_possible(seq, arg.intron, arg.exon,
@@ -61,10 +61,7 @@ if __name__ == '__main__':
 		txs = sorted(txs, key=lambda item: item['score'], reverse=True)
 		for i in range(deets):
 			tx = txs[i]
-			print(tx['score'], end =' ')
+			print(f'{tx["score"]:.3f}', end =' ')
 			for exon in tx['exons']:
 				print(exon[0]+1, '..', exon[1]+1, ' ', sep='', end = '')
 			print()
-
-
-
