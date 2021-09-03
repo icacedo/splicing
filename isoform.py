@@ -47,6 +47,13 @@ def prob2score(p):
 	if p == 0: return -100
 	return math.log2(p/0.25)
 
+def entropy(ps):
+	assert(math.isclose(sum(ps), 1))
+	h = 0
+	for p in ps:
+		h -= p * math.log2(p)
+	return h
+
 #################
 ## PWM SECTION ##
 #################
@@ -280,8 +287,6 @@ def score_imm(mm, tx, dpwm, apwm):
 		score += score_markov(mm, tx['seq'], beg, end)
 	return score
 
-
-
 ################################
 ## ISOFORM GENERATION SECTION ##
 ################################
@@ -371,8 +376,7 @@ def build_mRNA(seq, beg, end, dons, accs):
 
 	return tx
 
-def all_possible(seq, minin, minex, maxs, flank, dpwm=None, apwm=None,
-		emm=None, imm=None, elen=None, ilen=None, gff=None):
+def all_possible(seq, minin, minex, maxs, flank, gff=None):
 
 	if gff: dons, accs = gff_sites(seq, gff)
 	else:   dons, accs = gtag_sites(seq, flank, minex)
@@ -402,15 +406,22 @@ def all_possible(seq, minin, minex, maxs, flank, dpwm=None, apwm=None,
 					continue
 
 				# create isoform and save
-				score = 0
 				tx = build_mRNA(seq, flank, len(seq) -flank, dsites, asites)
-				if apwm: score += score_apwm(apwm, tx)
-				if dpwm: score += score_dpwm(dpwm, tx)
-				if elen: score += score_elen(elen, tx)
-				if ilen: score += score_ilen(ilen, tx)
-				if emm:  score += score_emm(emm, tx)
-				if imm:  score += score_imm(imm, tx, dpwm, apwm)
-				tx['score'] = score
 				isoforms.append(tx)
 
 	return isoforms, info
+
+########################
+## EXPRESSION SECTION ##
+########################
+
+def complexity(txs):
+	prob = []
+	total = 0
+	for tx in txs:
+		w = 2 ** tx['score']
+		prob.append(w)
+		total += w
+	for i in range(len(prob)):
+		prob[i] /= total
+	return entropy(prob)

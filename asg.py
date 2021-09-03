@@ -34,6 +34,24 @@ if __name__ == '__main__':
 		help='see all splice forms')
 	parser.add_argument('--limit', required=False, type=int, metavar='<int>',
 		help='limit full report')
+	"""
+	parser.add_argument('--wdpwm', required=False, type=float, default=1.0,
+		metavar='<float>', help='dpwm weight [%(default).2f]')
+	parser.add_argument('--wapwm', required=False, type=float, default=1.0,
+		metavar='<float>', help='apwm weight [%(default).2f]')
+	parser.add_argument('--wemm', required=False, type=float, default=1.0,
+		metavar='<float>', help='emm weight [%(default).2f]')
+	parser.add_argument('--wimm', required=False, type=float, default=1.0,
+		metavar='<float>', help='imm weight [%(default).2f]')
+	parser.add_argument('--welen', required=False, type=float, default=1.0,
+		metavar='<float>', help='elen weight [%(default).2f]')
+	parser.add_argument('--wilen', required=False, type=float, default=1.0,
+		metavar='<float>', help='ilen weight [%(default).2f]')
+
+	is there a state-switching (splicing) cost?
+	why do 3 splice introns score better than the real 2 in 777?
+	what combinations of weights best match real data?
+	"""
 	arg = parser.parse_args()
 
 	dpwm = isoform.read_pwm(arg.dpwm)   if arg.dpwm else None
@@ -45,23 +63,45 @@ if __name__ == '__main__':
 
 	name, seq = next(isoform.read_fasta(arg.fasta))
 	txs, info = isoform.all_possible(seq, arg.intron, arg.exon,
-		arg.splice, arg.flank, gff=arg.gff, dpwm=dpwm, apwm=apwm,
-		elen=elen, ilen=ilen, emm=emm, imm=imm)
+		arg.splice, arg.flank, gff=arg.gff)
+
+	for tx in txs:
+		score = 0
+		if apwm: score += isoform.score_apwm(apwm, tx)
+		if dpwm: score += isoform.score_dpwm(dpwm, tx)
+		if elen: score += isoform.score_elen(elen, tx)
+		if ilen: score += isoform.score_ilen(ilen, tx)
+		if emm:  score += isoform.score_emm(emm, tx)
+		if imm:  score += isoform.score_imm(imm, tx, dpwm, apwm)
+		tx['score'] = score
+
 	print('seq:', name)
 	print('len:', len(seq))
 	print('donors:', info['donors'])
 	print('acceptors:', info['acceptors'])
 	print('trials:', info['trials'])
 	print('isoforms:', len(txs))
+	print('complexity:', isoform.complexity(txs))
+
 
 	if arg.full:
-		deets = arg.limit if arg.limit else len(txs)
-		print('details:', deets)
-
+		limit = arg.limit if arg.limit else len(txs)
 		txs = sorted(txs, key=lambda item: item['score'], reverse=True)
-		for i in range(deets):
+		print('details:', limit)
+
+		# calculate probability of each isoform
+		weight = []
+		total = 0
+		for tx in txs:
+			w = 2 ** tx['score']
+			weight.append(w)
+			total += w
+		prob = []
+		for w in weight: prob.append(w / total)
+
+		for i in range(limit):
 			tx = txs[i]
-			print(f'{tx["score"]:.3f}', end =' ')
+			print(f'{tx["score"]:.2f} {100 * prob[i]:.2f}', end =' ')
 			for exon in tx['exons']:
 				print(exon[0]+1, '..', exon[1]+1, ' ', sep='', end = '')
 			print()
