@@ -33,7 +33,6 @@ if __name__ == '__main__':
 		help='use introns in gff for source of splice sites [%(default)s]')
 	parser.add_argument('--limit', required=False, type=int, default=20,
 		metavar='<int>', help='limit number of transcripts [%(default)i]')
-	"""
 	parser.add_argument('--wdpwm', required=False, type=float, default=1.0,
 		metavar='<float>', help='dpwm weight [%(default).2f]')
 	parser.add_argument('--wapwm', required=False, type=float, default=1.0,
@@ -46,13 +45,11 @@ if __name__ == '__main__':
 		metavar='<float>', help='elen weight [%(default).2f]')
 	parser.add_argument('--wilen', required=False, type=float, default=1.0,
 		metavar='<float>', help='ilen weight [%(default).2f]')
-
-	is there a state-switching (splicing) cost?
-	why do 3 splice introns score better than the real 2 in 777?
-	what combinations of weights best match real data?
-	"""
+	parser.add_argument('--icost', required=False, type=float, default=0.0,
+		metavar='<float>', help='cost for each intron [%(default).2f]')
 	arg = parser.parse_args()
 
+	assert(arg.icost >= 0)
 	dpwm = isoform.read_pwm(arg.dpwm)   if arg.dpwm else None
 	apwm = isoform.read_pwm(arg.apwm)   if arg.apwm else None
 	elen = isoform.read_len(arg.elen)   if arg.elen else None
@@ -60,19 +57,26 @@ if __name__ == '__main__':
 	emm  = isoform.read_markov(arg.emm) if arg.emm  else None
 	imm  = isoform.read_markov(arg.imm) if arg.imm  else None
 
+	# generate isoforms
+
 	name, seq = next(isoform.read_fasta(arg.fasta))
 	txs, info = isoform.all_possible(seq, arg.min_intron, arg.min_exon,
 		arg.max_splice, arg.flank, gff=arg.introns)
 
+	# score isoforms
+
 	for tx in txs:
 		score = 0
-		if apwm: score += isoform.score_apwm(apwm, tx)
-		if dpwm: score += isoform.score_dpwm(dpwm, tx)
-		if elen: score += isoform.score_elen(elen, tx)
-		if ilen: score += isoform.score_ilen(ilen, tx)
-		if emm:  score += isoform.score_emm(emm, tx)
-		if imm:  score += isoform.score_imm(imm, tx, dpwm, apwm)
+		if apwm: score += isoform.score_apwm(apwm, tx) * arg.wapwm
+		if dpwm: score += isoform.score_dpwm(dpwm, tx) * arg.wdpwm
+		if elen: score += isoform.score_elen(elen, tx) * arg.welen
+		if ilen: score += isoform.score_ilen(ilen, tx) * arg.wilen
+		if emm:  score += isoform.score_emm(emm, tx) * arg.wemm
+		if imm:  score += isoform.score_imm(imm, tx, dpwm, apwm) * arg.wimm
+		score -= len(tx['introns']) * arg.icost
 		tx['score'] = score
+
+	# summary output
 
 	print('# seq:', name)
 	print('# len:', len(seq))
@@ -80,12 +84,13 @@ if __name__ == '__main__':
 	print('# acceptors:', info['acceptors'])
 	print('# trials:', info['trials'])
 	print('# isoforms:', len(txs))
-	print('# entropy:', isoform.complexity(txs))
+	print(f'# complexity: {isoform.complexity(txs):.4f}')
 
 	limit = arg.limit if arg.limit else len(txs)
 	txs = sorted(txs, key=lambda item: item['score'], reverse=True)
 
 	# calculate probability of each isoform
+
 	weight = []
 	total = 0
 	for tx in txs:
@@ -96,22 +101,30 @@ if __name__ == '__main__':
 	for w in weight: prob.append(w / total)
 
 	# create gff
+
 	chrom = name.split()[0]
 	src = 'asg'
 	cs = f'{chrom}\t{src}\t'
 	b = txs[0]['beg'] + 1
 	e = txs[0]['end'] + 1
 	gene = f'Gene-{chrom}'
-	print(f'{cs}gene\t{b}\t{e}\t.\t+\t.\tID={gene}\n') # gene
+	print(f'{cs}gene\t{b}\t{e}\t.\t+\t.\tID={gene}\n')
 	for i in range(limit):
 		tx = txs[i]
 		b = tx['beg'] + 1
 		e = tx['end'] + 1
 		s = prob[i]
 		tid = f'tx-{chrom}-{i+1}'
-		print(f'{cs}mRNA\t{b}\t{e}\t{s:.4g}\t+\t.\tID={tid};Parent={gene}') # tx
+		print(f'{cs}mRNA\t{b}\t{e}\t{s:.4g}\t+\t.\tID={tid};Parent={gene}')
+
 		for exon in tx['exons']:
 			b = exon[0] + 1
 			e = exon[1] + 1
-			print(f'{cs}exon\t{b}\t{e}\t.\t+\t.\tParent={tid}') # exons
+			print(f'{cs}exon\t{b}\t{e}\t.\t+\t.\tParent={tid}')
+
+		for intron in tx['introns']:
+			b = intron[0] + 1
+			e = intron[1] + 1
+			print(f'{cs}intron\t{b}\t{e}\t.\t+\t.\tParent={tid}')
+
 		print()
