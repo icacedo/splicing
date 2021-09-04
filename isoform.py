@@ -425,3 +425,10 @@ def complexity(txs):
 	for i in range(len(prob)):
 		prob[i] /= total
 	return entropy(prob)
+
+def kl_distance(txs1, txs2):
+	pass
+
+def man_distance(txs1, txs2):
+	pass
+

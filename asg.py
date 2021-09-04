@@ -7,15 +7,16 @@ if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser(
 		description='Alternative Splice Generator')
-	parser.add_argument('fasta', type=str, metavar='<file>', help='fasta file')
-	parser.add_argument('--intron', required=False, type=int, default=35,
+	parser.add_argument('fasta', type=str, metavar='<file>',
+		help='input fasta file (reads only the first sequence if multi-fasta)')
+	parser.add_argument('--min_intron', required=False, type=int, default=35,
 		metavar='<int>', help='minimum length of intron [%(default)i]')
-	parser.add_argument('--exon', required=False, type=int, default=25,
+	parser.add_argument('--min_exon', required=False, type=int, default=25,
 		metavar='<int>', help='minimum length exon [%(default)i]')
-	parser.add_argument('--splice', required=False, type=int, default=3,
+	parser.add_argument('--max_splice', required=False, type=int, default=3,
 		metavar='<int>', help='maximum number of introns [%(default)i]')
 	parser.add_argument('--flank', required=False, type=int, default=99,
-		metavar='<int>', help='distance to ignore on each side [%(default)i]')
+		metavar='<int>', help='genomic flank on each side [%(default)i]')
 	parser.add_argument('--dpwm', required=False, type=str, metavar='<file>',
 		help='position weight matrix for donor site [%(default)s]')
 	parser.add_argument('--apwm', required=False, type=str, metavar='<file>',
@@ -28,12 +29,10 @@ if __name__ == '__main__':
 		help='length model for exons [%(default)s]')
 	parser.add_argument('--ilen', required=False, type=str, metavar='<file>',
 		help='length model for introns [%(default)s]')
-	parser.add_argument('--gff', required=False, type=str, metavar='<file>',
-		help='use GFF for source of splice sites [%(default)s]')
-	parser.add_argument('--full', action='store_true',
-		help='see all splice forms')
-	parser.add_argument('--limit', required=False, type=int, metavar='<int>',
-		help='limit full report')
+	parser.add_argument('--introns', required=False, type=str, metavar='<file>',
+		help='use introns in gff for source of splice sites [%(default)s]')
+	parser.add_argument('--limit', required=False, type=int, default=20,
+		metavar='<int>', help='limit number of transcripts [%(default)i]')
 	"""
 	parser.add_argument('--wdpwm', required=False, type=float, default=1.0,
 		metavar='<float>', help='dpwm weight [%(default).2f]')
@@ -62,8 +61,8 @@ if __name__ == '__main__':
 	imm  = isoform.read_markov(arg.imm) if arg.imm  else None
 
 	name, seq = next(isoform.read_fasta(arg.fasta))
-	txs, info = isoform.all_possible(seq, arg.intron, arg.exon,
-		arg.splice, arg.flank, gff=arg.gff)
+	txs, info = isoform.all_possible(seq, arg.min_intron, arg.min_exon,
+		arg.max_splice, arg.flank, gff=arg.introns)
 
 	for tx in txs:
 		score = 0
@@ -75,33 +74,44 @@ if __name__ == '__main__':
 		if imm:  score += isoform.score_imm(imm, tx, dpwm, apwm)
 		tx['score'] = score
 
-	print('seq:', name)
-	print('len:', len(seq))
-	print('donors:', info['donors'])
-	print('acceptors:', info['acceptors'])
-	print('trials:', info['trials'])
-	print('isoforms:', len(txs))
-	print('complexity:', isoform.complexity(txs))
+	print('# seq:', name)
+	print('# len:', len(seq))
+	print('# donors:', info['donors'])
+	print('# acceptors:', info['acceptors'])
+	print('# trials:', info['trials'])
+	print('# isoforms:', len(txs))
+	print('# entropy:', isoform.complexity(txs))
 
+	limit = arg.limit if arg.limit else len(txs)
+	txs = sorted(txs, key=lambda item: item['score'], reverse=True)
 
-	if arg.full:
-		limit = arg.limit if arg.limit else len(txs)
-		txs = sorted(txs, key=lambda item: item['score'], reverse=True)
-		print('details:', limit)
+	# calculate probability of each isoform
+	weight = []
+	total = 0
+	for tx in txs:
+		w = 2 ** tx['score']
+		weight.append(w)
+		total += w
+	prob = []
+	for w in weight: prob.append(w / total)
 
-		# calculate probability of each isoform
-		weight = []
-		total = 0
-		for tx in txs:
-			w = 2 ** tx['score']
-			weight.append(w)
-			total += w
-		prob = []
-		for w in weight: prob.append(w / total)
-
-		for i in range(limit):
-			tx = txs[i]
-			print(f'{tx["score"]:.2f} {100 * prob[i]:.2f}', end =' ')
-			for exon in tx['exons']:
-				print(exon[0]+1, '..', exon[1]+1, ' ', sep='', end = '')
-			print()
+	# create gff
+	chrom = name.split()[0]
+	src = 'asg'
+	cs = f'{chrom}\t{src}\t'
+	b = txs[0]['beg'] + 1
+	e = txs[0]['end'] + 1
+	gene = f'Gene-{chrom}'
+	print(f'{cs}gene\t{b}\t{e}\t.\t+\t.\tID={gene}\n') # gene
+	for i in range(limit):
+		tx = txs[i]
+		b = tx['beg'] + 1
+		e = tx['end'] + 1
+		s = prob[i]
+		tid = f'tx-{chrom}-{i+1}'
+		print(f'{cs}mRNA\t{b}\t{e}\t{s:.4g}\t+\t.\tID={tid};Parent={gene}') # tx
+		for exon in tx['exons']:
+			b = exon[0] + 1
+			e = exon[1] + 1
+			print(f'{cs}exon\t{b}\t{e}\t.\t+\t.\tParent={tid}') # exons
+		print()
