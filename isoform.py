@@ -54,6 +54,23 @@ def entropy(ps):
 		h -= p * math.log2(p)
 	return h
 
+def kld(p, q):
+	assert(math.isclose(sum(p), 1.0))
+	assert(math.isclose(sum(q), 1.0))
+	d = 0
+	for pi, qi in zip(p, q):
+		if pi != 0 and qi != 0:
+			d += pi * math.log2(pi / qi)
+	return d
+
+def manhattan(p, q):
+	assert(math.isclose(sum(p), 1.0))
+	assert(math.isclose(sum(q), 1.0))
+	d = 0
+	for pi, qi in zip(p, q):
+		d += abs(pi - qi)
+	return d
+
 #################
 ## PWM SECTION ##
 #################
@@ -332,7 +349,9 @@ def gff_sites(seq, gff):
 	accd = {}
 	with open(gff) as fp:
 		for line in fp.readlines():
+			if line.startswith('#'): continue
 			f = line.split()
+			if len(f) < 8: continue
 			if f[2] != 'intron': continue
 			if f[6] != '+': continue
 			dond[int(f[3]) -1] = True
@@ -426,9 +445,7 @@ def complexity(txs):
 		prob[i] /= total
 	return entropy(prob)
 
-def kl_distance(txs1, txs2):
-	pass
 
-def man_distance(txs1, txs2):
-	pass
+
+
 

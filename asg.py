@@ -120,11 +120,11 @@ if __name__ == '__main__':
 		for exon in tx['exons']:
 			b = exon[0] + 1
 			e = exon[1] + 1
-			print(f'{cs}exon\t{b}\t{e}\t.\t+\t.\tParent={tid}')
+			print(f'{cs}exon\t{b}\t{e}\t{s:.4g}\t+\t.\tParent={tid}')
 
 		for intron in tx['introns']:
 			b = intron[0] + 1
 			e = intron[1] + 1
-			print(f'{cs}intron\t{b}\t{e}\t.\t+\t.\tParent={tid}')
+			print(f'{cs}intron\t{b}\t{e}\t{s:.4g}\t+\t.\tParent={tid}')
 
 		print()
