@@ -15,7 +15,7 @@ def get_introns(gff):
 			beg, end, score = f[3], f[4], f[5]
 			beg = int(beg)
 			end = int(end)
-			score = float(score)
+			score = 0 if score == '.' else float(score)
 			if (beg,end) not in introns: introns[(beg,end)] = 0
 			introns[(beg,end)] += score
 			total += score
@@ -40,18 +40,11 @@ if __name__ == '__main__':
 	i1 = get_introns(arg.gff1)
 	i2 = get_introns(arg.gff2)
 
-	# ensure all introns are in both collections
-	for k in i1:
-		if k not in i2: i2[k] = 0
-	for k in i2:
-		if k not in i1: i1[k] = 0
+	dist, details = isoform.expdiff(i1, i2)
+	print(dist)
+	for exon, p1, p2 in details:
+		print(f'{exon[0]}\t{exon[1]}\t{p1:.6f}\t{p2:.6f}')
 
-	p1 = []
-	p2 = []
-	for k in i1:
-		p1.append(i1[k])
-		p2.append(i2[k])
 
-	print(isoform.manhattan(p1, p2))
 
 

@@ -1,4 +1,5 @@
 
+import copy
 import itertools
 import math
 import random
@@ -59,8 +60,7 @@ def kld(p, q):
 	assert(math.isclose(sum(q), 1.0))
 	d = 0
 	for pi, qi in zip(p, q):
-		if pi != 0 and qi != 0:
-			d += pi * math.log2(pi / qi)
+		d += pi * math.log2(pi / qi)
 	return d
 
 def manhattan(p, q):
@@ -446,6 +446,29 @@ def complexity(txs):
 	return entropy(prob)
 
 
+
+def expdiff(introns1, introns2):
+
+	# non-mutating
+	i1 = copy.deepcopy(introns1)
+	i2 = copy.deepcopy(introns2)
+
+	# ensure all introns are in both collections
+	for k in i1:
+		if k not in i2: i2[k] = 0
+	for k in i2:
+		if k not in i1: i1[k] = 0
+
+	# compare distances
+	p1 = []
+	p2 = []
+	details = []
+	for k in i1:
+		p1.append(i1[k])
+		p2.append(i2[k])
+		details.append((k, i1[k], i2[k]))
+	distance = manhattan(p1, p2)
+	return distance, details
 
 
 
