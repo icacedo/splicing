@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+import argparse
+import isoform
+
+## Command Line Interface ##
+
+parser = argparse.ArgumentParser(
+	description='Parameter optization program for geniso')
+parser.add_argument('fasta', type=str, metavar='<file>',
+	help='input fasta file')
+parser.add_argument('dpwm', type=str, metavar='<file>',
+	help='input donor PWM')
+parser.add_argument('apwm', type=str, metavar='<file>',
+	help='input acceptor PWM')
+parser.add_argument('emm', type=str, metavar='<file>',
+	help='input exon Markov model')
+parser.add_argument('imm', type=str, metavar='<file>',
+	help='input intron Markov model')
+parser.add_argument('elen', type=str, metavar='<file>',
+	help='input exon length model')
+parser.add_argument('ilen', type=str, metavar='<file>',
+	help='input intron length model')
+
+parser.add_argument('--introns', required=False, type=str, metavar='<file>',
+	help='use introns in gff for source of splice sites [%(default)s]')
+parser.add_argument('--min_intron', required=False, type=int, default=35,
+	metavar='<int>', help='minimum length of intron [%(default)i]')
+parser.add_argument('--min_exon', required=False, type=int, default=25,
+	metavar='<int>', help='minimum length exon [%(default)i]')
+parser.add_argument('--max_splice', required=False, type=int, default=3,
+	metavar='<int>', help='maximum number of introns [%(default)i]')
+parser.add_argument('--flank', required=False, type=int, default=99,
+	metavar='<int>', help='genomic flank on each side [%(default)i]')
+parser.add_argument('--limit', required=False, type=int, default=20,
+	metavar='<int>', help='limit number of transcripts [%(default)i]')
+
+arg = parser.parse_args()
+
+dpwm = isoform.read_pwm(arg.dpwm)
+apwm = isoform.read_pwm(arg.apwm)
+elen = isoform.read_len(arg.elen)
+ilen = isoform.read_len(arg.ilen)
+emm  = isoform.read_markov(arg.emm)
+imm  = isoform.read_markov(arg.imm)
+
+

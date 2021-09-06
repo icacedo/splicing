@@ -445,7 +445,28 @@ def complexity(txs):
 		prob[i] /= total
 	return entropy(prob)
 
+def get_introns(gff):
+	introns = {}
+	total = 0
+	with open(gff) as fp:
+		for line in fp.readlines():
+			if line.startswith('#'): continue
+			f = line.split()
+			if len(f) < 8: continue
+			if f[2] != 'intron': continue
+			if f[6] != '+': continue
+			beg, end, score = f[3], f[4], f[5]
+			beg = int(beg)
+			end = int(end)
+			score = 0 if score == '.' else float(score)
+			if (beg,end) not in introns: introns[(beg,end)] = 0
+			introns[(beg,end)] += score
+			total += score
 
+	# convert to histogram
+	for k in introns: introns[k] /= total
+
+	return introns
 
 def expdiff(introns1, introns2):
 
