@@ -65,13 +65,17 @@ def make_pwm(seqs, n, N, pseudo_count):
 		col = 0
 		for y in x:
 			if row == 0: 
-				pwm_arr[row][col] = np.log2(pfm_arr[row][col] / Af)
+				pwm_arr[row][col] = np.log2(pfm_arr[row][col] 
+					/ Af)
 			if row == 1:
-				pwm_arr[row][col] = np.log2(pfm_arr[row][col] / Cf)
+				pwm_arr[row][col] = np.log2(pfm_arr[row][col] 
+					/ Cf)
 			if row == 2:
-				pwm_arr[row][col] = np.log2(pfm_arr[row][col] / Gf)
+				pwm_arr[row][col] = np.log2(pfm_arr[row][col] 
+					/ Gf)
 			if row == 3:
-				pwm_arr[row][col] = np.log2(pfm_arr[row][col] / Tf)
+				pwm_arr[row][col] = np.log2(pfm_arr[row][col] 
+					/ Tf)
 			col += 1
 		row += 1
 	return(pwm_arr)
