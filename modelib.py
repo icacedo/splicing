@@ -79,7 +79,23 @@ def make_pwm(seqs, n, N, pseudo_count):
 			col += 1
 		row += 1
 	return(pwm_arr)
-	
+
+def site_score(pwm_arr, site):
+
+	p = 0 
+	score = 0
+	for n in site:
+		if n.upper() == 'A':
+			score += pwm_arr[0][p]
+		if n.upper() == 'C':
+			score += pwm_arr[1][p]
+		if n.upper() == 'G':
+			score += pwm_arr[2][p]
+		if n.upper() == 'T':
+			score += pwm_arr[3][p]
+		p += 1
+	return(site, score)
+
 
 
 

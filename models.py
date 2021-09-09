@@ -17,13 +17,9 @@ np.savetxt(sys.argv[2],ml.make_pwm(seqs,6,len(seqs),0.001))
 '''
 
 pwm_arr = ml.make_pwm(seqs,6,len(seqs),0.001)
-print(pwm_arr)
 
-site = 'ACGTCA'
-score = 0
-
-
-
+site = 'GTACGC'
+print(ml.site_score(pwm_arr, site))
 
 
 	
