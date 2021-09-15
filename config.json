@@ -1,0 +1,32 @@
+{
+	"gff_introns": true,
+	
+	"cli": {
+		"--min_exon": 25,
+		"--min_intron": 35,
+		"--max_splice": 3,
+		"--flank": 99,
+		"--limit": 20,
+	
+		"--apwm": "data/acceptor.pwm",
+		"--dpwm": "data/donor.pwm",
+		"--emm" : "data/exon.mm",
+		"--imm" : "data/intron.mm",
+		"--elen": "data/exon.len",
+		"--ilen": "data/intron.len"
+	},
+	
+	"data": [
+		{
+			"name": "777",
+			"fasta": "data/sequences/777.fa",
+			"gff": "data/sequences/777.gff"
+		},
+		{
+			"name": "656",
+			"fasta": "data/sequences/656.fa",
+			"gff": "data/sequences/656.gff"
+		}
+	]
+	
+}

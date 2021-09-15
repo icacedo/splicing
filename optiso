@@ -1,47 +1,71 @@
 #!/usr/bin/env python3
 
-import argparse
+import json
+import os
+import random
+
 import isoform
 
-## Command Line Interface ##
+def set_fitness(guy, cfg, truth):
 
-parser = argparse.ArgumentParser(
-	description='Parameter optization program for geniso')
-parser.add_argument('fasta', type=str, metavar='<file>',
-	help='input fasta file')
-parser.add_argument('dpwm', type=str, metavar='<file>',
-	help='input donor PWM')
-parser.add_argument('apwm', type=str, metavar='<file>',
-	help='input acceptor PWM')
-parser.add_argument('emm', type=str, metavar='<file>',
-	help='input exon Markov model')
-parser.add_argument('imm', type=str, metavar='<file>',
-	help='input intron Markov model')
-parser.add_argument('elen', type=str, metavar='<file>',
-	help='input exon length model')
-parser.add_argument('ilen', type=str, metavar='<file>',
-	help='input intron length model')
+	base = [f'./geniso']
+	for opt, val in cfg['cli'].items():
+		base.append(f'{opt} {val}')
+	for opt, val in guy['genotype'].items():
+		base.append(f'{opt} {val}')
+	
+	sum = 0
+	for d in cfg['data']:
+		cmd = [' '.join(base)]
+		cmd.append(d['fasta'])
+		if cfg['gff_introns']: cmd.append(f'--introns {d["gff"]}')
+		cmd.append(f'> tmp.gff')
+		cli = ' '.join(cmd)
+		os.system(cli)
+		found = isoform.get_introns('tmp.gff')
+		dist, details = isoform.expdiff(found, truth[d['name']])
+		sum += dist
 
-parser.add_argument('--introns', required=False, type=str, metavar='<file>',
-	help='use introns in gff for source of splice sites [%(default)s]')
-parser.add_argument('--min_intron', required=False, type=int, default=35,
-	metavar='<int>', help='minimum length of intron [%(default)i]')
-parser.add_argument('--min_exon', required=False, type=int, default=25,
-	metavar='<int>', help='minimum length exon [%(default)i]')
-parser.add_argument('--max_splice', required=False, type=int, default=3,
-	metavar='<int>', help='maximum number of introns [%(default)i]')
-parser.add_argument('--flank', required=False, type=int, default=99,
-	metavar='<int>', help='genomic flank on each side [%(default)i]')
-parser.add_argument('--limit', required=False, type=int, default=20,
-	metavar='<int>', help='limit number of transcripts [%(default)i]')
+	guy['fitness'] = dist
+	
+def random_guy():
+	guy = {
+		'genotype': {
+			'--wdpwm': random.random(),
+			'--wapwm': random.random(),
+			'--wemm':  random.random(),
+			'--wimm':  random.random(),
+			'--welen': random.random(),
+			'--wilen': random.random(),
+			'--icost': random.randint(0, 9),
+		},
+		'fitness': None
+	}
+	return guy
 
-arg = parser.parse_args()
+def read_cfg(filename):
+	cfg = None
+	with open(filename) as fp:
+		s = fp.read()
+		cfg = json.loads(s)	
+	return cfg
 
-dpwm = isoform.read_pwm(arg.dpwm)
-apwm = isoform.read_pwm(arg.apwm)
-elen = isoform.read_len(arg.elen)
-ilen = isoform.read_len(arg.ilen)
-emm  = isoform.read_markov(arg.emm)
-imm  = isoform.read_markov(arg.imm)
+# Initialize
+
+cfg = read_cfg('config.json')
+
+introns = {}
+for d in cfg['data']:
+	introns[d['name']] = isoform.get_introns(d['gff'])
+
+psize = 20
+pop = []
+for i in range(psize):
+	guy = random_guy()
+	set_fitness(guy, cfg, introns)
+	pop.append(guy)
+
+# Evolve population
 
 
+# Final report

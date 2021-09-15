@@ -64,8 +64,8 @@ def kld(p, q):
 	return d
 
 def manhattan(p, q):
-	assert(math.isclose(sum(p), 1.0))
-	assert(math.isclose(sum(q), 1.0))
+	assert(math.isclose(sum(p), 1.0, rel_tol=1e-6))
+	assert(math.isclose(sum(q), 1.0, rel_tol=1e-6))
 	d = 0
 	for pi, qi in zip(p, q):
 		d += abs(pi - qi)
