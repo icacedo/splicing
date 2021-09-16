@@ -86,7 +86,13 @@ print('# trials:', info['trials'])
 print('# isoforms:', len(txs))
 print(f'# complexity: {isoform.complexity(txs):.4f}')
 
-limit = arg.limit if arg.limit else len(txs)
+
+if arg.limit:
+	limit = arg.limit
+	if limit > len(txs): limit = len(txs)
+else:
+	limit = len(txs)
+
 txs = sorted(txs, key=lambda item: item['score'], reverse=True)
 
 # calculate probability of each isoform
