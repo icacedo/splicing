@@ -6,7 +6,7 @@
 		"--min_intron": 35,
 		"--max_splice": 3,
 		"--flank": 99,
-		"--limit": 20,
+		"--limit": 100,
 	
 		"--apwm": "data/acceptor.pwm",
 		"--dpwm": "data/donor.pwm",

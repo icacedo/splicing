@@ -64,8 +64,8 @@ def kld(p, q):
 	return d
 
 def manhattan(p, q):
-	assert(math.isclose(sum(p), 1.0, rel_tol=1e-6))
-	assert(math.isclose(sum(q), 1.0, rel_tol=1e-6))
+	assert(math.isclose(sum(p), 1.0, abs_tol=1e-6))
+	assert(math.isclose(sum(q), 1.0, abs_tol=1e-6))
 	d = 0
 	for pi, qi in zip(p, q):
 		d += abs(pi - qi)
@@ -91,7 +91,7 @@ def create_pwm(seqs):
 
 def write_pwm(file, pwm):
 	with open(file, 'w') as fp:
-		fp.write(f'# PWM {file} {len(pwm)}\n')
+		fp.write(f'% PWM {file} {len(pwm)}\n')
 		for pos in pwm:
 			for nt in pos:
 				fp.write(f'{pos[nt]:.6f} ')
@@ -104,7 +104,7 @@ def read_pwm(file):
 	# read raw values
 	with open(file) as fp:
 		for line in fp.readlines():
-			if line.startswith('#'): continue
+			if line.startswith('%'): continue
 			f = line.split()
 			d = {}
 			for nt, val in zip(nts, f):
@@ -163,7 +163,7 @@ def create_len(seqs, floor, limit):
 
 def write_len(file, hist):
 	with open(file, 'w') as fp:
-		fp.write(f'# LEN {file} {len(hist)}\n')
+		fp.write(f'% LEN {file} {len(hist)}\n')
 		for val in hist:
 			fp.write(f'{val:.6f}\n')
 
@@ -184,7 +184,7 @@ def read_len(file):
 	model = []
 	with open(file) as fp:
 		for line in fp.readlines():
-			if line.startswith('#'): continue
+			if line.startswith('%'): continue
 			line = line.rstrip()
 			model.append(float(line))
 
@@ -233,7 +233,7 @@ def create_markov(seqs, order, beg, end):
 
 def write_markov(file, mm):
 	with open(file, 'w') as fp:
-		fp.write(f'# MM {file} {len(mm)*4}\n')
+		fp.write(f'% MM {file} {len(mm)*4}\n')
 		for kmer in sorted(mm):
 			for v in mm[kmer]:
 				fp.write(f'{kmer}{v} {mm[kmer][v]:.6f}\n')
@@ -244,7 +244,7 @@ def read_markov(file):
 	k = None
 	with open(file) as fp:
 		for line in fp.readlines():
-			if line.startswith('#'): continue
+			if line.startswith('%'): continue
 			f = line.split()
 			if len(f) == 2:
 				mm[f[0]] = prob2score(float(f[1]))
@@ -488,6 +488,7 @@ def expdiff(introns1, introns2):
 		p1.append(i1[k])
 		p2.append(i2[k])
 		details.append((k, i1[k], i2[k]))
+	
 	distance = manhattan(p1, p2)
 	return distance, details
 

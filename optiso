@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-
+import argparse
 import json
 import os
 import random
 
 import isoform
 
-def set_fitness(guy, cfg, truth):
+def set_fitness(guy, cfg, truth, prog):
 
-	base = [f'./geniso']
+	base = [prog]
 	for opt, val in cfg['cli'].items():
 		base.append(f'{opt} {val}')
 	for opt, val in guy['genotype'].items():
@@ -37,7 +37,7 @@ def random_guy():
 			'--wimm':  random.random(),
 			'--welen': random.random(),
 			'--wilen': random.random(),
-			'--icost': random.randint(0, 9),
+			'--icost': random.randint(0, 100),
 		},
 		'fitness': None
 	}
@@ -50,22 +50,79 @@ def read_cfg(filename):
 		cfg = json.loads(s)	
 	return cfg
 
+def mate(p1, p2, mut):
+	child = {
+		'genotype': {},
+		'fitness': None
+	}
+		
+	weight = ('--wdpwm', '--wapwm', '--wemm', '--wimm', '--welen', '--wilen')
+	for k in weight:
+		if random.random() < 0.5: child['genotype'][k] = p1['genotype'][k]
+		else:                     child['genotype'][k] = p2['genotype'][k]
+		if random.random() < mut:
+			child['genotype'][k] = random.random()
+	
+	if random.random() < 0.5:
+		child['genotype']['--icost'] = p1['genotype']['--icost']
+	else:
+		child['genotype']['--icost'] = p2['genotype']['--icost']
+	if random.random() < mut:
+		child['genotype']['--icost'] = random.randint(0, 100)
+	
+	return child
+
+# CLI
+
+parser = argparse.ArgumentParser(
+	description='Parameter optimization program')
+parser.add_argument('config', type=str, metavar='<json>',
+	help='configuration file')
+parser.add_argument('--program', required=False, type=str, default='./geniso',
+	metavar='<exec>', help='path to program [%(default)s]')
+parser.add_argument('--pop', required=False, type=int, default=100,
+	metavar='<int>', help='population size [%(default)i]')
+parser.add_argument('--gen', required=False, type=int, default=100,
+	metavar='<int>', help='generations [%(default)i]')
+parser.add_argument('--die', required=False, type=float, default=0.5,
+	metavar='<int>', help='fraction that die each gen [%(default).2f]')
+parser.add_argument('--mut', required=False, type=float, default=0.1,
+	metavar='<int>', help='mutation frequency [%(default).2f]')
+#parser.add_argument('--cpu', required=False, type=int, default=1,
+#	metavar='<int>', help='CPU threads [%(default)i]')
+parser.add_argument('--seed', required=False, type=int,
+	metavar='<int>', help='random seed')
+parser.add_argument('--verbose', action='store_true', help='show progress')
+arg = parser.parse_args()
+
 # Initialize
 
-cfg = read_cfg('config.json')
+if arg.seed: random.seed(arg.seed)
+cfg = read_cfg(arg.config)
 
 introns = {}
 for d in cfg['data']:
 	introns[d['name']] = isoform.get_introns(d['gff'])
 
-psize = 20
 pop = []
-for i in range(psize):
+for i in range(arg.pop):
 	guy = random_guy()
-	set_fitness(guy, cfg, introns)
+	set_fitness(guy, cfg, introns, arg.program)
 	pop.append(guy)
 
 # Evolve population
 
+half = int(len(pop) * arg.die)
+for g in range(arg.gen):
+	pop = sorted(pop, key=lambda item: item['fitness'])
+	if arg.verbose: print(f'generation: {g}, fitness: {pop[0]["fitness"]}')
+	# this part could be threaded
+	for i in range(half, len(pop)):
+		p1 = random.randint(0, half)
+		p2 = random.randint(0, half)
+		pop[i] = mate(pop[p1], pop[p2], arg.mut)
+		set_fitness(pop[i], cfg, introns, arg.program)
 
 # Final report
+pop = sorted(pop, key=lambda item: item['fitness'])
+print(pop[0])
