@@ -1,33 +1,39 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import multiprocessing
 import os
 import random
 
 import isoform
 
-def set_fitness(guy, cfg, truth, prog):
+CFG = None
+INTRONS = None
+PROGRAM = None
 
-	base = [prog]
-	for opt, val in cfg['cli'].items():
+def get_fitness(guy):
+	base = [PROGRAM]
+	for opt, val in CFG['cli'].items():
 		base.append(f'{opt} {val}')
 	for opt, val in guy['genotype'].items():
 		base.append(f'{opt} {val}')
-	
+
 	sum = 0
-	for d in cfg['data']:
+	tmpfile = f'tmp.{os.getpid()}.gff'
+	for d in CFG['data']:
 		cmd = [' '.join(base)]
 		cmd.append(d['fasta'])
-		if cfg['gff_introns']: cmd.append(f'--introns {d["gff"]}')
-		cmd.append(f'> tmp.gff')
+		if CFG['gff_introns']: cmd.append(f'--introns {d["gff"]}')
+		cmd.append(f'> {tmpfile}')
 		cli = ' '.join(cmd)
 		os.system(cli)
-		found = isoform.get_introns('tmp.gff')
-		dist, details = isoform.expdiff(found, truth[d['name']])
+		found = isoform.get_introns(tmpfile)
+		dist, details = isoform.expdiff(found, INTRONS[d['name']])
 		sum += dist
 
-	guy['fitness'] = dist
-	
+	os.system(f'rm {tmpfile}')
+	return dist
+
 def random_guy():
 	guy = {
 		'genotype': {
@@ -47,7 +53,7 @@ def read_cfg(filename):
 	cfg = None
 	with open(filename) as fp:
 		s = fp.read()
-		cfg = json.loads(s)	
+		cfg = json.loads(s)
 	return cfg
 
 def mate(p1, p2, mut):
@@ -55,21 +61,21 @@ def mate(p1, p2, mut):
 		'genotype': {},
 		'fitness': None
 	}
-		
+
 	weight = ('--wdpwm', '--wapwm', '--wemm', '--wimm', '--welen', '--wilen')
 	for k in weight:
 		if random.random() < 0.5: child['genotype'][k] = p1['genotype'][k]
 		else:                     child['genotype'][k] = p2['genotype'][k]
 		if random.random() < mut:
 			child['genotype'][k] = random.random()
-	
+
 	if random.random() < 0.5:
 		child['genotype']['--icost'] = p1['genotype']['--icost']
 	else:
 		child['genotype']['--icost'] = p2['genotype']['--icost']
 	if random.random() < mut:
 		child['genotype']['--icost'] = random.randint(0, 100)
-	
+
 	return child
 
 # CLI
@@ -88,27 +94,31 @@ parser.add_argument('--die', required=False, type=float, default=0.5,
 	metavar='<int>', help='fraction that die each gen [%(default).2f]')
 parser.add_argument('--mut', required=False, type=float, default=0.1,
 	metavar='<int>', help='mutation frequency [%(default).2f]')
-#parser.add_argument('--cpu', required=False, type=int, default=1,
-#	metavar='<int>', help='CPU threads [%(default)i]')
+parser.add_argument('--cpu', required=False, type=int, default=1,
+	metavar='<int>', help='CPU threads [%(default)i]')
 parser.add_argument('--seed', required=False, type=int,
 	metavar='<int>', help='random seed')
 parser.add_argument('--verbose', action='store_true', help='show progress')
 arg = parser.parse_args()
 
+# GLOBALS
+if arg.seed: random.seed(arg.seed)
+CFG = read_cfg(arg.config)
+
+INTRONS = {}
+for d in CFG['data']:
+	INTRONS[d['name']] = isoform.get_introns(d['gff'])
+
+PROGRAM = arg.program
+
 # Initialize
 
-if arg.seed: random.seed(arg.seed)
-cfg = read_cfg(arg.config)
-
-introns = {}
-for d in cfg['data']:
-	introns[d['name']] = isoform.get_introns(d['gff'])
-
 pop = []
-for i in range(arg.pop):
-	guy = random_guy()
-	set_fitness(guy, cfg, introns, arg.program)
-	pop.append(guy)
+for i in range(arg.pop): pop.append(random_guy())
+with multiprocessing.Pool(arg.cpu) as cpu:
+	fits = cpu.map(get_fitness, pop)
+	for guy, fit in zip(pop, fits):
+		guy['fitness'] = fit
 
 # Evolve population
 
@@ -116,12 +126,20 @@ half = int(len(pop) * arg.die)
 for g in range(arg.gen):
 	pop = sorted(pop, key=lambda item: item['fitness'])
 	if arg.verbose: print(f'generation: {g}, fitness: {pop[0]["fitness"]}')
-	# this part could be threaded
+
+	# mate
+	children = []
 	for i in range(half, len(pop)):
 		p1 = random.randint(0, half)
 		p2 = random.randint(0, half)
 		pop[i] = mate(pop[p1], pop[p2], arg.mut)
-		set_fitness(pop[i], cfg, introns, arg.program)
+		children.append(pop[i])
+
+	# fitness
+	with multiprocessing.Pool(arg.cpu) as cpu:
+		fits = cpu.map(get_fitness, children)
+		for child, fit in zip(children, fits):
+			child['fitness'] = fit
 
 # Final report
 pop = sorted(pop, key=lambda item: item['fitness'])
