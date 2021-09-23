@@ -344,7 +344,7 @@ def gtag_sites(seq, flank, minex):
 		if seq[i-1:i+1] == 'AG': accs.append(i)
 	return dons, accs
 
-def gff_sites(seq, gff):
+def gff_sites(seq, gff, gtag=True):
 	dond = {}
 	accd = {}
 	with open(gff) as fp:
@@ -354,8 +354,13 @@ def gff_sites(seq, gff):
 			if len(f) < 8: continue
 			if f[2] != 'intron': continue
 			if f[6] != '+': continue
-			dond[int(f[3]) -1] = True
-			accd[int(f[4]) -1] = True
+			beg = int(f[3]) -1
+			end = int(f[4]) -1
+			if gtag:
+				if seq[beg:beg+2]   != 'GT': continue
+				if seq[end-1:end+1] != 'AG': continue
+			dond[beg] = True
+			accd[end] = True
 
 	dons = list(dond.keys())
 	accs = list(accd.keys())
