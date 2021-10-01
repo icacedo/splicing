@@ -27,30 +27,36 @@ print(ml.site_score(pwm_arr, site))
 '''
 def gff_reader(gff, seq):
 
-	fp1 = open(seq)
+	fp = open(seq)
 	seq = ''
-	for line in fp1.readlines():
+	for line in fp.readlines():
 		if line.startswith('>'): continue
 		line = line.rstrip()
 		seq += line
 	
-	fp2 = open(gff)
+	fp = open(gff)
 	dons = []
 	accs = []
-	for line in fp2.readlines():
+	for line in fp.readlines():
 		line = line.rstrip()
 		line = line.split()
 		if line[2] == 'intron' and line[6] == '+': 
-			dpos = int(line[3])
+			dpos = int(line[3]) -1
 			if (dpos in dons) == False:
+				if seq[dpos:dpos+2] != 'GT': continue
 				dons.append(dpos)
-			apos = int(line[3])
+			apos = int(line[3]) -1
 			if (apos in accs) == False: 
+				if seq[apos-1:apos+1] != 'AG': continue
 				accs.append(apos)
 	
 	return sorted(dons), sorted(accs)
 
+print(gff_reader(sys.argv[1], sys.argv[2]))
 
+
+
+'''
 site_tup = gff_reader(sys.argv[1])
 for i in site_tup:
 	# these are integers
