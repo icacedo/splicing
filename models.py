@@ -25,24 +25,63 @@ pwm_arr = ml.make_pwm(seqs,6,len(seqs),0.001)
 site = 'GTACGC'
 print(ml.site_score(pwm_arr, site))
 '''
-def gff_reader(gff):
+def gff_reader(gff, seq):
 
-	fp = open(gff)
+	fp1 = open(seq)
+	seq = ''
+	for line in fp1.readlines():
+		if line.startswith('>'): continue
+		line = line.rstrip()
+		seq += line
+	
+	fp2 = open(gff)
 	dons = []
 	accs = []
-	for line in fp.readlines():
+	for line in fp2.readlines():
 		line = line.rstrip()
 		line = line.split()
 		if line[2] == 'intron' and line[6] == '+': 
-			if (int(line[3]) in dons) == False: 
-				dons.append(int(line[3]))
-			if (int(line[4]) in accs) == False: 
-				accs.append(int(line[4]))
+			dpos = int(line[3])
+			if (dpos in dons) == False:
+				dons.append(dpos)
+			apos = int(line[3])
+			if (apos in accs) == False: 
+				accs.append(apos)
 	
 	return sorted(dons), sorted(accs)
 
-print(gff_reader(sys.argv[1]))
-print(iso.gff_sites(sys.argv[2], sys.argv[1]))
+
+site_tup = gff_reader(sys.argv[1])
+for i in site_tup:
+	# these are integers
+	print(type(i[0]))
+'''
+#print(iso.gff_sites(sys.argv[2], sys.argv[1]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	
