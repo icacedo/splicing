@@ -96,7 +96,36 @@ def site_score(pwm_arr, site):
 		p += 1
 	return(site, score)
 
+def gff_reader(gff, seq, gtag=True):
 
+	fp = open(seq)
+	seq = ''
+	for line in fp.readlines():
+		if line.startswith('>'): continue
+		line = line.rstrip()
+		seq += line
+	
+	fp = open(gff)
+	dons = []
+	accs = []
+	for line in fp.readlines():
+		line = line.rstrip()
+		line = line.split()
+		if line[2] == 'intron' and line[6] == '+': 
+			dpos = int(line[3]) -1
+			if (dpos in dons) == False:
+				if seq[dpos:dpos+2] == 'GT' and gtag: 
+					dons.append(dpos)
+				if gtag == False: 
+					dons.append(dpos)
+			apos = int(line[4]) -1
+			if (apos in accs) == False: 
+				if seq[apos-1:apos+1] == 'AG' and gtag: 
+					accs.append(apos)
+				if gtag == False: 
+					accs.append(apos)
+	
+	return sorted(dons), sorted(accs)
 
 
 
