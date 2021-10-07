@@ -2,6 +2,8 @@ import argparse
 import itertools as it
 import seqlib as sl
 
+# comment out some parts to test in models.py
+'''
 parser=argparse.ArgumentParser(description='splice this sequence')
 parser.add_argument('--fasta', required=False, type=str, 
 	help='fasta file to splice')
@@ -14,6 +16,7 @@ arg=parser.parse_args()
 fasta=arg.fasta
 minexon=arg.minexon
 minintron=arg.minintron
+'''
 
 def find_sites_fasta(seq,minexon):
 
@@ -111,11 +114,11 @@ for seq in ranseq_test(100,300,50,10):
 		id+=1
 		print(id,len(seq),all_possible(d,a,minexon,minintron))
 '''
-
+'''
 # use this chunk to test using a fasta file
 for i,d,a in find_sites_fasta(fasta,minexon):
 	print(i,all_possible(d,a,minexon,minintron))
-
+'''
 
 					
 				

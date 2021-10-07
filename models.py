@@ -3,6 +3,7 @@ import gzip
 import modelib as ml
 import numpy as np
 import isoform as iso
+import allpossible_v2 as allv2
 
 '''
 fp = gzip.open(sys.argv[1])
@@ -25,48 +26,19 @@ pwm_arr = ml.make_pwm(seqs,6,len(seqs),0.001)
 site = 'GTACGC'
 print(ml.site_score(pwm_arr, site))
 '''
-def gff_reader(gff, seq, gtag=True):
 
-	fp = open(seq)
-	seq = ''
-	for line in fp.readlines():
-		if line.startswith('>'): continue
-		line = line.rstrip()
-		seq += line
-	
-	fp = open(gff)
-	dons = []
-	accs = []
-	for line in fp.readlines():
-		line = line.rstrip()
-		line = line.split()
-		if line[2] == 'intron' and line[6] == '+': 
-			dpos = int(line[3]) -1
-			if (dpos in dons) == False:
-				if seq[dpos:dpos+2] == 'GT' and gtag: 
-					dons.append(dpos)
-				if gtag == False: 
-					dons.append(dpos)
-			apos = int(line[4]) -1
-			if (apos in accs) == False: 
-				if seq[apos-1:apos+1] == 'AG' and gtag: 
-					accs.append(apos)
-				if gtag == False: 
-					accs.append(apos)
-	
-	return sorted(dons), sorted(accs)
+sites = ml.gff_reader(sys.argv[1], sys.argv[2], gtag=False)
+don_sites = sites[0]
+acc_sites = sites[1]
+# Next step: all possible using gff sites
 
-print(gff_reader(sys.argv[1], sys.argv[2], gtag=False))
+# compare output of allpossible_v2.py to isoform.py
+seq = [seq for id, seq in iso.read_fasta(sys.argv[2])]
+seq = seq[0]
 
-fp = open(sys.argv[2])
-seq = ''
-for line in fp.readlines():
-	if line.startswith('>'): continue
-	line = line.rstrip()
-	seq += line
-		
-print(iso.gff_sites(seq, sys.argv[1], gtag=False))
+print(iso.all_possible(seq, 10, 10, 10, 10, gff=sys.argv[1]))
 
+print(allv2.all_possible(don_sites, acc_sites, 10, 10))
 
 
 
