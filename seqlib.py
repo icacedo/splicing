@@ -1,14 +1,11 @@
-# Assignment 1: Use argparse and libraries
-# Never copy-paste functions from one program to another
-# make a library instead and import functions
 import gzip
 import random
 import math
 
 def read_fasta(filename):
 	
-	name = None
-	seqs = []
+	label = None
+	seq = []
 	
 	fp = None
 	if filename.endswith('.gz'): 
@@ -19,23 +16,17 @@ def read_fasta(filename):
 	for line in fp.readlines():
 		line = line.rstrip()
 		if line.startswith('>'):
-			if len(seqs) > 0:
-				seq = ''.join(seqs)
-				yield(name, seq)
-				name = line[1:]
-				seqs = []
+			if len(seq) > 0:
+				seq = ''.join(seq)
+				yield(label, seq)
+				label = line[1:]
+				seq = []
 			else:
-				name = line[1:]
+				label = line[1:]
 		else:	
-			seqs.append(line)
-	yield(name, ''.join(seqs))
+			seq.append(line)
+	yield(label, ''.join(seq))
 	fp.close()
-	
-def rev_comp(seq):
-
-	comp = str.maketrans('ACGTRYMKWSBDHV', 'TGCAYRKMWSVHDB')
-	anti = seq.translate(comp)[::-1]
-	return anti
 	
 def read_fastq(filename):
 	
