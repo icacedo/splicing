@@ -49,16 +49,17 @@ def splice_sites(seqs):
 # flanking regions are not a part of the exon
 
 # should flanking region be the same as minimum exon length?
-flank5 = 6
+flank5 = 5
 flank3 = 5
-minintron = 3
-minexon = 5
+minintron = 4
+minexon = 4
 
 sites = splice_sites(seqs)
 don_sites = sites[0]
 acc_sites = sites[1]
 s_lens = sites[2]
 
+isoforms = []
 for i in range(len(s_lens)):
 	for l in range(1,len(don_sites[i])+1):
 		for d in it.combinations(don_sites[i],l):
@@ -78,36 +79,27 @@ for i in range(len(s_lens)):
 				# remove short 3' exon
 				e_len3 = s_lens[i] - a[-1]
 				if e_len3 < flank3: continue
-			
+				
+				isof = []
 				for don, acc in zip(d,a):
-					print(don, acc)
-		
 					# remove splice site if the donor comes after the acceptor
-					#if don >= acc: continue
-					
-					# remove short introns
-					#i_len = acc-don
-					#if i_len < minintron: continue
-			
-			#for j in range(len(d)):	
-				#print(j)
-				#print(d[j], a[j])				
-			
-				
-				#if i_len < minintron: continue
-				#e_len = 
-				
-				# think
-				# if there are only one donor and acceptor sites
-				# the exons will be on the flanks
-				# does the min exon size
-				# work for only one of the exons on the flank?
+					if don >= acc: continue
+					# remove short (includes interior) introns
+					i_len = acc-don
+					if i_len < minintron: continue
+					isof.append((don,acc))
+				# check for repeats
+				if isof not in isoforms and isof != []:
+					isoforms.append(isof)
+print(isoforms)
 		
 			
 	
-
-
-
+print('****************')
+seq='ATATATCGTCGATCAGCCGTATATATCGTCGATCAGCCGT'
+txs, info = iso.all_possible(seq, 1, 1, 100, 1, gff=None)
+for i in txs:
+	print(i)
 
 
 
