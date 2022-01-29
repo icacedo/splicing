@@ -4,13 +4,20 @@ import itertools as it
 import modelib as ml
 import isoform as iso
 import seqlib as sql
-'''
+
 seqs = []
 labels = []
 for label, seq in sql.read_fasta(sys.argv[1]):
 	seqs.append(seq)
 	labels.append(label)
-'''
+
+# name, seq = next(iso.read_fasta(sys.argv[1]))
+
+# shorten fasta file to a certain number of base pairs
+short = seqs[0][0:100]
+test = []
+test.append(short)
+seqs = test
 #### re-write of the api algorithm, with more parameters ######################
 # avg exon size in C. elegans: 200.7bp
 # median: 123bp, smallest: 7bp, largest 7569bp
@@ -24,7 +31,7 @@ for label, seq in sql.read_fasta(sys.argv[1]):
 # test seq is 40bp, same 20 bp sequence twice
 #########1######8######15##19#######28#####35##39#####
 #########1######GT#####AG##GT#######GT#####AG##GT#####
-seqs = ['ATATATCGTCGATCAGCCGTATATATCGTCGATCAGCCGT']
+#seqs = ['ATATATCGTCGATCAGCCGTATATATCGTCGATCAGCCGT']
 def splice_sites(seqs):
 
 	seq_don_sites = []
@@ -59,6 +66,8 @@ don_sites = sites[0]
 acc_sites = sites[1]
 s_lens = sites[2]
 
+# still need to implement maximum number of introns
+
 isoforms = []
 for i in range(len(s_lens)):
 	for l in range(1,len(don_sites[i])+1):
@@ -92,14 +101,19 @@ for i in range(len(s_lens)):
 				if isof not in isoforms and isof != []:
 					isoforms.append(isof)
 print(isoforms)
-		
-			
-	
+
+
 print('****************')
-seq='ATATATCGTCGATCAGCCGTATATATCGTCGATCAGCCGT'
-txs, info = iso.all_possible(seq, 1, 1, 100, 1, gff=None)
-for i in txs:
-	print(i)
+
+# trying to run all_possible, not exaclty sure what seq should be? a single sequence, a list?
+for seq in seqs:
+	#txs, info = iso.all_possible(seq, 25, 123, 10, 20, gff=None)
+	txs, info = iso.all_possible(seqs[0], 1, 1, 10, 1, gff=None)
+	for i in txs:
+		print(i)
+		
+
+
 
 
 
