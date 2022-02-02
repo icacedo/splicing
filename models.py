@@ -4,20 +4,22 @@ import itertools as it
 import modelib as ml
 import isoform as iso
 import seqlib as sql
-
+'''
 seqs = []
 labels = []
 for label, seq in sql.read_fasta(sys.argv[1]):
 	seqs.append(seq)
 	labels.append(label)
-
+'''
 # name, seq = next(iso.read_fasta(sys.argv[1]))
 
 # shorten fasta file to a certain number of base pairs
+'''
 short = seqs[0][0:100]
 test = []
 test.append(short)
 seqs = test
+'''
 #### re-write of the api algorithm, with more parameters ######################
 # avg exon size in C. elegans: 200.7bp
 # median: 123bp, smallest: 7bp, largest 7569bp
@@ -31,7 +33,9 @@ seqs = test
 # test seq is 40bp, same 20 bp sequence twice
 #########1######8######15##19#######28#####35##39#####
 #########1######GT#####AG##GT#######GT#####AG##GT#####
-#seqs = ['ATATATCGTCGATCAGCCGTATATATCGTCGATCAGCCGT']
+seqs = ['ATATATCGTCGATCAGCCGTATATATCGTCGATCAGCCGT']
+
+# this should be 0 based, since the output is not directly given to the user
 def splice_sites(seqs):
 
 	seq_don_sites = []
@@ -44,7 +48,7 @@ def splice_sites(seqs):
 			if seqs[i][j:j+2]=='GT':
 				d_sites.append(j+1)
 			if seqs[i][j:j+2]=='AG':
-				a_sites.append(j+1)
+				a_sites.append(j+2)
 			else: continue
 		seq_don_sites.append(d_sites)
 		seq_acc_sites.append(a_sites)
@@ -56,10 +60,10 @@ def splice_sites(seqs):
 # flanking regions are not a part of the exon
 
 # should flanking region be the same as minimum exon length?
-flank5 = 5
-flank3 = 5
-minintron = 4
-minexon = 4
+flank5 = 4
+flank3 = 4
+minintron = 9
+minexon = 1
 
 sites = splice_sites(seqs)
 don_sites = sites[0]
@@ -94,7 +98,7 @@ for i in range(len(s_lens)):
 					# remove splice site if the donor comes after the acceptor
 					if don >= acc: continue
 					# remove short (includes interior) introns
-					i_len = acc-don
+					i_len = acc-don+1
 					if i_len < minintron: continue
 					isof.append((don,acc))
 				# check for repeats
@@ -108,10 +112,16 @@ print('****************')
 # trying to run all_possible, not exaclty sure what seq should be? a single sequence, a list?
 for seq in seqs:
 	#txs, info = iso.all_possible(seq, 25, 123, 10, 20, gff=None)
-	txs, info = iso.all_possible(seqs[0], 1, 1, 10, 1, gff=None)
+	txs, info = iso.all_possible(seqs[0], minintron, minexon, 10, 4, gff=None)
 	for i in txs:
 		print(i)
 		
+#######
+# what should program output be? 0 based coordinates
+# subtract 1 off the gff coordinates
+# internally, use 0 based coordinates
+# example: everything in the isoform library is 0 based
+# at the end, 1 is added to the coordinates (where the gff is made)
 
 
 
