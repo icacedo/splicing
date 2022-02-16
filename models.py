@@ -33,6 +33,7 @@ seqs = test
 # test seq is 40bp, same 20 bp sequence twice
 #########1######8######15##19#######28#####35##39#####
 #########1######GT#####AG##GT#######GT#####AG##GT#####
+#########0######7######14##18#######27#####34##38#####
 seqs = ['ATATATCGTCGATCAGCCGTATATATCGTCGATCAGCCGT']
 
 # this should be 0 based, since the output is not directly given to the user
@@ -46,9 +47,9 @@ def splice_sites(seqs):
 		a_sites = []
 		for j in range(len(seqs[i])):
 			if seqs[i][j:j+2]=='GT':
-				d_sites.append(j+1)
+				d_sites.append(j)
 			if seqs[i][j:j+2]=='AG':
-				a_sites.append(j+2)
+				a_sites.append(j+1)
 			else: continue
 		seq_don_sites.append(d_sites)
 		seq_acc_sites.append(a_sites)
@@ -56,14 +57,17 @@ def splice_sites(seqs):
 		
 	return seq_don_sites, seq_acc_sites, seq_lens
 
+print(splice_sites(seqs))
+print('****************')
+
 # need to filter after/during/while using the API algorithm
 # flanking regions are not a part of the exon
 
 # should flanking region be the same as minimum exon length?
 flank5 = 4
 flank3 = 4
-minintron = 9
-minexon = 1
+minintron = 4
+minexon = 2
 
 sites = splice_sites(seqs)
 don_sites = sites[0]
@@ -74,7 +78,8 @@ s_lens = sites[2]
 
 isoforms = []
 for i in range(len(s_lens)):
-	for l in range(1,len(don_sites[i])+1):
+	# l can't be 0
+	for l in range(1, len(don_sites[i])+1):
 		for d in it.combinations(don_sites[i],l):
 			for a in it.combinations(acc_sites[i],l):
 			
@@ -85,7 +90,7 @@ for i in range(len(s_lens)):
 				# are probably still done in the background
 				# will this affect performance? idk yet
 				# can use same index to get interior exons
-				
+			
 				# remove short 5' exon
 				if d[0] < flank5: continue
 				
@@ -102,20 +107,25 @@ for i in range(len(s_lens)):
 					if i_len < minintron: continue
 					isof.append((don,acc))
 				# check for repeats
+				print(isof)
 				if isof not in isoforms and isof != []:
 					isoforms.append(isof)
+print('*************')				
 print(isoforms)
 
 
 print('****************')
 
 # trying to run all_possible, not exaclty sure what seq should be? a single sequence, a list?
+# minexon may be off by 1
+flank = 4
+max_splices = 10
 for seq in seqs:
 	#txs, info = iso.all_possible(seq, 25, 123, 10, 20, gff=None)
-	txs, info = iso.all_possible(seqs[0], minintron, minexon, 10, 4, gff=None)
+	txs, info = iso.all_possible(seqs[0], minintron, minexon, max_splices, flank, gff=None)
 	for i in txs:
 		print(i)
-		
+
 #######
 # what should program output be? 0 based coordinates
 # subtract 1 off the gff coordinates
