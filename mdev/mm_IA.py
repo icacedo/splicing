@@ -48,10 +48,74 @@ def nuc_freqs(fasta):
 		nfreqs[i] = nfreqs[i]/total_n
 	
 	avg_len = total_lens/seq_count
+	trn_prb = 1/avg_len
+	sty_prb = 1-trn_prb
 	
-	return nfreqs, avg_len
+	return nfreqs, seq_count, trn_prb, sty_prb
 
 print(nuc_freqs(exons))
-print(nuc_freqs(introns))
+print(nuc_freqs(introns))	
+
+exon_count = nuc_freqs(exons)[1]	
+intron_count = nuc_freqs(introns)[1]
+exon_init = exon_count/(exon_count + intron_count)
+intron_init = intron_count/(exon_count + intron_count)
+print(exon_init, intron_init)
+
+##### initialize matrix #######################################################
+fp = sys.argv[3]
+sequences = open(fp)
+
+seqs = []
+for s in sequences:
+	seqs.append(s.rstrip())
+	
+for i in seqs:
+	print(i)
+print('**********')
+for i in seqs:
+	print(i)
+
+def make_m(sequences):
+	m = []
+
+	for seq in sequences:
+		e_i = []
+		e = [exon_init] + [0]*len(seq.rstrip())
+		i = [intron_init] + [0]*len(seq.rstrip())
+		e_i.append(e)
+		e_i.append(i)
+		m.append(e_i)
+	
+	return m
+
+print(make_m(seqs))
+
+for seq in seqs:
+	print(seq)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
