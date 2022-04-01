@@ -7,11 +7,12 @@ IDs = []
 for id in fp.readlines():
 	IDs.append(id.rstrip())
 '''
-#IDs = ['4884', '7395']
+
 configfile: 'config.yml'
 IDs = config['IDs']
-print('Config is: ', config)
-print(IDs)
+min_intron = config['min_intron']
+max_splice = config['max_splice']
+flank = config['flank']
 
 rule all:
 	input:
@@ -23,7 +24,7 @@ rule run_geniso:
 	output:
 		'geniso_out/ch.{sample}.apc.iso.gff'
 	shell:
-		'./geniso {input} > {output}'
+		'./geniso {input} --min_intron {min_intron} > {output}'
 
 rule run_cmpiso:
 	input:

@@ -1,1 +1,8 @@
+---
 IDs: [4884, 7395]
+min_intron: 35
+min_exon: 25
+max_splice: 3
+flank: 99
+limit: 20
+
