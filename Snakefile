@@ -7,16 +7,19 @@ IDs = []
 for id in fp.readlines():
 	IDs.append(id.rstrip())
 '''
-IDs = ['4884', '7395']
+#IDs = ['4884', '7395']
+configfile: 'config.yml'
+IDs = config['IDs']
+print('Config is: ', config)
+print(IDs)
 
 rule all:
 	input:
 		expand('cmpiso_out/ch.{id}.manhattan', id=IDs)
-		#expand('geniso_out/ch.{id}.apc.iso.gff', id=IDs)
 	
 rule run_geniso:
 	input:
-		'small_data/small_apc/ch.{sample}.fa'
+		'test_data/ch.{sample}.fa'
 	output:
 		'geniso_out/ch.{sample}.apc.iso.gff'
 	shell:
@@ -25,7 +28,7 @@ rule run_geniso:
 rule run_cmpiso:
 	input:
 		'geniso_out/ch.{sample}.apc.iso.gff',
-		'data/apc/ch.{sample}.gff3'
+		'test_data/ch.{sample}.gff3'
 	output:
 		'cmpiso_out/ch.{sample}.manhattan'
 	shell:
