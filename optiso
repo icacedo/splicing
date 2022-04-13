@@ -67,7 +67,7 @@ def mate(p1, p2, mut):
 		if random.random() < 0.5: child['genotype'][k] = p1['genotype'][k]
 		else:                     child['genotype'][k] = p2['genotype'][k]
 		if random.random() < mut:
-			child['genotype'][k] = random.random()
+			child['genotype'][k] = random.random() # maybe make smaller changes
 
 	if random.random() < 0.5:
 		child['genotype']['--icost'] = p1['genotype']['--icost']
@@ -102,6 +102,7 @@ parser.add_argument('--verbose', action='store_true', help='show progress')
 arg = parser.parse_args()
 
 # GLOBALS
+
 if arg.seed: random.seed(arg.seed)
 CFG = read_cfg(arg.config)
 
@@ -142,5 +143,6 @@ for g in range(arg.gen):
 			child['fitness'] = fit
 
 # Final report
+
 pop = sorted(pop, key=lambda item: item['fitness'])
-print(pop[0])
+print(json.dumps(pop[0]))
