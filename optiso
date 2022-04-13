@@ -67,7 +67,7 @@ def mate(p1, p2, mut):
 		if random.random() < 0.5: child['genotype'][k] = p1['genotype'][k]
 		else:                     child['genotype'][k] = p2['genotype'][k]
 		if random.random() < mut:
-			child['genotype'][k] = random.random() # maybe make smaller changes
+			child['genotype'][k] += (0.5 - random.random());
 
 	if random.random() < 0.5:
 		child['genotype']['--icost'] = p1['genotype']['--icost']

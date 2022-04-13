@@ -18,14 +18,9 @@
 	
 	"data": [
 		{
-			"name": "777",
-			"fasta": "data/sequences/777.fa",
-			"gff": "data/sequences/777.gff"
-		},
-		{
-			"name": "656",
-			"fasta": "data/sequences/656.fa",
-			"gff": "data/sequences/656.gff"
+			"name": "ch.11741",
+			"fasta": "data/apc/ch.11741.fa",
+			"gff": "data/apc/ch.11741.gff3"
 		}
 	]
 	
