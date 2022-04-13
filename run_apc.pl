@@ -33,8 +33,6 @@ my $JSON = '
 
 die "usage: $0 <cpus>" unless @ARGV == 1;
 my $cpus = $ARGV[0];
-#print "$cpus\n";
-#die "testing";
 
 open(my $fh, "data/719.txt") or die;
 my $header = <$fh>;
