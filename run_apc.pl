@@ -3,7 +3,7 @@ use warnings;
 
 my $JSON = '
 {
-	"gff_introns": true,
+	"gff_introns": false,
 	
 	"cli": {
 		"--min_exon": 25,
@@ -41,5 +41,5 @@ while (<$fh>) {
 	open(my $ofh, ">tmp.json") or die;
 	print $ofh $json;
 	close $ofh;
-	system("./optiso --pop 10 --gen 10 tmp.json") == 0 or die; 
+	system("./optiso --program isoformer --cpu 2 tmp.json") == 0 or die; 
 }
