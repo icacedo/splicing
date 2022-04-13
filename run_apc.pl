@@ -31,6 +31,10 @@ my $JSON = '
 }
 ';
 
+die "usage: $0 <cpus>" unless @ARGV == 1;
+my $cpus = $ARGV[0];
+#print "$cpus\n";
+#die "testing";
 
 open(my $fh, "data/719.txt") or die;
 my $header = <$fh>;
@@ -41,5 +45,5 @@ while (<$fh>) {
 	open(my $ofh, ">tmp.json") or die;
 	print $ofh $json;
 	close $ofh;
-	system("./optiso --program isoformer --cpu 2 tmp.json") == 0 or die; 
+	system("./optiso --program isoformer --cpu $cpus tmp.json") == 0 or die; 
 }
