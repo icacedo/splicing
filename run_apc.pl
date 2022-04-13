@@ -43,5 +43,6 @@ while (<$fh>) {
 	open(my $ofh, ">tmp.json") or die;
 	print $ofh $json;
 	close $ofh;
+	print "$chr\t";
 	system("./optiso --program isoformer --cpu $cpus tmp.json") == 0 or die; 
 }
