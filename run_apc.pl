@@ -23,23 +23,24 @@ my $JSON = '
 	"data": [
 		{
 			"name": "CHROMOSOME",
-			"fasta": "data/apc/CHROMOSOME.fa",
-			"gff": "data/apc/CHROMOSOME.gff3"
+			"fasta": "APCROOT/CHROMOSOME.fa",
+			"gff": "APCROOT/CHROMOSOME.gff3"
 		}
 	]
 	
 }
 ';
 
-die "usage: $0 <cpus>" unless @ARGV == 1;
-my $cpus = $ARGV[0];
+die "usage: $0 <apc.genes.txt> <apc dir> <cpus>" unless @ARGV == 3;
+my ($genes, $apc, $cpus) = @ARGV;
 
-open(my $fh, "data/719.txt") or die;
+open(my $fh, $genes) or die;
 my $header = <$fh>;
 while (<$fh>) {
 	my ($chr) = split;
 	my $json = $JSON;
 	$json =~ s/CHROMOSOME/$chr/g;
+	$json =~ s/APCROOT/$apc/g;
 	open(my $ofh, ">tmp.json") or die;
 	print $ofh $json;
 	close $ofh;
