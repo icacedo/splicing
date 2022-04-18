@@ -32,7 +32,7 @@ def get_fitness(guy):
 		sum += dist
 
 	os.system(f'rm {tmpfile}')
-	return dist
+	return sum
 
 def random_guy():
 	guy = {
