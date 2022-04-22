@@ -31,7 +31,7 @@ my $JSON = '
 }
 ';
 
-die "usage: $0 <apc.genes.txt> <apc dir> <cpus>" unless @ARGV == 3;
+die "usage: $0 <apc.genes.txt> <apc dir> <cpus>\n" unless @ARGV == 3;
 my ($genes, $apc, $cpus) = @ARGV;
 
 open(my $fh, $genes) or die;
@@ -45,5 +45,5 @@ while (<$fh>) {
 	print $ofh $json;
 	close $ofh;
 	print "$chr\t";
-	system("./optiso --program isoformer --cpu $cpus tmp.json") == 0 or die; 
+	system("./optiso --program isoformer --cpu $cpus tmp.json") == 0 or die;
 }
