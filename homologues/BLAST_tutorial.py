@@ -1,0 +1,9 @@
+# tutorial from BIS180L
+# Pt. 1: https://jnmaloof.github.io/BIS180L_web/2022/04/05/2-BLAST-part1/
+# Pt. 2: https://jnmaloof.github.io/BIS180L_web/2022/04/07/BLAST-part2/
+
+
+
+
+
+
