@@ -1,0 +1,26 @@
+"""
+rule all:
+	input:
+		"blastdbs/c_briggsae.PRJNA10731.WS284.genomic.ndb",
+		"blastdbs/c_briggsae.PRJNA10731.WS284.genomic.nhr",
+		"blastdbs/c_briggsae.PRJNA10731.WS284.genomic.nin",
+		"blastdbs/c_briggsae.PRJNA10731.WS284.genomic.njs",
+		"blastdbs/c_briggsae.PRJNA10731.WS284.genomic.not",
+		"blastdbs/c_briggsae.PRJNA10731.WS284.genomic.nsq",
+		"blastdbs/c_briggsae.PRJNA10731.WS284.genomic.ntf",
+		"blastdbs/c_briggsae.PRJNA10731.WS284.genomic.nto"
+"""
+
+# helped fix error: 
+# https://stackoverflow.com/questions/59288002/missingoutputexception-and-laten
+# cy-wait-error-with-snakemake
+# files are still made without touch(), but latency wait error is thrown
+# i think touch() makes the file so snakemake can find them? not really sure
+
+rule makeblastdb:
+	input:
+		"input/ref/c_briggsae.PRJNA10731.WS284.genomic.fa"
+	output:
+		touch("blastdbs/c_briggsae.PRJNA10731.WS284.genomic.done")
+	shell:
+		"makeblastdb -in {input} -dbtype nucl -out blastdbs/c_briggsae.PRJNA10731.WS284.genomic"
