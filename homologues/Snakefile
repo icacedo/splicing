@@ -1,18 +1,34 @@
+'''
 rule all:
 	input:
-		"blastdbs/c_briggsae.PRJNA10731.WS284.genomic.done"
+		"output/blastout.default.tsv"
+'''
+SAMPLES = ["briggsae.PRJNA10731.WS284", "japonica.PRJNA12591.WS284"]
 
-# helped fix error: 
-# https://stackoverflow.com/questions/59288002/missingoutputexception-and-laten
-# cy-wait-error-with-snakemake
-# files are still made without touch(), but latency wait error is thrown
-# i think touch() makes the file so snakemake can find them? not really sure
-# creates a dummy .done file, idk how to remove it without errors
+rule all:
+	input:
+		expand("c_{sample}.blastdb", sample=SAMPLES)
 
 rule makeblastdb:
 	input:
-		"input/ref/c_briggsae.PRJNA10731.WS284.genomic.fa"
+		"input/ref/c_{sample}.genomic.fa"
 	output:
-		touch("blastdbs/c_briggsae.PRJNA10731.WS284.genomic.done")
+		touch("blastdbs/c_{sample}.blastdb")
 	shell:
-		"makeblastdb -in {input} -dbtype nucl -out blastdbs/c_briggsae.PRJNA10731.WS284.genomic"
+		"makeblastdb -in {input} -dbtype nucl -out blastsdbs/c_{wildcards.sample}"
+		
+'''
+rule run_blastn:
+	input:
+		"blastdbs/c_briggsae.PRJNA10731.WS284.genomic"
+	output:
+		"output/blastout.default.tsv"
+	shell:
+		"blastn -db {input} -query input/apc_test/ch.10010.fa -evalue 1e-3 -outfmt "
+		"'7 std stitle' > {output}"
+'''
+		
+#blastdbs/c_briggsae.PRJNA10731.WS284.genomic
+can't figure this out:
+https://stackoverflow.com/questions/59288002/missingoutputexception-and-latency-wait-error-with-snakemake
+Next try the snakemake tutorial to see exactly what wildcards.sample is doing
