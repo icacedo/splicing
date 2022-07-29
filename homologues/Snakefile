@@ -18,7 +18,7 @@ rule run_blastn:
 	input:
 		expand("blastdbs/{genome}.blastdb{ext}", genome=GENOMES, ext=EXTS)
 	output:
-		"output/{genome}.blastout.tsv"
+		"output/{genome}.blastout.tsv"		
 	shell:
-		"blastn -db blastdbs/{wildcards.genome}.blastdb -query input/apc_test/ch.10010.fa -evalue 1e-3 -outfmt "
-		"'7 std stitle' > {output}"
+		"blastn -db blastdbs/{wildcards.genome}.blastdb -query input/apc_test/ch.10010.fa "
+		"-evalue 1e-3 -outfmt '7 std stitle' > {output}"
