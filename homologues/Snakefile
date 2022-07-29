@@ -1,34 +1,24 @@
-'''
-rule all:
-	input:
-		"output/blastout.default.tsv"
-'''
-SAMPLES = ["briggsae.PRJNA10731.WS284", "japonica.PRJNA12591.WS284"]
+GENOMES = ["c_briggsae.PRJNA10731.WS284", "c_japonica.PRJNA12591.WS284"]
+EXTS = [".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto"]
 
 rule all:
 	input:
-		expand("c_{sample}.blastdb", sample=SAMPLES)
-
+		#expand("blastdbs/{genome}.blastdb.dummy", genome=GENOMES)
+		expand("output/{genome}.blastout.tsv", genome=GENOMES)
+		
 rule makeblastdb:
 	input:
-		"input/ref/c_{sample}.genomic.fa"
+		"input/ref/{genome}.genomic.fa"
 	output:
-		touch("blastdbs/c_{sample}.blastdb")
+		touch("blastdbs/{genome}.blastdb.dummy")
 	shell:
-		"makeblastdb -in {input} -dbtype nucl -out blastsdbs/c_{wildcards.sample}"
-		
-'''
+		"makeblastdb -in {input} -dbtype nucl -out blastdbs/{wildcards.genome}.blastdb"
+
 rule run_blastn:
 	input:
-		"blastdbs/c_briggsae.PRJNA10731.WS284.genomic"
+		expand("blastdbs/{genome}.blastdb{ext}", genome=GENOMES, ext=EXTS)
 	output:
-		"output/blastout.default.tsv"
+		"output/{genome}.blastout.tsv"
 	shell:
-		"blastn -db {input} -query input/apc_test/ch.10010.fa -evalue 1e-3 -outfmt "
+		"blastn -db blastdbs/{wildcards.genome}.blastdb -query input/apc_test/ch.10010.fa -evalue 1e-3 -outfmt "
 		"'7 std stitle' > {output}"
-'''
-		
-#blastdbs/c_briggsae.PRJNA10731.WS284.genomic
-can't figure this out:
-https://stackoverflow.com/questions/59288002/missingoutputexception-and-latency-wait-error-with-snakemake
-Next try the snakemake tutorial to see exactly what wildcards.sample is doing
