@@ -1,10 +1,11 @@
 GENOMES = ["c_briggsae.PRJNA10731.WS284", "c_japonica.PRJNA12591.WS284"]
 EXTS = [".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto"]
+SAMPLES = ["10010", "10019", "10087", "10164", "10192"]
 
 rule all:
 	input:
 		#expand("blastdbs/{genome}.blastdb.dummy", genome=GENOMES)
-		expand("output/{genome}.blastout.tsv", genome=GENOMES)
+		expand("output/{genome}.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
 		
 rule makeblastdb:
 	input:
@@ -20,9 +21,10 @@ rule makeblastdb:
 
 rule run_blastn:
 	input:
-		expand("blastdbs/{genome}.blastdb{ext}", genome=GENOMES, ext=EXTS)
+		expand("blastdbs/{genome}.blastdb{ext}", genome=GENOMES, ext=EXTS),
+		query = "input/apc_test/ch.{sample}.fa"
 	output:
-		"output/{genome}.blastout.tsv"		
+		"output/{genome}.{sample}.blastout.tsv"		
 	shell:
-		"blastn -db blastdbs/{wildcards.genome}.blastdb -query input/apc_test/ch.10010.fa "
+		"blastn -db blastdbs/{wildcards.genome}.blastdb -query {input.query} "
 		"-evalue 1e-3 -outfmt '7 std stitle' > {output}"
