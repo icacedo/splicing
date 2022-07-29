@@ -10,9 +10,13 @@ rule makeblastdb:
 	input:
 		"input/ref/{genome}.genomic.fa"
 	output:
-		touch("blastdbs/{genome}.blastdb.dummy")
+		#touch("blastdbs/{genome}.blastdb.dummy")
+		multiext("blastdbs/{genome}.blastdb", ".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto")
 	shell:
-		"makeblastdb -in {input} -dbtype nucl -out blastdbs/{wildcards.genome}.blastdb"
+		"""
+		makeblastdb -in {input} -dbtype nucl -out blastdbs/{wildcards.genome}.blastdb
+		touch {output}
+		"""
 
 rule run_blastn:
 	input:
