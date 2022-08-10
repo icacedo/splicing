@@ -1,4 +1,10 @@
-GENOMES = ["c_briggsae.PRJNA10731.WS284", "c_japonica.PRJNA12591.WS284"]
+# goal is to find the proteins in the APC dataset
+# make own translator-glue CDS's together from apc_test
+# do a blastp protein to protein
+# download all the protein sequences
+# blast the APC proteomes together
+'''
+GENOMES = ["c_briggsae.PRJNA10731.WS285", "c_japonica.PRJNA12591.WS285"]
 EXTS = [".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto"]
 SAMPLES = ["10010", "10019", "10087", "10164", "10192"]
 
@@ -6,7 +12,7 @@ rule all:
 	input:
 		#expand("blastdbs/{genome}.blastdb.dummy", genome=GENOMES)
 		expand("output/{genome}.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
-		
+
 rule makeblastdb:
 	input:
 		"input/ref/{genome}.genomic.fa"
@@ -24,7 +30,23 @@ rule run_blastn:
 		expand("blastdbs/{genome}.blastdb{ext}", genome=GENOMES, ext=EXTS),
 		query = "input/apc_test/ch.{sample}.fa"
 	output:
-		"output/{genome}.{sample}.blastout.tsv"		
+		"output/{genome}.{sample}.blastout.tsv"
 	shell:
 		"blastn -db blastdbs/{wildcards.genome}.blastdb -query {input.query} "
 		"-evalue 1e-3 -outfmt '7 std stitle' > {output}"
+'''
+
+SPECIES = [
+	"c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS285.genomic.fa.gz",
+	"c_brenneri/PRJNA20035/c_brenneri.PRJNA20035.WS285.genomic.fa.gz",
+	"c_briggsae/PRJNA10731/c_briggsae.PRJNA10731.WS285.genomic.fa.gz"
+]
+
+rule get_genomes:
+	output:
+		"input/ref/"
+
+
+ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS285.genomic.fa.gz
+ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/c_brenneri/PRJNA20035/c_brenneri.PRJNA20035.WS285.genomic.fa.gz
+ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/c_briggsae/PRJNA10731/c_briggsae.PRJNA10731.WS285.genomic.fa.gz
