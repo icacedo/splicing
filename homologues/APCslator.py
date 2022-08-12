@@ -10,69 +10,60 @@ import os
 import sys
 
 parser = argparse.ArgumentParser()
-#parser.add_argument('fasta', type=str)
-#parser.add_argument('gff3', type=str)
-parser.add_argument('path', type=str)
+parser.add_argument('-gff3', type=str)
+parser.add_argument('-fasta', type=str)
 
 arg = parser.parse_args()
-'''
-for ID, seq in seqlib.read_fasta('input/apc_test/ch.10010.fa'):
-	print(ID)
-	print(seq)
-'''	
+
 # gff reader
 # move to seqlib when done
-# not sure what what make of + or - strand
-# would i need to make the complement of the sequence in the fasta file?
-# to get the CDS sequence on the - strand?
-'''
-fp = open(arg.gff3)
-for line in fp.readlines():
-	line = line.rstrip()
-	line = line.split()
-	SEQID = line[0]
-	SOURCE = line[1]
-	TYPE = line[2]
-	START = line[3]
-	END = line[4]
-	SCORE = line[5]
-	STRAND = line[6]
-	PHASE = line[7]
-	if SOURCE == 'WormBase':
-		ATTRIBUTES = line[8]
-	if TYPE == 'CDS':
-		print(line)
-		print(ATTRIBUTES)
-'''		
+# APC dataset should only have + strands, ignore the few - strands
 
-# *just ignore the - strands*
-# are there any CDS regions on the - strand? YES
-# in the apc dataset
-# 1896 CDS regions on the + strand, and 14 on the - strand
-# are there - strand CDS with + strand CDS in same sequence/geneID? YES
+def gff_reader(gff3):
 
-#countplus = 0
-#countnega = 0
-for item in os.listdir(arg.path):
-	if item.endswith('gff3'):
-		fp = open(arg.path+item)
-		for line in fp.readlines():
-			line = line.rstrip()
-			line = line.split()
-			if line[2] == 'CDS':
-				if line[6] == '+':
-					print(line[0], line[2], line[3], line[4], line[6])
-					#print(line[2],line[6])
-					#countplus += 1
-				if line[6] == '-':
-					print(line)
-					#print(line[2],line[3],line[4],line[6])
-					#countnega += 1
-#print(countplus, countnega)
+	fp = open(gff3)
+	CDS_lines = []
+	for line in fp.readlines():
+		line = line.rstrip()
+		line = line.split()
+		SEQID = line[0]
+		SOURCE = line[1]
+		TYPE = line[2]
+		START = line[3]
+		END = line[4]
+		SCORE = line[5]
+		STRAND = line[6]
+		PHASE = line[7]
+		if STRAND == '-': continue
+		if SOURCE == 'WormBase':
+			ATTRIBUTES = line[8]
+		if TYPE == 'CDS':
+			CDS_lines.append(line)
+	
+	return CDS_lines
 
-# save output of this code to > strands
-# use to find - strands and see all other strands:
-# grep --color=always -e '^' -e '-' strands
+def get_CDS_regions(CDS_lines):
+
+	CDS_regions = {}
+	starts_n_ends = []	
+	for line in CDS_lines:
+		startend = line[3], line[4]
+		starts_n_ends.append(startend)
+		CDS_regions[line[0]] = starts_n_ends
+
+	return CDS_regions
+	
+CDS_lines = gff_reader(arg.gff3)
+
+CDS_regions = get_CDS_regions(CDS_lines)
+
+for ID, seq in seqlib.read_fasta(arg.fasta):
+	ID = ID.split()
+	ch_id = ID[0]
+	print(CDS_regions[ch_id])
+	print(seq[451-1:567])
+	
+		
 
 
 
