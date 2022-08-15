@@ -57,12 +57,25 @@ CDS_lines = gff_reader(arg.gff3)
 
 CDS_regions = get_CDS_regions(CDS_lines)
 
+CDS_sequences = {}
+
 for ID, seq in seqlib.read_fasta(arg.fasta):
 	ID = ID.split()
 	ch_id = ID[0]
-	print(CDS_regions[ch_id])
-	print(seq[451-1:567])
+	CDS_seq = ''
+	for CDS in CDS_regions[ch_id]:
+		start = int(CDS[0])
+		end = int(CDS[1])
+		CDS_seq += seq[start-1:end]
+
+	print(CDS_seq)
+	CDS_sequences[ch_id] = CDS_seq
 	
+print(CDS_sequences)
+		
+
+		
+
 		
 
 
