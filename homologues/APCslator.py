@@ -86,7 +86,9 @@ for ID in CDS_sequences:
 		fo.write('\n'.join(lines))
 
 # can put multiple sequences in the same file for command line blast
+# also, do i need to worry about the phase?
 
+'''
 sss = 'ACTGTGACTG'
 with open('test', 'w') as foo:
 	foo.write('eyedee'+'\n')
@@ -95,7 +97,7 @@ with open('test', 'w') as foo:
 		line = sss[i:i+2]
 		lines.append(line)
 	foo.write('\n'.join(lines))
-
+'''
 		
 
 
