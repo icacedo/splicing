@@ -68,13 +68,33 @@ for ID, seq in seqlib.read_fasta(arg.fasta):
 		end = int(CDS[1])
 		CDS_seq += seq[start-1:end]
 
-	print(CDS_seq)
 	CDS_sequences[ch_id] = CDS_seq
 	
 print(CDS_sequences)
-		
 
-		
+
+for ID in CDS_sequences:
+	name = ID + '.CDS.fa'
+	seq = CDS_sequences[ID]
+	with open(name, 'w') as fo:	
+		fo.write(ID+'.CDS'+'\n')
+		lines = []
+		for i in range(0, len(seq), 80):
+			line = seq[i:i+80]
+			lines.append(line)
+			print(seq[i:i+80])
+		fo.write('\n'.join(lines))
+
+# can put multiple sequences in the same file for command line blast
+
+sss = 'ACTGTGACTG'
+with open('test', 'w') as foo:
+	foo.write('eyedee'+'\n')
+	lines = []
+	for i in range(0, len(sss), 2):
+		line = sss[i:i+2]
+		lines.append(line)
+	foo.write('\n'.join(lines))
 
 		
 
