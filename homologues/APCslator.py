@@ -67,7 +67,7 @@ def get_CDS_sequences(CDS_regions, fasta):
 			CDS_seq += seq[start-1:end]
 
 		CDS_sequences[ch_id] = CDS_seq
-	
+		
 	return CDS_sequences
 
 # can put multiple sequences in the same file for command line blast
@@ -75,13 +75,63 @@ def get_CDS_sequences(CDS_regions, fasta):
 # used this command for all gff files in the apc/ directory
 # awk '//{print $8}' data/apc/*.gff3 | sort --unique
 # there only '.'
+# can ignore phase
 # i will just run blastx for now, it doesn't need a specific start site
 
 
+def get_all_CDS(path_to_apc):
+
+	path = path_to_apc
+	
+	all_CDS = {}
+
+	ext_gff = 'gff3'
+	ext_fasta = 'fa'
+	already_seen = []
+	for files in os.listdir(path):
+		split_file = os.path.splitext(files)
+		chID = split_file[0]
+		if chID in already_seen: continue
+		else: 
+			already_seen.append(chID)
+			gff_path = path + chID + '.' + ext_gff
+			fasta_path = path + chID + '.' + ext_fasta  	
+			CDS_lines = get_CDS_lines(gff_path)
+			CDS_regions = get_CDS_regions(CDS_lines)
 		
+		#yield get_CDS_sequences(CDS_regions,fasta_path)
+			all_CDS.update(get_CDS_sequences(CDS_regions,fasta_path))
+		
+	return all_CDS
+
+all_CDS = get_all_CDS(arg.path_to_apc)
+
+print(all_CDS)
 
 
+#for key, val in all_CDS.items():	
+	#print(key, val)
+	#for ID in pair.keys():
+	#	print(ID)
+
+
+'''
+for ID in all_CDS:
+	seq = all_CDS[ID]
+	with open(filename, 'w') as fo:	
+		fo.write(ID+'.CDS'+'\n')
+		lines = []
+		for i in range(0, len(seq), 80):
+			line = seq[i:i+80]
+			lines.append(line)
+		fo.write('\n'.join(lines))
+'''
+
+
+'''
 path = arg.path_to_apc
+	
+all_CDS = {}
 
 ext_gff = 'gff3'
 ext_fasta = 'fa'
@@ -92,27 +142,18 @@ for files in os.listdir(path):
 	if chID in already_seen: continue
 	else: 
 		already_seen.append(chID)
-	gff_path = path + chID + '.' + ext_gff
-	fasta_path = path + chID + '.' + ext_fasta  	
-	CDS_lines = get_CDS_lines(gff_path)
-	CDS_regions = get_CDS_regions(CDS_lines)
-	print(get_CDS_sequences(CDS_regions,fasta_path))
-	
-	
-'''	
-filename = 'c_elegans.APC.CDS.fa'
-
-for ID in CDS_sequences:
-	seq = CDS_sequences[ID]
-	with open(filename, 'w') as fo:	
-		fo.write(ID+'.CDS'+'\n')
-		lines = []
-		for i in range(0, len(seq), 80):
-			line = seq[i:i+80]
-			lines.append(line)
-		fo.write('\n'.join(lines))
+		gff_path = path + chID + '.' + ext_gff
+		fasta_path = path + chID + '.' + ext_fasta  	
+		CDS_lines = get_CDS_lines(gff_path)
+		CDS_regions = get_CDS_regions(CDS_lines)
+		
+		#yield get_CDS_sequences(CDS_regions,fasta_path)
+			#all_CDS.update(
+		get_CDS_sequences(CDS_regions,fasta_path)
+		
+	return all_CDS
 '''
-
+all_CDS = get_all_CDS(arg.path_to_apc)
 
 
 
