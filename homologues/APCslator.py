@@ -106,13 +106,9 @@ def get_all_CDS(path_to_apc):
 
 all_CDS = get_all_CDS(arg.path_to_apc)
 
-print(all_CDS)
+filename = 'c_elegans.apc.cds.fa'
 
-
-#for key, val in all_CDS.items():	
-	#print(key, val)
-	#for ID in pair.keys():
-	#	print(ID)
+with open(filename, 'w') as fo:
 
 
 '''
