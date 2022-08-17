@@ -10,9 +10,9 @@ import os
 import sys
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--gff3', type=str)
-parser.add_argument('--fasta', type=str)
-parser.add_argument('--path', type=str)
+#parser.add_argument('--gff3', type=str)
+#parser.add_argument('--fasta', type=str)
+parser.add_argument('--path_to_apc', type=str)
 
 arg = parser.parse_args()
 
@@ -20,7 +20,7 @@ arg = parser.parse_args()
 # move to seqlib when done
 # APC dataset should only have + strands, ignore the few - strands
 
-def gff_reader(gff3):
+def get_CDS_lines(gff3):
 
 	fp = open(gff3)
 	CDS_lines = []
@@ -57,7 +57,7 @@ def get_CDS_regions(CDS_lines):
 def get_CDS_sequences(CDS_regions, fasta):
 
 	CDS_sequences = {}
-	for ID, seq in seqlib.read_fasta(arg.fasta):
+	for ID, seq in seqlib.read_fasta(fasta):
 		ID = ID.split()
 		ch_id = ID[0]
 		CDS_seq = ''
@@ -70,15 +70,37 @@ def get_CDS_sequences(CDS_regions, fasta):
 	
 	return CDS_sequences
 
-CDS_lines = gff_reader(arg.gff3)
+# can put multiple sequences in the same file for command line blast
+# also, do i need to worry about the phase?
+# used this command for all gff files in the apc/ directory
+# awk '//{print $8}' data/apc/*.gff3 | sort --unique
+# there only '.'
+# i will just run blastx for now, it doesn't need a specific start site
 
-CDS_regions = get_CDS_regions(CDS_lines)
 
-CDS_sequences = get_CDS_sequences(CDS_regions, arg.fasta)
+		
 
-print(CDS_sequences)
 
-filename = 'C_elegans.APC.CDS.fa'
+path = arg.path_to_apc
+
+ext_gff = 'gff3'
+ext_fasta = 'fa'
+already_seen = []
+for files in os.listdir(path):
+	split_file = os.path.splitext(files)
+	chID = split_file[0]
+	if chID in already_seen: continue
+	else: 
+		already_seen.append(chID)
+	gff_path = path + chID + '.' + ext_gff
+	fasta_path = path + chID + '.' + ext_fasta  	
+	CDS_lines = get_CDS_lines(gff_path)
+	CDS_regions = get_CDS_regions(CDS_lines)
+	print(get_CDS_sequences(CDS_regions,fasta_path))
+	
+	
+'''	
+filename = 'c_elegans.APC.CDS.fa'
 
 for ID in CDS_sequences:
 	seq = CDS_sequences[ID]
@@ -89,30 +111,7 @@ for ID in CDS_sequences:
 			line = seq[i:i+80]
 			lines.append(line)
 		fo.write('\n'.join(lines))
-
-# can put multiple sequences in the same file for command line blast
-# also, do i need to worry about the phase?
-# used this command for all gff files in the apc/ directory
-# awk '//{print $8}' data/apc/*.gff3 | sort --unique
-# there only '.'
-# i will just run blastx for now, it doesn't need a specific start site
-
 '''
-sss = 'ACTGTGACTG'
-with open('test', 'w') as foo:
-	foo.write('eyedee'+'\n')
-	lines = []
-	for i in range(0, len(sss), 2):
-		line = sss[i:i+2]
-		lines.append(line)
-	foo.write('\n'.join(lines))
-'''
-		
-import os
-
-print(arg.path)
-
-
 
 
 
