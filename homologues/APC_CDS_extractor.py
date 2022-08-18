@@ -122,56 +122,6 @@ with open(filename, 'w') as fo:
 		fo.write('\n')
 
 
-'''
-for ID in all_CDS:
-	seq = all_CDS[ID]
-	with open(filename, 'w') as fo:	
-		fo.write(ID+'.CDS'+'\n')
-		lines = []
-		for i in range(0, len(seq), 80):
-			line = seq[i:i+80]
-			lines.append(line)
-		fo.write('\n'.join(lines))
-'''
-
-
-'''
-path = arg.path_to_apc
-	
-all_CDS = {}
-
-ext_gff = 'gff3'
-ext_fasta = 'fa'
-already_seen = []
-for files in os.listdir(path):
-	split_file = os.path.splitext(files)
-	chID = split_file[0]
-	if chID in already_seen: continue
-	else: 
-		already_seen.append(chID)
-		gff_path = path + chID + '.' + ext_gff
-		fasta_path = path + chID + '.' + ext_fasta  	
-		CDS_lines = get_CDS_lines(gff_path)
-		CDS_regions = get_CDS_regions(CDS_lines)
-		
-		#yield get_CDS_sequences(CDS_regions,fasta_path)
-			#all_CDS.update(
-		get_CDS_sequences(CDS_regions,fasta_path)
-		
-	return all_CDS
-'''
-all_CDS = get_all_CDS(arg.path_to_apc)
-
-
-
-
-
-
-
-
-
-
-
 
 
 
