@@ -107,8 +107,19 @@ def get_all_CDS(path_to_apc):
 all_CDS = get_all_CDS(arg.path_to_apc)
 
 filename = 'c_elegans.apc.cds.fa'
+ID_ext = '.CDS'
+width = 80
 
 with open(filename, 'w') as fo:
+	for ID in all_CDS:
+		seq = all_CDS[ID]
+		fo.write(ID+ID_ext+'\n')
+		lines = []
+		for i in range(0, len(seq), width):
+			line = seq[i:i+width]
+			lines.append(line)
+		fo.write('\n'.join(lines))
+		fo.write('\n')
 
 
 '''
