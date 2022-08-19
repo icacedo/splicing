@@ -113,7 +113,7 @@ width = 80
 with open(filename, 'w') as fo:
 	for ID in all_CDS:
 		seq = all_CDS[ID]
-		fo.write(ID+ID_ext+'\n')
+		fo.write('>'+ID+ID_ext+'\n')
 		lines = []
 		for i in range(0, len(seq), width):
 			line = seq[i:i+width]
