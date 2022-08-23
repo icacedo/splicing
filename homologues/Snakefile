@@ -35,38 +35,77 @@ rule run_blastn:
 		"blastn -db blastdbs/{wildcards.genome}.blastdb -query {input.query} "
 		"-evalue 1e-3 -outfmt '7 std stitle' > {output}"
 '''
-
-SPECIES = [
-	#"c_elegans.PRJNA13758",
-	#"c_brenneri.PRJNA20035",
-	#"c_briggsae.PRJNA10731"
-	"c_elegans/PRJNA13758/c_elegans.PRJNA13758", 
-	"c_brenneri/PRJNA20035/c_brenneri.PRJNA20035", 
-	"c_briggsae/PRJNA10731/c_briggsae.PRJNA10731"
-]
-
+'''
 rule get_genomes:
 	output:
-		expand("{specie}.WS285.genomic.fa.gz", specie=SPECIES)
+		"ref/c_elegans.PRJNA13758.WS285.genomic.fa.gz",
+		"ref/c_brenneri.PRJNA20035.WS285.genomic.fa.gz",
+		"ref/c_briggsae.PRJNA10731.WS285.genomic.fa.gz",
+		"ref/c_japonica.PRJNA12591.WS285.genomic.fa.gz",
+		"ref/c_remanei.PRJNA577507.WS285.genomic.fa.gz",
+		"ref/b_malayi.PRJNA10729.WS285.genomic.fa.gz",
+		"ref/o_volvulus.PRJEB513.WS285.genomic.fa.gz",
+		"ref/p_pacificus.PRJNA12644.WS285.genomic.fa.gz",
+		"ref/s_ratti.PRJEB125.WS285.genomic.fa.gz",
+		"ref/t_muris.PRJEB126.WS285.genomic.fa.gz"
 	shell:
-		"""
-		wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/{output} -P ref/"
-		wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/{output} -P ref/"
-		wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/{output} -P ref/"
-		"""
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"c_brenneri/PRJNA20035/c_brenneri.PRJNA20035.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"c_briggsae/PRJNA10731/c_briggsae.PRJNA10731.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"c_japonica/PRJNA12591/c_japonica.PRJNA12591.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"c_remanei/PRJNA577507/c_remanei.PRJNA577507.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"b_malayi/PRJNA10729/b_malayi.PRJNA10729.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"o_volvulus/PRJEB513/o_volvulus.PRJEB513.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"p_pacificus/PRJNA12644/p_pacificus.PRJNA12644.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"s_ratti/PRJEB125/s_ratti.PRJEB125.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"t_muris/PRJEB126/t_muris.PRJEB126.WS285.genomic.fa.gz"
+		" -P ref/"
+'''	
+SPECIES=[
+	"c_elegans.PRJNA13758",
+	"c_brenneri.PRJNA20035",
+	"c_briggsae.PRJNA10731",
+	"c_japonica.PRJNA12591",
+	"c_remanei.PRJNA577507",
+	"b_malayi.PRJNA10729",
+	"o_volvulus.PRJEB513",
+	"p_pacificus.PRJNA12644",
+	"s_ratti.PRJEB125",
+	"t_muris.PRJEB126"
+]		
 
-'''
-ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS285.genomic.fa.gz
-ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/c_brenneri/PRJNA20035/c_brenneri.PRJNA20035.WS285.genomic.fa.gz
-ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/c_briggsae/PRJNA10731/c_briggsae.PRJNA10731.WS285.genomic.fa.gz
-ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/c_japonica/PRJNA12591/c_japonica.PRJNA12591.WS285.genomic.fa.gz
-ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/c_remanei/PRJNA577507/c_remanei.PRJNA577507.WS285.genomic.fa.gz
-ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/b_malayi/PRJNA10729/b_malayi.PRJNA10729.WS285.genomic.fa.gz
-ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/o_volvulus/PRJEB513/o_volvulus.PRJEB513.WS285.genomic.fa.gz
-ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/p_pacificus/PRJNA12644/p_pacificus.PRJNA12644.WS285.genomic.fa.gz
-ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/s_ratti/PRJEB125/s_ratti.PRJEB125.WS285.genomic.fa.gz
-ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/t_muris/PRJEB126/t_muris.PRJEB126.WS285.genomic.fa.gz
-'''
+rule all:
+	input:
+		expand("ref/{sample}.WS285.genomic.fa", sample=SPECIES)
+
+rule unzip_genomes:
+	input:
+		"ref/{sample}.WS285.genomic.fa.gz"
+	output:
+		"ref/{sample}.WS285.genomic.fa"
+	shell:
+		"gzip -dk {input}"
+
+
 
 
 
