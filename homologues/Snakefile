@@ -37,16 +37,25 @@ rule run_blastn:
 '''
 
 SPECIES = [
-	"c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS285.genomic.fa.gz",
-	"c_brenneri/PRJNA20035/c_brenneri.PRJNA20035.WS285.genomic.fa.gz",
-	"c_briggsae/PRJNA10731/c_briggsae.PRJNA10731.WS285.genomic.fa.gz"
+	#"c_elegans.PRJNA13758",
+	#"c_brenneri.PRJNA20035",
+	#"c_briggsae.PRJNA10731"
+	"c_elegans/PRJNA13758/c_elegans.PRJNA13758", 
+	"c_brenneri/PRJNA20035/c_brenneri.PRJNA20035", 
+	"c_briggsae/PRJNA10731/c_briggsae.PRJNA10731"
 ]
 
 rule get_genomes:
 	output:
-		"input/ref/"
+		expand("{specie}.WS285.genomic.fa.gz", specie=SPECIES)
+	shell:
+		"""
+		wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/{output} -P ref/"
+		wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/{output} -P ref/"
+		wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/{output} -P ref/"
+		"""
 
-
+'''
 ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS285.genomic.fa.gz
 ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/c_brenneri/PRJNA20035/c_brenneri.PRJNA20035.WS285.genomic.fa.gz
 ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/c_briggsae/PRJNA10731/c_briggsae.PRJNA10731.WS285.genomic.fa.gz
@@ -57,7 +66,7 @@ ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/o_volvulus/PRJEB513/o
 ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/p_pacificus/PRJNA12644/p_pacificus.PRJNA12644.WS285.genomic.fa.gz
 ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/s_ratti/PRJEB125/s_ratti.PRJEB125.WS285.genomic.fa.gz
 ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/t_muris/PRJEB126/t_muris.PRJEB126.WS285.genomic.fa.gz
-
+'''
 
 
 
