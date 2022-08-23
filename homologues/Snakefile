@@ -35,7 +35,24 @@ rule run_blastn:
 		"blastn -db blastdbs/{wildcards.genome}.blastdb -query {input.query} "
 		"-evalue 1e-3 -outfmt '7 std stitle' > {output}"
 '''
-'''
+
+SPECIES=[
+	"c_elegans.PRJNA13758",
+	"c_brenneri.PRJNA20035",
+	"c_briggsae.PRJNA10731",
+	"c_japonica.PRJNA12591",
+	"c_remanei.PRJNA577507",
+	"b_malayi.PRJNA10729",
+	"o_volvulus.PRJEB513",
+	"p_pacificus.PRJNA12644",
+	"s_ratti.PRJEB125",
+	"t_muris.PRJEB126"
+]		
+
+rule all:
+	input:
+		expand("ref/{sample}.WS285.genomic.fa", sample=SPECIES)
+
 rule get_genomes:
 	output:
 		"ref/c_elegans.PRJNA13758.WS285.genomic.fa.gz",
@@ -79,23 +96,6 @@ rule get_genomes:
 		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
 		"t_muris/PRJEB126/t_muris.PRJEB126.WS285.genomic.fa.gz"
 		" -P ref/"
-'''	
-SPECIES=[
-	"c_elegans.PRJNA13758",
-	"c_brenneri.PRJNA20035",
-	"c_briggsae.PRJNA10731",
-	"c_japonica.PRJNA12591",
-	"c_remanei.PRJNA577507",
-	"b_malayi.PRJNA10729",
-	"o_volvulus.PRJEB513",
-	"p_pacificus.PRJNA12644",
-	"s_ratti.PRJEB125",
-	"t_muris.PRJEB126"
-]		
-
-rule all:
-	input:
-		expand("ref/{sample}.WS285.genomic.fa", sample=SPECIES)
 
 rule unzip_genomes:
 	input:
