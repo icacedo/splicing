@@ -1,78 +1,6 @@
-# goal is to find the proteins in the APC dataset
-# make own translator-glue CDS's together from apc_test
-# do a blastp protein to protein
-# download all the protein sequences
-# blast the APC proteomes together
-'''
-GENOMES = ["c_briggsae.PRJNA10731.WS285", "c_japonica.PRJNA12591.WS285"]
-EXTS = [".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto"]
-SAMPLES = ["10010", "10019", "10087", "10164", "10192"]
+# run blastx on all CDS sequences in the APC dataset
+# against all available core genomes on wormbase
 
-rule all:
-	input:
-		#expand("blastdbs/{genome}.blastdb.dummy", genome=GENOMES)
-		expand("output/{genome}.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
-
-rule makeblastdb:
-	input:
-		"input/ref/{genome}.genomic.fa"
-	output:
-		#touch("blastdbs/{genome}.blastdb.dummy")
-		multiext("blastdbs/{genome}.blastdb", ".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto")
-	shell:
-		"""
-		makeblastdb -in {input} -dbtype nucl -out blastdbs/{wildcards.genome}.blastdb
-		touch {output}
-		"""
-
-rule run_blastn:
-	input:
-		expand("blastdbs/{genome}.blastdb{ext}", genome=GENOMES, ext=EXTS),
-		query = "input/apc_test/ch.{sample}.fa"
-	output:
-		"output/{genome}.{sample}.blastout.tsv"
-	shell:
-		"blastn -db blastdbs/{wildcards.genome}.blastdb -query {input.query} "
-		"-evalue 1e-3 -outfmt '7 std stitle' > {output}"
-'''
-
-GENOMES = ["c_briggsae.PRJNA10731.WS285", "c_japonica.PRJNA12591.WS285"]
-EXTS = [".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto"]
-SAMPLES = ["10010", "10019"] #, "10087", "10164", "10192"]
-
-rule all:
-	input:
-		#expand("blastdbs/{genome}.blastdb.dummy", genome=GENOMES)
-		expand("output/{genome}.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
-
-rule makeblastdb:
-	input:
-		"ref/{genome}.genomic.fa"
-	output:
-		#touch("blastdbs/{genome}.blastdb.dummy")
-		multiext("blastdbs/{genome}.blastdb", ".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto")
-	shell:
-		"""
-		makeblastdb -in {input} -dbtype nucl -out blastdbs/{wildcards.genome}.blastdb
-		touch {output}
-		"""
-
-rule run_blastn:
-	input:
-		expand("blastdbs/{genome}.blastdb{ext}", genome=GENOMES, ext=EXTS),
-		query = "queries/ch.{sample}.fa"
-	output:
-		"output/{genome}.{sample}.blastout.tsv"
-	shell:
-		"blastn -db blastdbs/{wildcards.genome}.blastdb -query {input.query} "
-		"-evalue 1e-3 -outfmt '7 std stitle' > {output}"
-
-
-
-
-
-
-'''
 GENOMES=[
 	"c_elegans.PRJNA13758",
 	"c_brenneri.PRJNA20035",
@@ -88,30 +16,14 @@ GENOMES=[
 
 EXTS = [".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto"]
 
-
-rule all:
-	input:
-		expand("ref/{genome}.WS285.genomic.fa", genome=GENOMES)
-
-rule all:
-	input:
-		expand("blastdbs/{sample}.WS285.blastdb{ext}", sample=SAMPLES, ext=EXTS)
-
-
 SAMPLES = ["10010", "10019"] #"10087", "10164", "10192"]
 
 rule all:
 	input:
-		#expand("blastdbs/{genome}.blastdb.dummy", genome=GENOMES)
-		expand("output/{genome}.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
-
-
-rule all:
-	input:
 		#expand("output/{genome}.{sample}.test", genome=GENOMES, sample=SAMPLES)
-		expand("output/{genome}.WS285.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
+		#expand("output/{genome}.WS285.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
+		expand("output/{genome}.WS285.APC.blastout.tsv", genome=GENOMES)
 		
-
 rule get_genomes:
 	output:
 		"ref/c_elegans.PRJNA13758.WS285.genomic.fa.gz",
@@ -172,31 +84,23 @@ rule makeblastdb:
 		".not", ".nsq", ".ntf", ".nto")
 	shell:
 		"""
-		makeblastdb -in {input} -dbtype nucl -out blastdbs/{wildcards.genome}.blastdb
+		makeblastdb -in {input} -dbtype prot -out blastdbs/{wildcards.genome}.WS285.blastdb
 		touch {output}
 		"""
 
-	
-rule test:
-	input:
-		expand("blastdbs/{genome}.WS285.blastdb{ext}", genome=GENOMES, ext=EXTS),		
-		query = "queries/ch.{sample}.fa"
-	output:
-		"output/{genome}.{sample}.test"
-	shell:
-		"echo {wildcards.genome} {input.query} > {output}"
-
-
+# GETTING 0 HITS even againsts c. elegans, something is wrong
 rule run_blastn:
 	input:
 		expand("blastdbs/{genome}.WS285.blastdb{ext}", genome=GENOMES, ext=EXTS),
-		query = "queries/ch.{sample}.fa"
+		#query = "queries/ch.{sample}.fa"
 	output:
-		"output/{genome}.WS285.{sample}.blastout.tsv"
+		#"output/{genome}.WS285.{sample}.blastout.tsv"
+		"output/{genome}.WS285.APC.blastout.tsv"
 	shell:
-		"blastn -db blastdbs/{wildcards.genome}.WS285.blastdb -query {input.query} "
-		"-evalue 1e-3 -outfmt '7 std stitle' > {output}"
-'''
+		"blastx -db blastdbs/{wildcards.genome}.WS285.blastdb -query "
+		"test.fa -outfmt '7 std stitle' > {output}"
+		# -evalue 1e-3
+
 
 
 
