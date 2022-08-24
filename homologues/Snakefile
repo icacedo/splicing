@@ -36,7 +36,44 @@ rule run_blastn:
 		"-evalue 1e-3 -outfmt '7 std stitle' > {output}"
 '''
 
-SPECIES=[
+GENOMES = ["c_briggsae.PRJNA10731.WS285", "c_japonica.PRJNA12591.WS285"]
+EXTS = [".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto"]
+SAMPLES = ["10010", "10019"] #, "10087", "10164", "10192"]
+
+rule all:
+	input:
+		#expand("blastdbs/{genome}.blastdb.dummy", genome=GENOMES)
+		expand("output/{genome}.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
+
+rule makeblastdb:
+	input:
+		"ref/{genome}.genomic.fa"
+	output:
+		#touch("blastdbs/{genome}.blastdb.dummy")
+		multiext("blastdbs/{genome}.blastdb", ".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto")
+	shell:
+		"""
+		makeblastdb -in {input} -dbtype nucl -out blastdbs/{wildcards.genome}.blastdb
+		touch {output}
+		"""
+
+rule run_blastn:
+	input:
+		expand("blastdbs/{genome}.blastdb{ext}", genome=GENOMES, ext=EXTS),
+		query = "queries/ch.{sample}.fa"
+	output:
+		"output/{genome}.{sample}.blastout.tsv"
+	shell:
+		"blastn -db blastdbs/{wildcards.genome}.blastdb -query {input.query} "
+		"-evalue 1e-3 -outfmt '7 std stitle' > {output}"
+
+
+
+
+
+
+'''
+GENOMES=[
 	"c_elegans.PRJNA13758",
 	"c_brenneri.PRJNA20035",
 	"c_briggsae.PRJNA10731",
@@ -49,9 +86,31 @@ SPECIES=[
 	"t_muris.PRJEB126"
 ]		
 
+EXTS = [".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto"]
+
+
 rule all:
 	input:
-		expand("ref/{sample}.WS285.genomic.fa", sample=SPECIES)
+		expand("ref/{genome}.WS285.genomic.fa", genome=GENOMES)
+
+rule all:
+	input:
+		expand("blastdbs/{sample}.WS285.blastdb{ext}", sample=SAMPLES, ext=EXTS)
+
+
+SAMPLES = ["10010", "10019"] #"10087", "10164", "10192"]
+
+rule all:
+	input:
+		#expand("blastdbs/{genome}.blastdb.dummy", genome=GENOMES)
+		expand("output/{genome}.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
+
+
+rule all:
+	input:
+		#expand("output/{genome}.{sample}.test", genome=GENOMES, sample=SAMPLES)
+		expand("output/{genome}.WS285.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
+		
 
 rule get_genomes:
 	output:
@@ -99,11 +158,45 @@ rule get_genomes:
 
 rule unzip_genomes:
 	input:
-		"ref/{sample}.WS285.genomic.fa.gz"
+		"ref/{genome}.WS285.genomic.fa.gz"
 	output:
-		"ref/{sample}.WS285.genomic.fa"
+		"ref/{genome}.WS285.genomic.fa"
 	shell:
 		"gzip -dk {input}"
+
+rule makeblastdb:
+	input:
+		"ref/{genome}.WS285.genomic.fa"
+	output:
+		multiext("blastdbs/{genome}.WS285.blastdb", ".ndb", ".nhr", ".nin", ".njs", \
+		".not", ".nsq", ".ntf", ".nto")
+	shell:
+		"""
+		makeblastdb -in {input} -dbtype nucl -out blastdbs/{wildcards.genome}.blastdb
+		touch {output}
+		"""
+
+	
+rule test:
+	input:
+		expand("blastdbs/{genome}.WS285.blastdb{ext}", genome=GENOMES, ext=EXTS),		
+		query = "queries/ch.{sample}.fa"
+	output:
+		"output/{genome}.{sample}.test"
+	shell:
+		"echo {wildcards.genome} {input.query} > {output}"
+
+
+rule run_blastn:
+	input:
+		expand("blastdbs/{genome}.WS285.blastdb{ext}", genome=GENOMES, ext=EXTS),
+		query = "queries/ch.{sample}.fa"
+	output:
+		"output/{genome}.WS285.{sample}.blastout.tsv"
+	shell:
+		"blastn -db blastdbs/{wildcards.genome}.WS285.blastdb -query {input.query} "
+		"-evalue 1e-3 -outfmt '7 std stitle' > {output}"
+'''
 
 
 
