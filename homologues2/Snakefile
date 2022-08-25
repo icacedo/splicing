@@ -1,33 +1,87 @@
-https://downloads.wormbase.org/releases/WS282/species/c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS282.annotations.gff3.gz
-https://downloads.wormbase.org/releases/WS282/species/c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS282.genomic.fa.gz
-
-https://downloads.wormbase.org/releases/WS282/species/c_brenneri/PRJNA20035/c_brenneri.PRJNA20035.WS282.annotations.gff3.gz
-https://downloads.wormbase.org/releases/WS282/species/c_brenneri/PRJNA20035/c_brenneri.PRJNA20035.WS282.genomic.fa.gz
-
-https://downloads.wormbase.org/releases/WS282/species/c_briggsae/PRJNA10731/c_briggsae.PRJNA10731.WS282.annotations.gff3.gz
-https://downloads.wormbase.org/releases/WS282/species/c_briggsae/PRJNA10731/c_briggsae.PRJNA10731.WS282.genomic.fa.gz
-
-https://downloads.wormbase.org/releases/WS282/species/c_japonica/PRJNA12591/c_japonica.PRJNA12591.WS282.annotations.gff3.gz
-https://downloads.wormbase.org/releases/WS282/species/c_japonica/PRJNA12591/c_japonica.PRJNA12591.WS282.genomic.fa.gz
-
-https://downloads.wormbase.org/releases/WS282/species/c_remanei/PRJNA53967/c_remanei.PRJNA53967.WS282.annotations.gff3.gz
-https://downloads.wormbase.org/releases/WS282/species/c_remanei/PRJNA53967/c_remanei.PRJNA53967.WS282.genomic.fa.gz
-
-https://downloads.wormbase.org/releases/WS282/species/b_malayi/PRJNA10729/b_malayi.PRJNA10729.WS282.annotations.gff3.gz
-https://downloads.wormbase.org/releases/WS282/species/b_malayi/PRJNA10729/b_malayi.PRJNA10729.WS282.genomic.fa.gz
-
-https://downloads.wormbase.org/releases/WS282/species/o_volvulus/PRJEB513/o_volvulus.PRJEB513.WS282.annotations.gff3.gz
-https://downloads.wormbase.org/releases/WS282/species/o_volvulus/PRJEB513/o_volvulus.PRJEB513.WS282.genomic.fa.gz
-
-https://downloads.wormbase.org/releases/WS282/species/p_pacificus/PRJNA12644/p_pacificus.PRJNA12644.WS282.annotations.gff3.gz
-https://downloads.wormbase.org/releases/WS282/species/p_pacificus/PRJNA12644/p_pacificus.PRJNA12644.WS282.genomic.fa.gz
-
-https://downloads.wormbase.org/releases/WS282/species/s_ratti/PRJEB125/s_ratti.PRJEB125.WS282.annotations.gff3.gz
-https://downloads.wormbase.org/releases/WS282/species/s_ratti/PRJEB125/s_ratti.PRJEB125.WS282.genomic.fa.gz
-
-https://downloads.wormbase.org/releases/WS282/species/t_muris/PRJEB126/t_muris.PRJEB126.WS282.annotations.gff3.gz
-https://downloads.wormbase.org/releases/WS282/species/t_muris/PRJEB126/t_muris.PRJEB126.WS282.genomic.fa.gz
-
+rule download_genomes:
+	output:
+		"ref/c_elegans.PRJNA13758.WS282.annotations.gff3.gz",
+		"ref/c_elegans.PRJNA13758.WS282.genomic.fa.gz",
+		"ref/c_brenneri.PRJNA20035.WS282.annotations.gff3.gz",
+		"ref/c_brenneri.PRJNA20035.WS282.genomic.fa.gz",
+		"ref/c_briggsae.PRJNA10731.WS282.annotations.gff3.gz",
+		"ref/c_briggsae.PRJNA10731.WS282.genomic.fa.gz",
+		"ref/c_japonica.PRJNA12591.WS282.annotations.gff3.gz",
+		"ref/c_japonica.PRJNA12591.WS282.genomic.fa.gz",
+		"ref/c_remanei.PRJNA53967.WS282.annotations.gff3.gz",
+		"ref/c_remanei.PRJNA53967.WS282.genomic.fa.gz",
+		"ref/b_malayi.PRJNA10729.WS282.annotations.gff3.gz",
+		"ref/b_malayi.PRJNA10729.WS282.genomic.fa.gz",
+		"ref/o_volvulus.PRJEB513.WS282.annotations.gff3.gz",
+		"ref/o_volvulus.PRJEB513.WS282.genomic.fa.gz",
+		"ref/p_pacificus.PRJNA12644.WS282.annotations.gff3.gz",
+		"ref/p_pacificus.PRJNA12644.WS282.genomic.fa.gz",
+		"ref/s_ratti.PRJEB125.WS282.annotations.gff3.gz",
+		"ref/s_ratti.PRJEB125.WS282.genomic.fa.gz",
+		"ref/t_muris.PRJEB126.WS282.annotations.gff3.gz",
+		"ref/t_muris.PRJEB126.WS282.genomic.fa.gz"
+	shell:
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS282.annotations.gff3.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS282.genomic.fa.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"c_brenneri/PRJNA20035/c_brenneri.PRJNA20035.WS282.annotations.gff3.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"c_brenneri/PRJNA20035/c_brenneri.PRJNA20035.WS282.genomic.fa.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"c_briggsae/PRJNA10731/c_briggsae.PRJNA10731.WS282.annotations.gff3.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"c_briggsae/PRJNA10731/c_briggsae.PRJNA10731.WS282.genomic.fa.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"c_japonica/PRJNA12591/c_japonica.PRJNA12591.WS282.annotations.gff3.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"c_japonica/PRJNA12591/c_japonica.PRJNA12591.WS282.genomic.fa.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"c_remanei/PRJNA53967/c_remanei.PRJNA53967.WS282.annotations.gff3.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"c_remanei/PRJNA53967/c_remanei.PRJNA53967.WS282.genomic.fa.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"b_malayi/PRJNA10729/b_malayi.PRJNA10729.WS282.annotations.gff3.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"b_malayi/PRJNA10729/b_malayi.PRJNA10729.WS282.genomic.fa.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"o_volvulus/PRJEB513/o_volvulus.PRJEB513.WS282.annotations.gff3.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"o_volvulus/PRJEB513/o_volvulus.PRJEB513.WS282.genomic.fa.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"p_pacificus/PRJNA12644/"
+		"p_pacificus.PRJNA12644.WS282.annotations.gff3.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"p_pacificus/PRJNA12644/p_pacificus.PRJNA12644.WS282.genomic.fa.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"s_ratti/PRJEB125/s_ratti.PRJEB125.WS282.annotations.gff3.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"s_ratti/PRJEB125/s_ratti.PRJEB125.WS282.genomic.fa.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"t_muris/PRJEB126/t_muris.PRJEB126.WS282.annotations.gff3.gz"
+		" -P ref/\n"
+		"wget https://downloads.wormbase.org/releases/WS282/species/"
+		"t_muris/PRJEB126/t_muris.PRJEB126.WS282.genomic.fa.gz"
+		" -P ref/\n"
 
 
 
