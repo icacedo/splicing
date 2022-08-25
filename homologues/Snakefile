@@ -1,5 +1,7 @@
 # run blastx on all CDS sequences in the APC dataset
-# against all available core genomes on wormbase
+# against all available core genomes on WB
+# currently running tblastx
+# need to download genomic protein sequences from WB for blastx
 
 GENOMES=[
 	"c_elegans.PRJNA13758",
@@ -16,13 +18,14 @@ GENOMES=[
 
 EXTS = [".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto"]
 
-SAMPLES = ["10010", "10019"] #"10087", "10164", "10192"]
+# tblastx run using all APC CDS sequences in a single file
+# alternatively, each APC gene can be run individually
 
 rule all:
 	input:
 		#expand("output/{genome}.{sample}.test", genome=GENOMES, sample=SAMPLES)
 		#expand("output/{genome}.WS285.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
-		expand("output/{genome}.WS285.APC.blastout.tsv", genome=GENOMES)
+		expand("results/{genome}.WS285.APC.blastout.tsv", genome=GENOMES)
 		
 rule get_genomes:
 	output:
@@ -84,22 +87,22 @@ rule makeblastdb:
 		".not", ".nsq", ".ntf", ".nto")
 	shell:
 		"""
-		makeblastdb -in {input} -dbtype prot -out blastdbs/{wildcards.genome}.WS285.blastdb
+		makeblastdb -in {input} -dbtype nucl -out blastdbs/{wildcards.genome}.WS285.blastdb
 		touch {output}
 		"""
 
-# GETTING 0 HITS even againsts c. elegans, something is wrong
+# CDS fasta file name is hardcoded, should change later
 rule run_blastn:
 	input:
 		expand("blastdbs/{genome}.WS285.blastdb{ext}", genome=GENOMES, ext=EXTS),
 		#query = "queries/ch.{sample}.fa"
 	output:
 		#"output/{genome}.WS285.{sample}.blastout.tsv"
-		"output/{genome}.WS285.APC.blastout.tsv"
+		"results/{genome}.WS285.APC.blastout.tsv"
 	shell:
-		"blastx -db blastdbs/{wildcards.genome}.WS285.blastdb -query "
-		"test.fa -outfmt '7 std stitle' > {output}"
-		# -evalue 1e-3
+		"tblastx -db blastdbs/{wildcards.genome}.WS285.blastdb -query "
+		"c_elegans.apc.cds.fa -evalue 1e-3 -outfmt '7 std stitle' > {output}"
+
 
 
 
