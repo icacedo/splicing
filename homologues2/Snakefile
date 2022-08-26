@@ -11,9 +11,12 @@ SAMPLES = [
 	"t_muris.PRJEB126.WS282"
 ]
 
+# haman outputs as .gff not .gff3 like it says on github
+EXTS = [".fa", ".gff"]
+
 rule all:
 	input:
-		expand("builds/{sample}.stripped.gff3", sample=SAMPLES)
+		expand("genome_builds/{sample}.1pct{ext}", sample=SAMPLES, ext=EXTS)
 
 rule download_genomes:
 	output:
@@ -104,11 +107,27 @@ rule gff_strip:
 	input:
 		"ref/{sample}.annotations.gff3.gz"
 	output:
-		"builds/{sample}.stripped.gff3"
+		"stripped_gffs/{sample}.stripped.gff3"
 	shell:
 		"gunzip -c {input} | grep -E 'WormBase|RNASeq' > {output}"
 
+rule build_genome:
+	input:
+		fasta="ref/{sample}.genomic.fa.gz",
+		gff="stripped_gffs/{sample}.stripped.gff3"
+	output:
+		multiext("genome_builds/{sample}.1pct", ".fa", ".gff")
+	shell:
+		"haman {input.fasta} {input.gff} pct genome_builds/{wildcards.sample}.1pct --pct 1"
 
+rule build_genes:
+	input:
+		fasta=expand("genome_builds/{sample}.1pct.fa", sample=SAMPLES),
+		gff=expand("genome_builds/{sample}.1pct.gff", sample=SAMPLES)
+	output:
+		"minigene/"
+	shell:
+		"haman {input.fasta} {input.gff} pcg minigene"
 
 
 
