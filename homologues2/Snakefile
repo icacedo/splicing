@@ -1,3 +1,20 @@
+SAMPLES = [
+	"b_malayi.PRJNA10729.WS282",
+	"c_brenneri.PRJNA20035.WS282",
+	"c_briggsae.PRJNA10731.WS282",
+	"c_elegans.PRJNA13758.WS282",
+	"c_japonica.PRJNA12591.WS282",
+	"c_remanei.PRJNA53967.WS282",
+	"o_volvulus.PRJEB513.WS282",
+	"p_pacificus.PRJNA12644.WS282",
+	"s_ratti.PRJEB125.WS282",
+	"t_muris.PRJEB126.WS282"
+]
+
+rule all:
+	input:
+		expand("builds/{sample}.stripped.gff3", sample=SAMPLES)
+
 rule download_genomes:
 	output:
 		"ref/c_elegans.PRJNA13758.WS282.annotations.gff3.gz",
@@ -83,6 +100,13 @@ rule download_genomes:
 		"t_muris/PRJEB126/t_muris.PRJEB126.WS282.genomic.fa.gz"
 		" -P ref/\n"
 
+rule gff_strip:
+	input:
+		"ref/{sample}.annotations.gff3.gz"
+	output:
+		"builds/{sample}.stripped.gff3"
+	shell:
+		"gunzip -c {input} | grep -E 'WormBase|RNASeq' > {output}"
 
 
 
