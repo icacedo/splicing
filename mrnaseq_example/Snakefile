@@ -1,0 +1,13 @@
+# -62 is N2, wildtype
+# -82 is r910, smg-1 mutant
+
+rule run_hts_stats:
+	input:
+		"data/subset/SRR5811862.subset.fastq.gz"
+	output:
+		multiext("HTS_testing/SRR5811862.subset", ".stats.json", ".stats_SE.fastq.gz")
+	shell:
+		"hts_Stats -U data/subset/SRR5811862.subset.fastq.gz -L HTS_testing/"
+		"SRR5811862.subset.stats.json -f HTS_testing/SRR5811862.subset.stats"
+		
+
