@@ -1,3 +1,4 @@
 .DS_Store
 __pycache__
 build
+mrnaseq_example/data/raw_data/
