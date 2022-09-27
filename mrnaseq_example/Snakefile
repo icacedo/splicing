@@ -1,5 +1,15 @@
 # -62 is N2, wildtype
 # -82 is r910, smg-1 mutant
+# data from Muir et. al. 2018
+# GEO accession number GSE100929
+# go to SRA Run Selector
+
+# pipe hts_Stats to hts_SeqScreener
+# runs basic stats and counts rrna (rrna ref seq from NCBI)
+# phix reads screened out by default
+# i do not know what adapter or phix sequence was used
+# hts_SuperDeduper finds and removes duplicates, but the workshop 
+# says to NEVER do PCR duplicate removal on single-end reads, i am not sure why
 
 SAMPLES=[
 	"SRR5811862.subset"
@@ -7,49 +17,40 @@ SAMPLES=[
 
 rule all:
 	input:
-		expand("HTS_testing/{sample}.streamed.json", sample=SAMPLES),
-		expand("HTS_testing/{sample}.streamed_SE.fastq.gz", sample=SAMPLES)
+		expand("HTS_testing/{sample}.htsStats.json", sample=SAMPLES)
+		#expand("HTS_testing/{sample}.streamed.json", sample=SAMPLES),
+		#expand("HTS_testing/{sample}.streamed_SE.fastq.gz", sample=SAMPLES)
 		
-'''
-# gets basic statistics about read data
-rule basic_stats:
-	input:
-		"data/subset/{sample}.fastq.gz"
-	output:
-		multiext("HTS_testing/{sample}", ".stats.json", ".stats_SE.fastq.gz")
-	shell:
-		"hts_Stats -U {input} -L HTS_testing/{wildcards.sample}.stats.json -f "
-		"HTS_testing/{wildcards.sample}.stats"
-		
-# count ribosomal rna
-# rrna ref sequences from NCBI
-rule count_rrna:
-	input:
-		"HTS_testing/{sample}.stats.json"
-		fastq = "data/subset/SRR5811862.subset.fastq.gz",
-		ref = "references/celegans_rrna.fasta"
-	output:
-		multiext("HTS_testing/SRR5811862.subset", ".rrna.json", ".rrna_SE.fastq.gz")
-	shell:
-		"hts_SeqScreener -A {input}
-		
-
-'''
-# pipe hts_Stats to hts_SeqScreener
-# runs basic stats and counts rrna (rrna ref seq from NCBI)
-# phix reads screened out by default
 rule stream_hts:
 	input:
 		mrna = "data/subset/{sample}.fastq.gz",
 		rrna = "references/celegans_rrna.fasta"
 	output:
-		multiext("HTS_testing/{sample}", ".streamed.json", \
-		".streamed_SE.fastq.gz")
+		multiext("HTS_testing/{sample}", ".htsStats.json", \
+		".htstream_SE.fastq.gz")
 	shell:
-		"hts_Stats -U {input.mrna} -L "
-		"HTS_testing/{wildcards.sample}.streamed.json | hts_SeqScreener -A "
-		"HTS_testing/{wildcards.sample}.streamed.json -r -s {input.rrna} -f "
-		"HTS_testing/{wildcards.sample}.streamed"
+		"hts_Stats -L HTS_testing/{wildcards.sample}.htsStats.json "
+		"-N 'initial stats' -U {input.mrna} | "
+		"hts_SeqScreener -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"-N 'screen phix' | "
+		"hts_SeqScreener -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"-N 'count the number of rRNA reads' -r -s {input.rrna} | "
+		"hts_SuperDeduper -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"-N 'remove PCR duplicates' | "
+		"hts_AdapterTrimmer -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"-N 'trim adapters' | "
+		"hts_PolyATTrim -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"-N 'trim adapters' | "
+		"hts_NTrimmer -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"-N 'remove any remaining 'N' characters' | "
+		"hts_QWindowTrim -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"-N 'quality trim the ends of reads' | "
+		"hts_LengthFilter -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"-N 'remove reads < 50 bp' -n -m 50 | "
+		"hts_Stats -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"-f HTS_testing/{wildcards.sample}.htstream > HTS_testing/out.tab"
+		
+		
 		
 	
 	
