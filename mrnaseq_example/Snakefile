@@ -4,22 +4,14 @@
 # GEO accession number GSE100929
 # go to SRA Run Selector
 
-# pipe hts_Stats to hts_SeqScreener
-# runs basic stats and counts rrna (rrna ref seq from NCBI)
-# phix reads screened out by default
-# i do not know what adapter or phix sequence was used
-# hts_SuperDeduper finds and removes duplicates, but the workshop 
-# says to NEVER do PCR duplicate removal on single-end reads, i am not sure why
-
 SAMPLES=[
 	"SRR5811862.subset"
 ]
 
 rule all:
 	input:
-		expand("HTS_testing/{sample}.htsStats.json", sample=SAMPLES)
-		#expand("HTS_testing/{sample}.streamed.json", sample=SAMPLES),
-		#expand("HTS_testing/{sample}.streamed_SE.fastq.gz", sample=SAMPLES)
+		expand("HTS_testing/{sample}.htsStats.json", sample=SAMPLES),
+		expand("HTS_testing/{sample}.htstream_SE.fastq.gz", sample=SAMPLES)
 		
 rule stream_hts:
 	input:
@@ -31,12 +23,18 @@ rule stream_hts:
 	shell:
 		"hts_Stats -L HTS_testing/{wildcards.sample}.htsStats.json "
 		"-N 'initial stats' -U {input.mrna} | "
+		# phix reads are screened out by default
+		# uknown phix sequence
 		"hts_SeqScreener -A HTS_testing/{wildcards.sample}.htsStats.json "
 		"-N 'screen phix' | "
 		"hts_SeqScreener -A HTS_testing/{wildcards.sample}.htsStats.json "
 		"-N 'count the number of rRNA reads' -r -s {input.rrna} | "
+		# UCD bioinformatics core recommends to NEVER remove PCR duplicates
+		# on single-end reads, not sure why though
 		"hts_SuperDeduper -A HTS_testing/{wildcards.sample}.htsStats.json "
 		"-N 'remove PCR duplicates' | "
+		# unknown adapter sequence, likely already removed
+		# htstream provides a default adapter sequence (not applicable here)
 		"hts_AdapterTrimmer -A HTS_testing/{wildcards.sample}.htsStats.json "
 		"-N 'trim adapters' | "
 		"hts_PolyATTrim -A HTS_testing/{wildcards.sample}.htsStats.json "
@@ -50,7 +48,26 @@ rule stream_hts:
 		"hts_Stats -A HTS_testing/{wildcards.sample}.htsStats.json "
 		"-f HTS_testing/{wildcards.sample}.htstream > HTS_testing/out.tab"
 		
-		
+rule gff_to_gtf:
+	input:
+		"references/1pct_elegans.gff3"
+	output:
+		"references/1pct_elegans.gtf2"
+	shell:
+		"gffread {input} -T -o {output}"
+
+rule index_genome:
+	input:
+		fasta="references/1pct_elegans.fa",
+		gtf2="references/1pct_elegans.gtf2"
+	output:
+		# if directory is pre-existing, files will not be generated
+		directory("star_index/")	
+	shell:
+		"STAR --runThreadN 1 --runMode genomeGenerate --genomeDir {output} "
+		"--genomeFastaFiles {input.fasta} --sjdbGTFfile {input.gtf2} "
+		"--sjdbOverhang 100"
+
 		
 	
 	
