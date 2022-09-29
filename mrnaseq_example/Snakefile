@@ -64,11 +64,13 @@ rule index_genome:
 		# if directory is pre-existing, files will not be generated
 		directory("star_index/")	
 	shell:
+		# need to scale down --genomeSAindexNbases for small genomes
 		"STAR --runThreadN 1 --runMode genomeGenerate --genomeDir {output} "
 		"--genomeFastaFiles {input.fasta} --sjdbGTFfile {input.gtf2} "
 		"--sjdbOverhang 100"
 
-		
+STAR --runThreadN 1 --genomeDir star_index/ --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix test_htstream_ --readFilesCommand zcat --readFilesIn HTS_testing/SRR5811862.subset.htstream_SE.fastq.gz 
+
 	
 	
 	
