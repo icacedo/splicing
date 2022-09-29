@@ -7,11 +7,12 @@
 SAMPLES=[
 	"SRR5811862.subset"
 ]
-
+'''
 rule all:
 	input:
 		expand("HTS_testing/{sample}.htsStats.json", sample=SAMPLES),
-		expand("HTS_testing/{sample}.htstream_SE.fastq.gz", sample=SAMPLES)
+		expand("HTS_testing/{sample}.htstream_SE.fastq.gz", sample=SAMPLES),	
+		directory("star_counts/")
 		
 rule stream_hts:
 	input:
@@ -58,8 +59,8 @@ rule gff_to_gtf:
 
 rule index_genome:
 	input:
-		fasta="references/1pct_elegans.fa",
-		gtf2="references/1pct_elegans.gtf2"
+		fasta = "references/1pct_elegans.fa",
+		gtf2 = "references/1pct_elegans.gtf2"
 	output:
 		# if directory is pre-existing, files will not be generated
 		directory("star_index/")	
@@ -68,8 +69,37 @@ rule index_genome:
 		"STAR --runThreadN 1 --runMode genomeGenerate --genomeDir {output} "
 		"--genomeFastaFiles {input.fasta} --sjdbGTFfile {input.gtf2} "
 		"--sjdbOverhang 100"
+		
+# ian says don't ever soft or hard clip reads
+# throwing away information
+'''
 
-STAR --runThreadN 1 --genomeDir star_index/ --outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix test_htstream_ --readFilesCommand zcat --readFilesIn HTS_testing/SRR5811862.subset.htstream_SE.fastq.gz 
+rule all:
+	input:
+		expand("star_counts/{sample}.htstream_SE.Aligned.sortedByCoord.out.bam", \
+		sample=SAMPLES), 
+		expand("star_counts/{sample}.htstream_SE.Log.progress.out", \
+		sample=SAMPLES), 
+		expand("star_counts/{sample}.htstream_SE.Log.final.out", \
+		sample=SAMPLES),
+		expand("star_counts/{sample}.htstream_SE.ReadsPerGene.out.tab", \
+		sample=SAMPLES), 
+		expand("star_counts/{sample}.htstream_SE.Log.out", sample=SAMPLES),
+		expand("star_counts/{sample}.htstream_SE.SJ.out.tab", sample=SAMPLES)
+
+rule count_reads:
+	input:
+		gdir = "star_index/",
+		reads = "HTS_testing/{sample}.htstream_SE.fastq.gz"
+	output:
+		multiext("star_counts/{sample}.htstream_SE.", \
+		"Aligned.sortedByCoord.out.bam", "Log.progress.out", "Log.final.out", \
+		"ReadsPerGene.out.tab", "Log.out", "SJ.out.tab")
+	shell:
+		"STAR --runThreadN 1 --genomeDir {input.gdir} --outSAMtype "
+		"BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix "
+		"star_counts/{wildcards.sample}.htstream_SE. --readFilesCommand zcat "
+		"--readFilesIn {input.reads}" 
 
 	
 	
