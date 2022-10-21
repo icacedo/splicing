@@ -1,0 +1,9 @@
+don't use multimapped reads
+multimapped reads are reads that align to more than one place in the genome
+command line arguments for subread used:
+quick start guide used: https://subread.sourceforge.net/subjunc.html
+
+subread-buildindex -o index/1pct_elegans ../references/1pct_elegans.fa
+
+
+there is an error. no 'gene_id' identifier attribute in the gtf or gff file
