@@ -1,144 +1,72 @@
-# -62 is N2, wildtype
-# -82 is r910, smg-1 mutant
-# data from Muir et. al. 2018
-# GEO accession number GSE100929
-# go to SRA Run Selector
-
 SAMPLES=[
-	"SRR5811862.subset"
+	"SRR5811862.subset",
+	"SRR5811882.subset"
 ]
 '''
 rule all:
 	input:
-		expand("HTS_testing/{sample}.htsStats.json", sample=SAMPLES),
-		expand("HTS_testing/{sample}.htstream_SE.fastq.gz", sample=SAMPLES),	
-		directory("star_counts/")
-		
+		expand("HTS_output/{sample}.htsStats.json", sample=SAMPLES),
+		expand("HTS_output/{sample}.htstream_SE.fastq.gz", sample=SAMPLES)
+
 rule stream_hts:
 	input:
 		mrna = "data/subset/{sample}.fastq.gz",
 		rrna = "references/celegans_rrna.fasta"
 	output:
-		multiext("HTS_testing/{sample}", ".htsStats.json", \
+		multiext("HTS_output/{sample}", ".htsStats.json", \
 		".htstream_SE.fastq.gz")
 	shell:
-		"hts_Stats -L HTS_testing/{wildcards.sample}.htsStats.json "
+		"hts_Stats -L HTS_output/{wildcards.sample}.htsStats.json "
 		"-N 'initial stats' -U {input.mrna} | "
-		# phix reads are screened out by default
-		# uknown phix sequence
-		"hts_SeqScreener -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"hts_SeqScreener -A HTS_output/{wildcards.sample}.htsStats.json "
 		"-N 'screen phix' | "
-		"hts_SeqScreener -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"hts_SeqScreener -A HTS_output/{wildcards.sample}.htsStats.json "
 		"-N 'count the number of rRNA reads' -r -s {input.rrna} | "
-		# UCD bioinformatics core recommends to NEVER remove PCR duplicates
-		# on single-end reads, not sure why though
-		"hts_SuperDeduper -A HTS_testing/{wildcards.sample}.htsStats.json "
-		"-N 'remove PCR duplicates' | "
-		# unknown adapter sequence, likely already removed
-		# htstream provides a default adapter sequence (not applicable here)
-		"hts_AdapterTrimmer -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"hts_PolyATTrim -A HTS_output/{wildcards.sample}.htsStats.json "
 		"-N 'trim adapters' | "
-		"hts_PolyATTrim -A HTS_testing/{wildcards.sample}.htsStats.json "
-		"-N 'trim adapters' | "
-		"hts_NTrimmer -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"hts_NTrimmer -A HTS_output/{wildcards.sample}.htsStats.json "
 		"-N 'remove any remaining 'N' characters' | "
-		"hts_QWindowTrim -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"hts_QWindowTrim -A HTS_output/{wildcards.sample}.htsStats.json "
 		"-N 'quality trim the ends of reads' | "
-		"hts_LengthFilter -A HTS_testing/{wildcards.sample}.htsStats.json "
+		"hts_LengthFilter -A HTS_output/{wildcards.sample}.htsStats.json "
 		"-N 'remove reads < 50 bp' -n -m 50 | "
-		"hts_Stats -A HTS_testing/{wildcards.sample}.htsStats.json "
-		"-f HTS_testing/{wildcards.sample}.htstream > HTS_testing/out.tab"
-		
-rule gff_to_gtf:
-	input:
-		"references/1pct_elegans.gff3"
-	output:
-		"references/1pct_elegans.gtf2"
-	shell:
-		"gffread {input} -T -o {output}"
+		"hts_Stats -A HTS_output/{wildcards.sample}.htsStats.json "
+		"-f HTS_output/{wildcards.sample}.htstream > HTS_output/out.tab"
+'''		
+EXTS=[
+	"1.ht2", 
+	"2.ht2", 
+	"3.ht2", 
+	"4.ht2",
+	"5.ht2", 
+	"6.ht2", 
+	"7.ht2", 
+	"8.ht2"
+]
 
-rule index_genome:
-	input:
-		fasta = "references/1pct_elegans.fa",
-		gtf2 = "references/1pct_elegans.gtf2"
-	output:
-		# if directory is pre-existing, files will not be generated
-		directory("star_index/")	
-	shell:
-		# need to scale down --genomeSAindexNbases for small genomes
-		"STAR --runThreadN 1 --runMode genomeGenerate --genomeDir {output} "
-		"--genomeFastaFiles {input.fasta} --sjdbGTFfile {input.gtf2} "
-		"--sjdbOverhang 100"
-		
-# ian says don't ever soft or hard clip reads
-# throwing away information
-'''
-'''
+REFGEN="references/1pct_elegans.fa"
+
 rule all:
 	input:
-		expand("star_counts/{sample}.htstream_SE.Aligned.sortedByCoord.out.bam", \
-		sample=SAMPLES), 
-		expand("star_counts/{sample}.htstream_SE.Log.progress.out", \
-		sample=SAMPLES), 
-		expand("star_counts/{sample}.htstream_SE.Log.final.out", \
-		sample=SAMPLES),
-		expand("star_counts/{sample}.htstream_SE.ReadsPerGene.out.tab", \
-		sample=SAMPLES), 
-		expand("star_counts/{sample}.htstream_SE.Log.out", sample=SAMPLES),
-		expand("star_counts/{sample}.htstream_SE.SJ.out.tab", sample=SAMPLES)
-'''
+		expand("HISAT2_index/{sample}.{ext}", sample=SAMPLES, ext=EXTS)
 		
-rule all:
-	input:
-		expand("samtools_index/{sample}.htstream_SE.Aligned."\
-		+"sortedByCoord.out.bam.bai", sample=SAMPLES)
-		
-rule count_reads:
-	input:
-		gdir = "star_index/",
-		reads = "HTS_testing/{sample}.htstream_SE.fastq.gz"
+rule build_index:
 	output:
-		multiext("star_counts/{sample}.htstream_SE.", \
-		"Aligned.sortedByCoord.out.bam", "Log.progress.out", "Log.final.out", \
-		"ReadsPerGene.out.tab", "Log.out", "SJ.out.tab")
-	shell:
-		"STAR --runThreadN 1 --genomeDir {input.gdir} --outSAMtype "
-		"BAM SortedByCoordinate --quantMode GeneCounts --outFileNamePrefix "
-		"star_counts/{wildcards.sample}.htstream_SE. --readFilesCommand zcat "
-		"--readFilesIn {input.reads}" 
+		multiext("HISAT2_index/{sample}.", "1.ht2", "2.ht2", "3.ht2", "4.ht2", \
+		"5.ht2", "6.ht2", "7.ht2", "8.ht2")
+	params:
+		ref=REFGEN
+	shell:		
+		"hisat2-build {params.ref} HISAT2_index/{wildcards.sample}"
 		
-# ReadsPerGene.out.tab (GeneCounts output) columns (from manual):
-# 1: gene ID, 2: counts for unstranded RNA-seq, 3: counts for the 1st read 
-# strand aligned with RNA, 4: counts for the 2nd read strand aligned with RNA
-# choose the column based on your strandedness
-# (UCD Bioinformatics Core) use the ReadsPerGene file to generate a file for
-# analysis in R (generating counts tables)
-
-rule index_bam:	
-	input:
-		"star_counts/{sample}.htstream_SE.Aligned.sortedByCoord.out.bam"
-	output:
-		"samtools_index/{sample}.htstream_SE.Aligned.sortedByCoord.out.bam.bai"
-	shell:
-		"samtools index {input} -o {output}"
-	
-# next step: salmon
-# reference based or de-novo?
-# where to get the reference sequences? find a paper that used this method
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+rule 
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
