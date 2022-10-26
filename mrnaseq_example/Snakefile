@@ -7,7 +7,27 @@ rule all:
 	input:
 		expand("HTS_output/{sample}.htsStats.json", sample=SAMPLES),
 		expand("HTS_output/{sample}.htstream_SE.fastq.gz", sample=SAMPLES)
+'''
 
+		
+EXT1S=[
+	"1.ht2", 
+	"2.ht2", 
+	"3.ht2", 
+	"4.ht2",
+	"5.ht2", 
+	"6.ht2", 
+	"7.ht2", 
+	"8.ht2"
+]
+
+REFGEN="references/1pct_elegans.fa"
+
+rule all:
+	input:
+		expand("HISAT2_index/{sample}.{ext1}", sample=SAMPLES, ext=EXT1S)
+		expand("
+		
 rule stream_hts:
 	input:
 		mrna = "data/subset/{sample}.fastq.gz",
@@ -32,23 +52,6 @@ rule stream_hts:
 		"-N 'remove reads < 50 bp' -n -m 50 | "
 		"hts_Stats -A HTS_output/{wildcards.sample}.htsStats.json "
 		"-f HTS_output/{wildcards.sample}.htstream > HTS_output/out.tab"
-'''		
-EXTS=[
-	"1.ht2", 
-	"2.ht2", 
-	"3.ht2", 
-	"4.ht2",
-	"5.ht2", 
-	"6.ht2", 
-	"7.ht2", 
-	"8.ht2"
-]
-
-REFGEN="references/1pct_elegans.fa"
-
-rule all:
-	input:
-		expand("HISAT2_index/{sample}.{ext}", sample=SAMPLES, ext=EXTS)
 		
 rule build_index:
 	output:
@@ -60,10 +63,14 @@ rule build_index:
 		"hisat2-build {params.ref} HISAT2_index/{wildcards.sample}"
 		
 rule get_junctions:
-	output:
 	input:
+		expand("HTS_output/{sample}.htstream_SE.fastq.gz", sample=SAMPLES)
+	output:
+		multiext("HISAT2_output/{sample}.", "sam", "junctions")	
 	shell:
-		"hisat2 -x HISAT2_index/{wildcards.sample} -U 
+		"hisat2 -x HISAT2_index/{wildcards.sample} -U {input} "
+		"-S HISAT2_output/{wildcards.sample}.sam --novel-splicesite-outfile "
+		"HISAT2_output/{sample}.junctions"
 		
 		
 		
