@@ -59,7 +59,11 @@ rule build_index:
 	shell:		
 		"hisat2-build {params.ref} HISAT2_index/{wildcards.sample}"
 		
-rule 
+rule get_junctions:
+	output:
+	input:
+	shell:
+		"hisat2 -x HISAT2_index/{wildcards.sample} -U 
 		
 		
 		
