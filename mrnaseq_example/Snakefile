@@ -2,46 +2,45 @@ SAMPLES=[
 	"SRR5811862.subset",
 	"SRR5811882.subset"
 ]
-'''
-rule all:
-	input:
-		expand("HTS_output/{sample}.htsStats.json", sample=SAMPLES),
-		expand("HTS_output/{sample}.htstream_SE.fastq.gz", sample=SAMPLES)
-'''
 
-		
-EXT1S=[
-	"1.ht2", 
-	"2.ht2", 
-	"3.ht2", 
-	"4.ht2",
-	"5.ht2", 
-	"6.ht2", 
-	"7.ht2", 
-	"8.ht2"
-]
+EXT1S=["1.ht2", "2.ht2", "3.ht2", "4.ht2", "5.ht2", "6.ht2", "7.ht2", "8.ht2"]
 
+EXT2S=["sam", "junctions"]
+
+GENOME=["1pct_elegans"]
+
+REFrRNA="references/celegans_rrna.fasta"
+SAMPLEmRNA=expand("data/subset/{sample}.fastq.gz", sample=SAMPLES)
 REFGEN="references/1pct_elegans.fa"
 
 rule all:
 	input:
+		expand("HTS_output/{sample}.htsStats.json", sample=SAMPLES),
+		expand("HTS_output/{sample}.htstream_SE.fastq.gz", sample=SAMPLES),
+		expand("HISAT2_index/{genome}.{ext1}", genome=GENOME, ext1=EXT1S),
+		#multiext("HISAT2_output/{sample}.", "sam", "junctions")
+		expand("HISAT2_output/{sample}.{ext2}", sample=SAMPLES, ext2=EXT2S)	
+
+'''
+rule all:
+	input:
 		expand("HISAT2_index/{sample}.{ext1}", sample=SAMPLES, ext=EXT1S)
 		expand("
-		
+'''
 rule stream_hts:
-	input:
-		mrna = "data/subset/{sample}.fastq.gz",
-		rrna = "references/celegans_rrna.fasta"
 	output:
 		multiext("HTS_output/{sample}", ".htsStats.json", \
 		".htstream_SE.fastq.gz")
+	params:
+		rrna=REFrRNA,
+		mrna=SAMPLEmRNA
 	shell:
 		"hts_Stats -L HTS_output/{wildcards.sample}.htsStats.json "
-		"-N 'initial stats' -U {input.mrna} | "
+		"-N 'initial stats' -U {params.mrna} | "
 		"hts_SeqScreener -A HTS_output/{wildcards.sample}.htsStats.json "
 		"-N 'screen phix' | "
 		"hts_SeqScreener -A HTS_output/{wildcards.sample}.htsStats.json "
-		"-N 'count the number of rRNA reads' -r -s {input.rrna} | "
+		"-N 'count the number of rRNA reads' -r -s {params.rrna} | "
 		"hts_PolyATTrim -A HTS_output/{wildcards.sample}.htsStats.json "
 		"-N 'trim adapters' | "
 		"hts_NTrimmer -A HTS_output/{wildcards.sample}.htsStats.json "
@@ -52,25 +51,39 @@ rule stream_hts:
 		"-N 'remove reads < 50 bp' -n -m 50 | "
 		"hts_Stats -A HTS_output/{wildcards.sample}.htsStats.json "
 		"-f HTS_output/{wildcards.sample}.htstream > HTS_output/out.tab"
-		
+
 rule build_index:
 	output:
-		multiext("HISAT2_index/{sample}.", "1.ht2", "2.ht2", "3.ht2", "4.ht2", \
+		multiext("HISAT2_index/{genome}.", "1.ht2", "2.ht2", "3.ht2", "4.ht2", \
 		"5.ht2", "6.ht2", "7.ht2", "8.ht2")
 	params:
 		ref=REFGEN
 	shell:		
-		"hisat2-build {params.ref} HISAT2_index/{wildcards.sample}"
-		
+		"hisat2-build {params.ref} HISAT2_index/{wildcards.genome}"
+
 rule get_junctions:
 	input:
-		expand("HTS_output/{sample}.htstream_SE.fastq.gz", sample=SAMPLES)
+		"HTS_output/{sample}.htstream_SE.fastq.gz"
 	output:
 		multiext("HISAT2_output/{sample}.", "sam", "junctions")	
+	params:
+		index=GENOME
 	shell:
-		"hisat2 -x HISAT2_index/{wildcards.sample} -U {input} "
+		"hisat2 -x HISAT2_index/{params.index} -U {input} "
 		"-S HISAT2_output/{wildcards.sample}.sam --novel-splicesite-outfile "
-		"HISAT2_output/{sample}.junctions"
+		"HISAT2_output/{wildcards.sample}.junctions"
+		
+'''
+samtools view -b HISAT2_output/SRR5811882.subset.sam -o SRR5811882.subset.bam
+bam2bed --keep-header < SRR5811882.subset.bam > SRR5811882.subset.bed
+
+look at STAR Output splice junctions (SJ.out.tab), might be a better way to get
+read counts that map to junctions
+
+IGV requires a FASTA file and index file to upload a genome
+What does a single index file look like?
+'''
+
 		
 		
 		
