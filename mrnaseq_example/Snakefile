@@ -21,12 +21,6 @@ rule all:
 		#multiext("HISAT2_output/{sample}.", "sam", "junctions")
 		expand("HISAT2_output/{sample}.{ext2}", sample=SAMPLES, ext2=EXT2S)	
 
-'''
-rule all:
-	input:
-		expand("HISAT2_index/{sample}.{ext1}", sample=SAMPLES, ext=EXT1S)
-		expand("
-'''
 rule stream_hts:
 	output:
 		multiext("HTS_output/{sample}", ".htsStats.json", \
@@ -79,6 +73,22 @@ bam2bed --keep-header < SRR5811882.subset.bam > SRR5811882.subset.bed
 
 look at STAR Output splice junctions (SJ.out.tab), might be a better way to get
 read counts that map to junctions
+
+subread has a tool called feature counts that can generate a junctions.bed file
+from a bam file
+use -J juncCounts
+
+featureCounts [options] -a <annotation_file> -o <output_file> input_file1 [input_file2] ... 
+
+
+use gffread to convert gff to gtf
+
+problems with AGAT:
+https://github.com/NBISweden/AGAT/issues/231
+could not get AGAT to work
+
+GenomeTools and bioinfokit has problems with 1pt elegans gff file
+maybe something wrong with grimoire/haman?
 
 IGV requires a FASTA file and index file to upload a genome
 What does a single index file look like?
