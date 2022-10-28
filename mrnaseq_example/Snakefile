@@ -89,6 +89,13 @@ could not get AGAT to work
 
 GenomeTools and bioinfokit has problems with 1pt elegans gff file
 maybe something wrong with grimoire/haman?
+1pt is missing some stuff at the beginner of the file
+
+https://agat.readthedocs.io/en/latest/gff_to_gtf.html
+
+bedops bedmap --indicator counts reads that overlap exons
+
+TransDecoder works with featureCounts!
 
 IGV requires a FASTA file and index file to upload a genome
 What does a single index file look like?
