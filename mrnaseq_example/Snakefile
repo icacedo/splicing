@@ -80,22 +80,24 @@ use -J juncCounts
 
 featureCounts [options] -a <annotation_file> -o <output_file> input_file1 [input_file2] ... 
 
-
-use gffread to convert gff to gtf
+use gffread to convert gff to gtf, subread does not like the output
 
 problems with AGAT:
 https://github.com/NBISweden/AGAT/issues/231
 could not get AGAT to work
-
-GenomeTools and bioinfokit has problems with 1pt elegans gff file
-maybe something wrong with grimoire/haman?
-1pt is missing some stuff at the beginner of the file
-
-https://agat.readthedocs.io/en/latest/gff_to_gtf.html
+AGAT broken
+GenomeTools does not work with whole gff file or 1pct gff file
+Bioinfokit has problems with 1pt elegans gff file
+1pct is missing some metadata at the beginner of the file
 
 bedops bedmap --indicator counts reads that overlap exons
+confused on how to used bedmap
 
 TransDecoder works with featureCounts!
+featureCounts -J outputs a very weird junctions.bed file when using 1pct
+However, when transdecoder is used with the full gff file and not the 1pct
+and the subseted fasta file is used, featureCounts outputs a normal looking
+.jcounts file
 
 IGV requires a FASTA file and index file to upload a genome
 What does a single index file look like?
