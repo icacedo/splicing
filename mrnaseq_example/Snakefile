@@ -94,13 +94,19 @@ bedops bedmap --indicator counts reads that overlap exons
 confused on how to used bedmap
 
 TransDecoder works with featureCounts!
-featureCounts -J outputs a very weird junctions.bed file when using 1pct
-However, when transdecoder is used with the full gff file and not the 1pct
-and the subseted fasta file is used, featureCounts outputs a normal looking
+gff3_gene_to_gtf_format.pl references/1pct_elegans.gff3 references/1pct_elegans.fa > 1pct_elegans.transdecoder.gtf
 .jcounts file
 
 IGV requires a FASTA file and index file to upload a genome
 What does a single index file look like?
+
+Running STAR:
+Generate genome indices:
+
+STAR --runMode genomeGenerate --genomeDir index/ --genomeFastaFiles ../../references/1pct_elegans.fa --sjdbGTFfile ../../1pct.gffread.gtf
+*gffread generated GTF file works here
+
+ 
 '''
 
 		
