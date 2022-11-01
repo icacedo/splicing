@@ -76,6 +76,9 @@ read counts that map to junctions
 
 subread has a tool called feature counts that can generate a junctions.bed file
 from a bam file
+
+subread-buildindex -o index/1pct.subread ../../references/1pct_elegans.fa 
+
 use -J juncCounts
 
 featureCounts [options] -a <annotation_file> -o <output_file> input_file1 [input_file2] ... 
@@ -106,7 +109,19 @@ Generate genome indices:
 STAR --runMode genomeGenerate --genomeDir index/ --genomeFastaFiles ../../references/1pct_elegans.fa --sjdbGTFfile ../../1pct.gffread.gtf
 *gffread generated GTF file works here
 
- 
+STAR --genomeDir index/ --outSAMtype BAM SortedByCoordinate --readFilesCommand zcat --readFilesIn ../../data/subset/SRR5811882.subset.fastq.gz --quantMode GeneCounts --outFileNamePrefix results/STAR.82. outWigType bedGraph
+bedgraph files are .bg
+Look at SJ.out.tab file, and see page 14 in the STAR manual
+
+Maybe can use subread to generate bed file from STAR output:
+ subjunc -i index/1pct -r ../../data/subset/SRR5811882.subset.fastq.gz -o subjunc_results.bam --allJunctions
+this makes a .bed file
+but use --BAMinput and give STAR made bam file ( still keep -r, just give bam file)
+the junctions file doesn't look any different whether I give it the STAR file or not
+maybe STAR is the issue? who knows
+
+
+
 '''
 
 		
