@@ -12,14 +12,13 @@ GENOME=["1pct_elegans"]
 REFrRNA="references/celegans_rrna.fasta"
 SAMPLEmRNA=expand("data/subset/{sample}.fastq.gz", sample=SAMPLES)
 REFGEN="references/1pct_elegans.fa"
+STAR_genomeSAindexNbases=8
 
 rule all:
 	input:
 		expand("HTS_output/{sample}.htsStats.json", sample=SAMPLES),
 		expand("HTS_output/{sample}.htstream_SE.fastq.gz", sample=SAMPLES),
-		expand("HISAT2_index/{genome}.{ext1}", genome=GENOME, ext1=EXT1S),
-		#multiext("HISAT2_output/{sample}.", "sam", "junctions")
-		expand("HISAT2_output/{sample}.{ext2}", sample=SAMPLES, ext2=EXT2S)	
+		directory("star_index/")
 
 rule stream_hts:
 	output:
@@ -46,64 +45,48 @@ rule stream_hts:
 		"hts_Stats -A HTS_output/{wildcards.sample}.htsStats.json "
 		"-f HTS_output/{wildcards.sample}.htstream > HTS_output/out.tab"
 
-rule build_index:
+rule build_star_index:
 	output:
-		multiext("HISAT2_index/{genome}.", "1.ht2", "2.ht2", "3.ht2", "4.ht2", \
-		"5.ht2", "6.ht2", "7.ht2", "8.ht2")
+		directory("star_index/")
 	params:
-		ref=REFGEN
-	shell:		
-		"hisat2-build {params.ref} HISAT2_index/{wildcards.genome}"
-
-rule get_junctions:
-	input:
-		"HTS_output/{sample}.htstream_SE.fastq.gz"
-	output:
-		multiext("HISAT2_output/{sample}.", "sam", "junctions")	
-	params:
-		index=GENOME
+		ref=REFGEN,
+		str_len=STAR_genomeSAindexNbases
 	shell:
-		"hisat2 -x HISAT2_index/{params.index} -U {input} "
-		"-S HISAT2_output/{wildcards.sample}.sam --novel-splicesite-outfile "
-		"HISAT2_output/{wildcards.sample}.junctions"
+		"STAR --runMode genomeGenerate --genomeSAindexNbases {params.str_len} "
+		"--genomeDir star_index/ --genomeFastaFiles {params.ref} --sjdbGTFfile "
+		"references/1pct_elegans.gffread.gtf"
 		
-'''
-samtools view -b HISAT2_output/SRR5811882.subset.sam -o SRR5811882.subset.bam
-bam2bed --keep-header < SRR5811882.subset.bam > SRR5811882.subset.bed
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Maybe can use subread to generate bed file from STAR output:
- subjunc -i index/1pct -r ../../data/subset/SRR5811882.subset.fastq.gz -o subjunc_results.bam --allJunctions
-this makes a .bed file
-but use --BAMinput and give STAR made bam file ( still keep -r, just give bam file)
-the junctions file doesn't look any different whether I give it the STAR file or not
-maybe STAR is the issue? who knows
 
 
 
 '''
+		"star_index/chrLength.txt",
+		"star_index/chrNameLength.txt",
+		"star_index/chrName.txt",
+		"star_index/chrStart.txt",
+		"star_index/exonGeTrInfo.tab",
+		"star_index/exonInfo.tab",
+		"star_index/geneInfo.tab",
+		"star_index/Genome",
+		"star_index/genomeParameters.txt",
+		"star_index/Log.out",
+		"star_index/SA",
+		"star_index/SAindex",
+		"star_index/sjdbInfo.txt",
+		"star_index/sjdbList.fromGTF.out.tab",
+		"star_index/sjdbList.out.tab",
+		"star_index/transcriptInfo.tab"
+'''
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
+
+
