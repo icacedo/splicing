@@ -71,47 +71,20 @@ rule get_junctions:
 samtools view -b HISAT2_output/SRR5811882.subset.sam -o SRR5811882.subset.bam
 bam2bed --keep-header < SRR5811882.subset.bam > SRR5811882.subset.bed
 
-look at STAR Output splice junctions (SJ.out.tab), might be a better way to get
-read counts that map to junctions
 
-subread has a tool called feature counts that can generate a junctions.bed file
-from a bam file
 
-subread-buildindex -o index/1pct.subread ../../references/1pct_elegans.fa 
 
-use -J juncCounts
 
-featureCounts [options] -a <annotation_file> -o <output_file> input_file1 [input_file2] ... 
 
-use gffread to convert gff to gtf, subread does not like the output
 
-problems with AGAT:
-https://github.com/NBISweden/AGAT/issues/231
-could not get AGAT to work
-AGAT broken
-GenomeTools does not work with whole gff file or 1pct gff file
-Bioinfokit has problems with 1pt elegans gff file
-1pct is missing some metadata at the beginner of the file
 
-bedops bedmap --indicator counts reads that overlap exons
-confused on how to used bedmap
 
-TransDecoder works with featureCounts!
-gff3_gene_to_gtf_format.pl references/1pct_elegans.gff3 references/1pct_elegans.fa > 1pct_elegans.transdecoder.gtf
-.jcounts file
 
-IGV requires a FASTA file and index file to upload a genome
-What does a single index file look like?
 
-Running STAR:
-Generate genome indices:
 
-STAR --runMode genomeGenerate --genomeDir index/ --genomeFastaFiles ../../references/1pct_elegans.fa --sjdbGTFfile ../../1pct.gffread.gtf
-*gffread generated GTF file works here
 
-STAR --genomeDir index/ --outSAMtype BAM SortedByCoordinate --readFilesCommand zcat --readFilesIn ../../data/subset/SRR5811882.subset.fastq.gz --quantMode GeneCounts --outFileNamePrefix results/STAR.82. outWigType bedGraph
-bedgraph files are .bg
-Look at SJ.out.tab file, and see page 14 in the STAR manual
+
+
 
 Maybe can use subread to generate bed file from STAR output:
  subjunc -i index/1pct -r ../../data/subset/SRR5811882.subset.fastq.gz -o subjunc_results.bam --allJunctions
