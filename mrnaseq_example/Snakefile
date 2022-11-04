@@ -3,9 +3,18 @@ SAMPLES=[
 	"SRR5811882.subset"
 ]
 
-EXT1S=["1.ht2", "2.ht2", "3.ht2", "4.ht2", "5.ht2", "6.ht2", "7.ht2", "8.ht2"]
-
-EXT2S=["sam", "junctions"]
+EXTS=[
+	"Aligned.sortedByCoord.out.bam",
+	"Log.final.out",
+	"Log.out",
+	"Log.progress.out",
+	"ReadsPerGene.out.tab",
+	"Signal.UniqueMultiple.str1.out.bg",
+	"Signal.UniqueMultiple.str2.out.bg",
+	"Signal.Unique.str1.out.bg",
+	"Signal.Unique.str2.out.bg",
+	"SJ.out.tab"
+]
 
 GENOME=["1pct_elegans"]
 
@@ -20,7 +29,7 @@ rule all:
 		expand("HTS_output/{sample}.htsStats.json", sample=SAMPLES),
 		expand("HTS_output/{sample}.htstream_SE.fastq.gz", sample=SAMPLES),
 		directory("star_index/"),
-		directory("star_results/")
+		expand("star_results/{sample}.star.{ext}", sample=SAMPLES, ext=EXTS)
 
 rule stream_hts:
 	output:
@@ -56,17 +65,23 @@ rule build_star_index:
 	shell:
 		"STAR --runMode genomeGenerate --genomeSAindexNbases {params.str_len} "
 		"--genomeDir star_index/ --genomeFastaFiles {params.ref} --sjdbGTFfile "
-		"references/1pct_elegans.gffread.gtf"
+		"references/c_elegans.PRJNA13758.WS282.canonical_geneset.gtf"
 		
 rule align_count_star:
 	input:
 		"HTS_output/{sample}.htstream_SE.fastq.gz"
 	output:
-		directory("star_results/")
+		multiext("star_results/{sample}.star", \
+		".Aligned.sortedByCoord.out.bam", ".Log.final.out", ".Log.out", \
+		".Log.progress.out", ".ReadsPerGene.out.tab", \
+		".Signal.UniqueMultiple.str1.out.bg", \
+		".Signal.UniqueMultiple.str2.out.bg", ".Signal.Unique.str1.out.bg", \
+		".Signal.Unique.str2.out.bg", ".SJ.out.tab")
 	shell:
 		"STAR --genomeDir star_index/ --outSAMtype BAM SortedByCoordinate "
 		"--readFilesCommand zcat --readFilesIn {input} --quantMode GeneCounts "
-		"--outFileNamePrefix star_results/{sample}.star. --outWigType bedGraph"
+		"--outFileNamePrefix star_results/{wildcards.sample}.star. "
+		"--outWigType bedGraph"
 
 
 
