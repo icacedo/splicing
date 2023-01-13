@@ -16,3 +16,5 @@
 - Compare RNA-seq data with simulated data
 - Compare RNA-seq data with gff-generated isoforms
 - Compare simulated data with gff-generated isoforms
+- Describe differences between APC 668 and WormBase, see:
+	https://docs.google.com/spreadsheets/d/1tzfDo145Nt0MtEyEqy__WnaV-PtKA79LN6mrsWuZbt0/edit#gid=0
