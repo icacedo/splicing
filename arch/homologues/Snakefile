@@ -1,0 +1,127 @@
+# run blastx on all CDS sequences in the APC dataset
+# against all available core genomes on WB
+# currently running tblastx
+# need to download genomic protein sequences from WB for blastx
+
+GENOMES=[
+	"c_elegans.PRJNA13758",
+	"c_brenneri.PRJNA20035",
+	"c_briggsae.PRJNA10731",
+	"c_japonica.PRJNA12591",
+	"c_remanei.PRJNA577507",
+	"b_malayi.PRJNA10729",
+	"o_volvulus.PRJEB513",
+	"p_pacificus.PRJNA12644",
+	"s_ratti.PRJEB125",
+	"t_muris.PRJEB126"
+]		
+
+EXTS = [".ndb", ".nhr", ".nin", ".njs", ".not", ".nsq", ".ntf", ".nto"]
+
+# tblastx run using all APC CDS sequences in a single file
+# alternatively, each APC gene can be run individually
+
+rule all:
+	input:
+		#expand("output/{genome}.{sample}.test", genome=GENOMES, sample=SAMPLES)
+		#expand("output/{genome}.WS285.{sample}.blastout.tsv", genome=GENOMES, sample=SAMPLES)
+		expand("results/{genome}.WS285.APC.blastout.tsv", genome=GENOMES)
+		
+rule get_genomes:
+	output:
+		"ref/c_elegans.PRJNA13758.WS285.genomic.fa.gz",
+		"ref/c_brenneri.PRJNA20035.WS285.genomic.fa.gz",
+		"ref/c_briggsae.PRJNA10731.WS285.genomic.fa.gz",
+		"ref/c_japonica.PRJNA12591.WS285.genomic.fa.gz",
+		"ref/c_remanei.PRJNA577507.WS285.genomic.fa.gz",
+		"ref/b_malayi.PRJNA10729.WS285.genomic.fa.gz",
+		"ref/o_volvulus.PRJEB513.WS285.genomic.fa.gz",
+		"ref/p_pacificus.PRJNA12644.WS285.genomic.fa.gz",
+		"ref/s_ratti.PRJEB125.WS285.genomic.fa.gz",
+		"ref/t_muris.PRJEB126.WS285.genomic.fa.gz"
+	shell:
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"c_brenneri/PRJNA20035/c_brenneri.PRJNA20035.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"c_briggsae/PRJNA10731/c_briggsae.PRJNA10731.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"c_japonica/PRJNA12591/c_japonica.PRJNA12591.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"c_remanei/PRJNA577507/c_remanei.PRJNA577507.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"b_malayi/PRJNA10729/b_malayi.PRJNA10729.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"o_volvulus/PRJEB513/o_volvulus.PRJEB513.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"p_pacificus/PRJNA12644/p_pacificus.PRJNA12644.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"s_ratti/PRJEB125/s_ratti.PRJEB125.WS285.genomic.fa.gz"
+		" -P ref/\n"
+		"wget ftp://ftp.wormbase.org/pub/wormbase/releases/WS285/species/"
+		"t_muris/PRJEB126/t_muris.PRJEB126.WS285.genomic.fa.gz"
+		" -P ref/"
+
+rule unzip_genomes:
+	input:
+		"ref/{genome}.WS285.genomic.fa.gz"
+	output:
+		"ref/{genome}.WS285.genomic.fa"
+	shell:
+		"gzip -dk {input}"
+
+rule makeblastdb:
+	input:
+		"ref/{genome}.WS285.genomic.fa"
+	output:
+		multiext("blastdbs/{genome}.WS285.blastdb", ".ndb", ".nhr", ".nin", ".njs", \
+		".not", ".nsq", ".ntf", ".nto")
+	shell:
+		"""
+		makeblastdb -in {input} -dbtype nucl -out blastdbs/{wildcards.genome}.WS285.blastdb
+		touch {output}
+		"""
+
+# CDS fasta file name is hardcoded, should change later
+rule run_blastn:
+	input:
+		expand("blastdbs/{genome}.WS285.blastdb{ext}", genome=GENOMES, ext=EXTS),
+		#query = "queries/ch.{sample}.fa"
+	output:
+		#"output/{genome}.WS285.{sample}.blastout.tsv"
+		"results/{genome}.WS285.APC.blastout.tsv"
+	shell:
+		"tblastx -db blastdbs/{wildcards.genome}.WS285.blastdb -query "
+		"c_elegans.apc.cds.fa -evalue 1e-3 -outfmt '7 std stitle' > {output}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

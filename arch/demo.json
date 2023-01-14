@@ -1,0 +1,27 @@
+{
+	"gff_introns": true,
+	
+	"cli": {
+		"--min_exon": 25,
+		"--min_intron": 35,
+		"--max_splice": 3,
+		"--flank": 99,
+		"--limit": 100,
+	
+		"--apwm": "data/acceptor.pwm",
+		"--dpwm": "data/donor.pwm",
+		"--emm" : "data/exon.mm",
+		"--imm" : "data/intron.mm",
+		"--elen": "data/exon.len",
+		"--ilen": "data/intron.len"
+	},
+	
+	"data": [
+		{
+			"name": "ch.11741",
+			"fasta": "data/apc/ch.11741.fa",
+			"gff": "data/apc/ch.11741.gff3"
+		}
+	]
+	
+}
