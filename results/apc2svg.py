@@ -3,6 +3,7 @@
 import argparse
 import glob
 import os
+import re
 import sys
 from operator import itemgetter
 
@@ -32,7 +33,7 @@ def draw_exon(f, y):
 	h = 'height="12"'
 	if f.strand == '+': c = 'fill="#00f"'
 	else:               c = 'fill="#f0f"'
-	return f'<rect {x} {y} {w} {h} {c}/>'
+	return f'<rect {x} {y} {w} {h} {c}><title>{f.beg}-{f.end}</title></rect>'
 
 def draw_intron(f, y):
 	x1 = f'x1="{f.beg}"';
@@ -41,7 +42,7 @@ def draw_intron(f, y):
 	y2 = f'y2="{y+6}"'
 	if f.strand == '+': c = 'stroke="#00f"'
 	else:               c = 'stroke="#f0f"'
-	return f'<line {x1} {y1} {x2} {y2} {c}/>'
+	return f'<line {x1} {y1} {x2} {y2} stroke-width="3" {c}><title>{f.seq_str()[0:5]}-{f.seq_str()[-6:]}</title></line>'
 
 def draw_cds(f, y):
 	x = f'x="{f.beg+1}"';
@@ -49,7 +50,7 @@ def draw_cds(f, y):
 	w = f'width="{f.length-1}"'
 	h = 'height="10"'
 	c = 'fill="#ff0"'
-	return f'<rect {x} {y} {w} {h} {c}/>'
+	return f'<rect {x} {y} {w} {h} {c}><title>{f.beg}-{f.end}</title></rect>'
 
 def draw_utr(f, y):
 	x = f'x="{f.beg+1}"';
@@ -57,7 +58,7 @@ def draw_utr(f, y):
 	w = f'width="{f.length-1}"'
 	h = 'height="10"'
 	c = 'fill="brown"'
-	return f'<rect {x} {y} {w} {h} {c}><title>{f.score}</title></rect>'
+	return f'<rect {x} {y} {w} {h} {c}><title>{f.beg}-{f.end}</title></rect>'
 
 def draw_splice(f, y):
 	x = f'x="{f.beg}"';
@@ -80,7 +81,7 @@ def get_isoforms(fasta,  params):
 # Hard-coded badness
 apc = 'apc'      # dir of fasta and gff
 tsv = 'apc.tsv'  # file of weights
-out = 'svg'      # outputdir
+out = 'html'     # outputdir
 mod = '../data'  # directory where models are
 
 # Isoformer params
@@ -113,7 +114,7 @@ style = '''
 for ff in glob.glob(f'{apc}/*.fa'):
 	gf = ff[:-2] + 'gff3'
 	ch = ff[4:-3]
-	print(f'building svg for {ch}', file=sys.stderr)
+	print(f'building html for {ch}', file=sys.stderr)
 
 	genome = Reader(gff=gf, fasta=ff)
 	chrom = next(genome)
@@ -153,7 +154,14 @@ for ff in glob.glob(f'{apc}/*.fa'):
 	xmlns = 'xmlns="http://www.w3.org/2000/svg"'
 	vbox = f'viewBox="0 0 {len(chrom.seq)} {off+40}"'
 	
-	with open(f'{out}/{chrom.name}.svg', 'w') as fp:
+	## html goodies
+	match = re.search('(WBGene\d+)', chrom.desc)
+	wbgene = match.group(1)
+	
+	with open(f'{out}/{chrom.name}.html', 'w') as fp:
+		fp.write(f'<html><title>{chrom.name}</title><body>\n')
+		fp.write(f'<h1>{chrom.name} {len(chrom.seq)} bp</h1>\n')
+		fp.write(f'<a href="https://wormbase.org/species/c_elegans/gene/{wbgene}">{wbgene}</a>\n')
 		fp.write(f'<svg {vbox} {xmlns}>\n')
 		fp.write(style)
 
@@ -161,3 +169,7 @@ for ff in glob.glob(f'{apc}/*.fa'):
 			fp.write(line)
 			fp.write('\n')
 		fp.write('</svg>\n')
+		
+		fp.write('</body></html>')
+
+	#sys.exit()
