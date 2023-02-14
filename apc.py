@@ -14,8 +14,8 @@ TCTAAAATTCTCCGAAAACTTTT
 '''
 from itertools import combinations
 
-#       0        9     15     22      30     37         
-#                D     A      D       A      A          
+#       0        9      16    22       31     38         
+#                D      A     D        A      A          
 seq1 = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 # iso1: AACATGACC        TTACCGTCACATTAGTTCGGAGCCCTATATA
 # iso2: AACATGACC        TTACC          TTCGGAGCCCTATATA
@@ -23,6 +23,7 @@ seq1 = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 # iso4: AACATGACCGTTGCGAGTTACC                 CCCTATATA
 # iso5: AACATGACC                       TTCGGAGCCCTATATA
 # iso5: AACATGACC                              CCCTATATA
+# iso6: AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA
 
 don = []
 acc = []
@@ -30,9 +31,56 @@ for i in range(len(seq1)):
 	if seq1[i:i+2] == 'GT':
 		don.append(i)
 	if seq1[i:i+2] == 'AG':
-		acc.append(i)
+		acc.append(i+1)
 		
-print(list(combinations(acc,2)))
-print(len(don))
-for i in combinations(don, len(don)):
-	print(i)
+
+ilen = 8
+
+introns = []
+for gt in don:
+	for ag in acc:
+		if gt > ag:
+			continue
+		if ag - gt + 1 < ilen:
+			continue
+		introns.append((gt,ag))
+
+isoforms = []
+for i in range(1, len(introns)+1):
+	for com in combinations(introns, i):
+		sites = []
+		for k,j in com:
+			sites += k,j
+		if len(sites) != len(set(sites)):
+			continue
+		else:
+			print(com)
+
+'''
+ls = [11,11,12,12]
+print(set(ls))
+print({1,2,3,2,1})
+'''
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
