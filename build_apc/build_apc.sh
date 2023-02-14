@@ -20,10 +20,11 @@ if test -f "$FILE3"; then
 else
 	gunzip -c gff3.gz | grep -E "WormBase|RNASeq" > ws282.gff3
 fi
-
+'''
 export PYTHONPATH="/home/izzy/Code/grimoire"
 export PATH="/home/izzy/Code/grimoire/bin:$PATH"
 
 haman genome.gz ws282.gff3 pcg genes --issuesok
 
 export PYTHONPATH="$PYTHONPATH:/home/izzy/Code/grimoire/grimoire"
+'''
