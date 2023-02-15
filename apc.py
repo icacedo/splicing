@@ -29,6 +29,8 @@ TCTAAAATTCTCCGAAAACTTTT
 
 from itertools import combinations
 import sys
+import isoform
+
 
 #       0        9      16    22       31     38         
 #                D      A     D        A      A          
@@ -43,6 +45,8 @@ seq1 = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 
 # should i count all possible combinations or all possible valid combinations?
 
+seq4 = 'ACACACACGTACACACACACACAGACACACGTACACACCAGACACA'
+
 with open(sys.argv[1], 'r') as ff:
 
 	seq2 = ''
@@ -53,8 +57,8 @@ with open(sys.argv[1], 'r') as ff:
 		else:
 			seq2 += line
 
-seq = seq3
-print(seq3)
+seq = seq1
+print(seq)
 
 don = []
 acc = []
@@ -65,7 +69,7 @@ for i in range(len(seq)):
 		acc.append(i+1)
 
 # default is 25
-ilen = 3
+minin = 3
 # still need to do exons
 
 introns = []
@@ -74,7 +78,7 @@ for gt in don:
 	for ag in acc:
 		if gt > ag:
 			continue
-		if ag - gt + 1 < ilen:
+		if ag - gt + 1 < minin:
 			short_introns =+ 1
 			continue
 		introns.append((gt,ag))
@@ -100,7 +104,22 @@ print(isoforms)
 # this code takes forever
 # need to see how long it took the old code run
 
+print('*********')
+# testing old code
+minex = 1
+maxs = 100
+flank = 1
+print(isoform.all_possible(seq,minin,minex,maxs,flank)[0])
 
+# using seq1
+# introns from old code is the same as new code
+'introns': [(9, 16)]
+'introns': [(9, 31)]
+'introns': [(9, 38)]
+'introns': [(22, 31)]
+'introns': [(22, 38)]
+'introns': [(9, 16), (22, 31)]
+'introns': [(9, 16), (22, 38)]
 
 
 
