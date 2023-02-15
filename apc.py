@@ -18,12 +18,12 @@ from itertools import combinations
 #                D      A     D        A      A          
 seq1 = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 # iso1: AACATGACC        TTACCGTCACATTAGTTCGGAGCCCTATATA
-# iso2: AACATGACC        TTACC          TTCGGAGCCCTATATA
-# iso3: AACATGACCGTTGCGAGTTACC          TTCGGAGCCCTATATA
-# iso4: AACATGACCGTTGCGAGTTACC                 CCCTATATA
-# iso5: AACATGACC                       TTCGGAGCCCTATATA
-# iso5: AACATGACC                              CCCTATATA
-# iso6: AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA
+# iso2: AACATGACC                       TTCGGAGCCCTATATA
+# iso3: AACATGACC                              CCCTATATA
+# iso4: AACATGACCGTTGCGAGTTACC          TTCGGAGCCCTATATA
+# iso5: AACATGACCGTTGCGAGTTACC                 CCCTATATA
+# iso6: AACATGACC        TTACC          TTCGGAGCCCTATATA
+# iso7: AACATGACC        TTACC                 CCCTATATA
 
 don = []
 acc = []
@@ -53,34 +53,7 @@ for i in range(1, len(introns)+1):
 			sites += k,j
 		if len(sites) != len(set(sites)):
 			continue
+		elif sites != sorted(sites):
+			continue
 		else:
 			print(com)
-
-'''
-ls = [11,11,12,12]
-print(set(ls))
-print({1,2,3,2,1})
-'''
-
-
-
-
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
