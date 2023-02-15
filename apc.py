@@ -12,7 +12,23 @@ TTTTTTGTTGAATTTGTTACTTTTTGACCTACCCCTCGAAACATTTTCTCACATTGCGAAATGAATCAATAAAATTTCGA
 TTTTAGATTTTTATTCATTTATCTCATTGGTTTCTATCCATTTTTGAATTACCTTCCCATTTTTATTTATCTCTGCCTTT
 TCTAAAATTCTCCGAAAACTTTT
 '''
+
+seq3 = 'CTTTAACTGTTTCTCTATTCAGTTGTATAGTCGAGTTTATTTTGTAAAATTAGTTCACGTCTATCAAGAAA'
+'''
+TCCAATTTTTT
+AAATGGAAAACCCATCATCGCACCTGTCGGGCCATCTTCTTTATTAACCAGGTTACTTTGAAGCAATTATTTAATTTTTA
+AGAAAAATTAATTCGAAATTTAAGATTACAATCGTTCCTGCCTCAAATGGAAGAAGCCAATCGAAATATGCCGGAAAACG
+CGTCAGCTGACGCTTTTCATATTGAAAATGTCGAGGATGACAGCTCGGACGACAGCGATTCGAATTCAGAATCGATTTCG
+GAAGAGGTACCTGTCACAACTGACGAAAAGAGCACAGCGAGTAGTACACAGAGGATTGAAATTGATTTAGACGTGTTCAA
+GGAGATGAACAGCGCAGTTGATGACAGAGATGTCGGAATTCAGAATGTCGAAGCTCTTCCAGAAGCATTTCAGTCAAAAG
+GAGAGGATTCGAAACCGGAAATTACAAAGAAACCGTTGATTGAAGAATTATGAAATTTATGTTTTTTCTATTGTTGTGAA
+TTTTTTGTTGAATTTGTTACTTTTTGACCTACCCCTCGAAACATTTTCTCACATTGCGAAATGAATCAATAAAATTTCGA
+TTTTAGATTTTTATTCATTTATCTCATTGGTTTCTATCCATTTTTGAATTACCTTCCCATTTTTATTTATCTCTGCCTTT
+TCTAAAATTCTCCGAAAACTTTT
+'''
+
 from itertools import combinations
+import sys
 
 #       0        9      16    22       31     38         
 #                D      A     D        A      A          
@@ -25,25 +41,46 @@ seq1 = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 # iso6: AACATGACC        TTACC          TTCGGAGCCCTATATA
 # iso7: AACATGACC        TTACC                 CCCTATATA
 
+# should i count all possible combinations or all possible valid combinations?
+
+with open(sys.argv[1], 'r') as ff:
+
+	seq2 = ''
+	for line in ff.readlines():
+		line = line.rstrip()
+		if line.startswith('>'):
+			ID = line
+		else:
+			seq2 += line
+
+seq = seq3
+print(seq3)
+
 don = []
 acc = []
-for i in range(len(seq1)):
-	if seq1[i:i+2] == 'GT':
+for i in range(len(seq)):
+	if seq[i:i+2] == 'GT':
 		don.append(i)
-	if seq1[i:i+2] == 'AG':
+	if seq[i:i+2] == 'AG':
 		acc.append(i+1)
-		
 
-ilen = 8
+# default is 25
+ilen = 3
+# still need to do exons
 
 introns = []
+short_introns = []
 for gt in don:
 	for ag in acc:
 		if gt > ag:
 			continue
 		if ag - gt + 1 < ilen:
+			short_introns =+ 1
 			continue
 		introns.append((gt,ag))
+print(introns)
+
+print('************')
 
 isoforms = []
 for i in range(1, len(introns)+1):
@@ -56,4 +93,37 @@ for i in range(1, len(introns)+1):
 		elif sites != sorted(sites):
 			continue
 		else:
-			print(com)
+			isoforms.append(com)
+
+print(isoforms)
+
+# this code takes forever
+# need to see how long it took the old code run
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
