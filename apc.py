@@ -57,8 +57,13 @@ with open(sys.argv[1], 'r') as ff:
 		else:
 			seq2 += line
 
-seq = seq1
+seq = seq3
 print(seq)
+# default is 25
+minin = 3
+# still need to do exons
+
+
 
 don = []
 acc = []
@@ -67,10 +72,6 @@ for i in range(len(seq)):
 		don.append(i)
 	if seq[i:i+2] == 'AG':
 		acc.append(i+1)
-
-# default is 25
-minin = 3
-# still need to do exons
 
 introns = []
 short_introns = []
@@ -86,6 +87,8 @@ print(introns)
 
 print('************')
 
+# to speed up, maybe don't generate sites in the APC loop?
+# try using previously coded sanity checks instead of building them in?
 isoforms = []
 for i in range(1, len(introns)+1):
 	for com in combinations(introns, i):
@@ -98,28 +101,41 @@ for i in range(1, len(introns)+1):
 			continue
 		else:
 			isoforms.append(com)
+			
+# need to get isoform information, where exons and introns and don/acc sites are
+			
 
 print(isoforms)
 
+# time with seq3: real 28.582s
 # this code takes forever
 # need to see how long it took the old code run
 
-print('*********')
+'''
+print('************')
 # testing old code
 minex = 1
 maxs = 100
 flank = 1
-print(isoform.all_possible(seq,minin,minex,maxs,flank)[0])
+# gets the same sequence each time
+#for i isoform.all_possible(seq,minin,minex,maxs,flank)[0]:
+#	print(i)
+print(isoform.all_possible(seq,minin,minex,maxs, flank)[0])
+'''
+# time with seq3: 0.084s
+# WAAAAAAAAAY faster
+# i messed up
 
 # using seq1
 # introns from old code is the same as new code
-'introns': [(9, 16)]
-'introns': [(9, 31)]
-'introns': [(9, 38)]
-'introns': [(22, 31)]
-'introns': [(22, 38)]
-'introns': [(9, 16), (22, 31)]
-'introns': [(9, 16), (22, 38)]
+# 'introns': [(9, 16)]
+# 'introns': [(9, 31)]
+# 'introns': [(9, 38)]
+# 'introns': [(22, 31)]
+# 'introns': [(22, 38)]
+# 'introns': [(9, 16), (22, 31)]
+# 'introns': [(9, 16), (22, 38)]
+
 
 
 
