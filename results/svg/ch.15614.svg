@@ -1,0 +1,181 @@
+<svg viewBox="0 0 773 545" xmlns="http://www.w3.org/2000/svg">
+
+<style>
+  .sm { font: 12px sans-serif; }
+  .lg { font: 15px sans-serif; }
+</style>
+<rect fill="#ddd" x="0" y="0" width="100%" height="100%"/>
+<text x="20" y="20" class="lg">ch.15614 V:12952536-12953308 Gene:WBGene00004151</text>
+<text x="20" y="50" class="sm">WormBase</text>
+<rect x="100" y="40" width="59" height="12" fill="#00f"/>
+<rect x="202" y="40" width="204" height="12" fill="#00f"/>
+<rect x="461" y="40" width="212" height="12" fill="#00f"/>
+<line x1="159" y1="46" x2="201" y2="46" stroke="#00f"/>
+<line x1="406" y1="46" x2="460" y2="46" stroke="#00f"/>
+<rect x="103" y="41" width="56" height="10" fill="#ff0"/>
+<rect x="203" y="41" width="203" height="10" fill="#ff0"/>
+<rect x="462" y="41" width="191" height="10" fill="#ff0"/>
+<rect x="101" y="41" width="1" height="10" fill="brown"><title>.</title></rect>
+<rect x="654" y="41" width="19" height="10" fill="brown"><title>.</title></rect>
+<text x="20" y="70" class="sm">Fitness: 0.10057043982308546</text>
+<rect x="406" y="65" width="55" height="5" fill="#00f"><title>142334.0</title></rect>
+<rect x="159" y="70" width="43" height="5" fill="#00f"><title>82753.0</title></rect>
+<rect x="159" y="75" width="47" height="5" fill="#00f"><title>29109.0</title></rect>
+<rect x="395" y="80" width="66" height="5" fill="#00f"><title>13533.0</title></rect>
+<rect x="156" y="85" width="46" height="5" fill="#00f"><title>136.0</title></rect>
+<rect x="156" y="90" width="50" height="5" fill="#00f"><title>26.0</title></rect>
+<rect x="144" y="95" width="58" height="5" fill="#00f"><title>17.0</title></rect>
+<rect x="159" y="100" width="60" height="5" fill="#00f"><title>4.0</title></rect>
+<rect x="144" y="105" width="62" height="5" fill="#00f"><title>3.0</title></rect>
+<text x="20" y="135" class="sm">0.4669</text>
+<rect x="100" y="125" width="59" height="12" fill="#00f"/>
+<rect x="202" y="125" width="204" height="12" fill="#00f"/>
+<rect x="461" y="125" width="215" height="12" fill="#00f"/>
+<line x1="159" y1="131" x2="201" y2="131" stroke="#00f"/>
+<line x1="406" y1="131" x2="460" y2="131" stroke="#00f"/>
+<rect x="103" y="126" width="56" height="10" fill="#ff0"/>
+<rect x="203" y="126" width="203" height="10" fill="#ff0"/>
+<rect x="462" y="126" width="191" height="10" fill="#ff0"/>
+<text x="20" y="155" class="sm">0.2379</text>
+<rect x="100" y="145" width="306" height="12" fill="#00f"/>
+<rect x="461" y="145" width="215" height="12" fill="#00f"/>
+<line x1="406" y1="151" x2="460" y2="151" stroke="#00f"/>
+<rect x="269" y="146" width="137" height="10" fill="#ff0"/>
+<rect x="462" y="146" width="191" height="10" fill="#ff0"/>
+<text x="20" y="175" class="sm">0.1659</text>
+<rect x="100" y="165" width="59" height="12" fill="#00f"/>
+<rect x="206" y="165" width="200" height="12" fill="#00f"/>
+<rect x="461" y="165" width="215" height="12" fill="#00f"/>
+<line x1="159" y1="171" x2="205" y2="171" stroke="#00f"/>
+<line x1="406" y1="171" x2="460" y2="171" stroke="#00f"/>
+<rect x="269" y="166" width="137" height="10" fill="#ff0"/>
+<rect x="462" y="166" width="191" height="10" fill="#ff0"/>
+<text x="20" y="195" class="sm">0.07115</text>
+<rect x="100" y="185" width="59" height="12" fill="#00f"/>
+<rect x="202" y="185" width="474" height="12" fill="#00f"/>
+<line x1="159" y1="191" x2="201" y2="191" stroke="#00f"/>
+<rect x="103" y="186" width="56" height="10" fill="#ff0"/>
+<rect x="203" y="186" width="218" height="10" fill="#ff0"/>
+<text x="20" y="215" class="sm">0.02629</text>
+<rect x="100" y="205" width="59" height="12" fill="#00f"/>
+<rect x="206" y="205" width="470" height="12" fill="#00f"/>
+<line x1="159" y1="211" x2="205" y2="211" stroke="#00f"/>
+<rect x="489" y="206" width="164" height="10" fill="#ff0"/>
+<text x="20" y="235" class="sm">0.01114</text>
+<rect x="100" y="225" width="59" height="12" fill="#00f"/>
+<rect x="219" y="225" width="187" height="12" fill="#00f"/>
+<rect x="461" y="225" width="215" height="12" fill="#00f"/>
+<line x1="159" y1="231" x2="218" y2="231" stroke="#00f"/>
+<line x1="406" y1="231" x2="460" y2="231" stroke="#00f"/>
+<rect x="269" y="226" width="137" height="10" fill="#ff0"/>
+<rect x="462" y="226" width="191" height="10" fill="#ff0"/>
+<text x="20" y="255" class="sm">0.004564</text>
+<rect x="100" y="245" width="44" height="12" fill="#00f"/>
+<rect x="202" y="245" width="204" height="12" fill="#00f"/>
+<rect x="461" y="245" width="215" height="12" fill="#00f"/>
+<line x1="144" y1="251" x2="201" y2="251" stroke="#00f"/>
+<line x1="406" y1="251" x2="460" y2="251" stroke="#00f"/>
+<rect x="103" y="246" width="41" height="10" fill="#ff0"/>
+<rect x="203" y="246" width="203" height="10" fill="#ff0"/>
+<rect x="462" y="246" width="191" height="10" fill="#ff0"/>
+<text x="20" y="275" class="sm">0.003849</text>
+<rect x="100" y="265" width="59" height="12" fill="#00f"/>
+<rect x="202" y="265" width="204" height="12" fill="#00f"/>
+<rect x="569" y="265" width="107" height="12" fill="#00f"/>
+<line x1="159" y1="271" x2="201" y2="271" stroke="#00f"/>
+<line x1="406" y1="271" x2="568" y2="271" stroke="#00f"/>
+<rect x="103" y="266" width="56" height="10" fill="#ff0"/>
+<rect x="203" y="266" width="203" height="10" fill="#ff0"/>
+<rect x="570" y="266" width="83" height="10" fill="#ff0"/>
+<text x="20" y="295" class="sm">0.001961</text>
+<rect x="100" y="285" width="306" height="12" fill="#00f"/>
+<rect x="569" y="285" width="107" height="12" fill="#00f"/>
+<line x1="406" y1="291" x2="568" y2="291" stroke="#00f"/>
+<rect x="269" y="286" width="137" height="10" fill="#ff0"/>
+<rect x="570" y="286" width="83" height="10" fill="#ff0"/>
+<text x="20" y="315" class="sm">0.001639</text>
+<rect x="100" y="305" width="59" height="12" fill="#00f"/>
+<rect x="219" y="305" width="457" height="12" fill="#00f"/>
+<line x1="159" y1="311" x2="218" y2="311" stroke="#00f"/>
+<rect x="489" y="306" width="164" height="10" fill="#ff0"/>
+<text x="20" y="335" class="sm">0.001368</text>
+<rect x="100" y="325" width="59" height="12" fill="#00f"/>
+<rect x="206" y="325" width="200" height="12" fill="#00f"/>
+<rect x="569" y="325" width="107" height="12" fill="#00f"/>
+<line x1="159" y1="331" x2="205" y2="331" stroke="#00f"/>
+<line x1="406" y1="331" x2="568" y2="331" stroke="#00f"/>
+<rect x="269" y="326" width="137" height="10" fill="#ff0"/>
+<rect x="570" y="326" width="83" height="10" fill="#ff0"/>
+<text x="20" y="355" class="sm">0.001171</text>
+<rect x="100" y="345" width="59" height="12" fill="#00f"/>
+<rect x="202" y="345" width="204" height="12" fill="#00f"/>
+<rect x="585" y="345" width="91" height="12" fill="#00f"/>
+<line x1="159" y1="351" x2="201" y2="351" stroke="#00f"/>
+<line x1="406" y1="351" x2="584" y2="351" stroke="#00f"/>
+<rect x="103" y="346" width="56" height="10" fill="#ff0"/>
+<rect x="203" y="346" width="203" height="10" fill="#ff0"/>
+<rect x="586" y="346" width="5" height="10" fill="#ff0"/>
+<text x="20" y="375" class="sm">0.001014</text>
+<rect x="100" y="365" width="59" height="12" fill="#00f"/>
+<rect x="202" y="365" width="204" height="12" fill="#00f"/>
+<rect x="534" y="365" width="142" height="12" fill="#00f"/>
+<line x1="159" y1="371" x2="201" y2="371" stroke="#00f"/>
+<line x1="406" y1="371" x2="533" y2="371" stroke="#00f"/>
+<rect x="103" y="366" width="56" height="10" fill="#ff0"/>
+<rect x="203" y="366" width="203" height="10" fill="#ff0"/>
+<rect x="535" y="366" width="5" height="10" fill="#ff0"/>
+<text x="20" y="395" class="sm">0.0008693</text>
+<rect x="100" y="385" width="48" height="12" fill="#00f"/>
+<rect x="202" y="385" width="204" height="12" fill="#00f"/>
+<rect x="461" y="385" width="215" height="12" fill="#00f"/>
+<line x1="148" y1="391" x2="201" y2="391" stroke="#00f"/>
+<line x1="406" y1="391" x2="460" y2="391" stroke="#00f"/>
+<rect x="269" y="386" width="137" height="10" fill="#ff0"/>
+<rect x="462" y="386" width="191" height="10" fill="#ff0"/>
+<text x="20" y="415" class="sm">0.0008567</text>
+<rect x="100" y="405" width="102" height="12" fill="#00f"/>
+<rect x="251" y="405" width="155" height="12" fill="#00f"/>
+<rect x="461" y="405" width="215" height="12" fill="#00f"/>
+<line x1="202" y1="411" x2="250" y2="411" stroke="#00f"/>
+<line x1="406" y1="411" x2="460" y2="411" stroke="#00f"/>
+<rect x="269" y="406" width="137" height="10" fill="#ff0"/>
+<rect x="462" y="406" width="191" height="10" fill="#ff0"/>
+<text x="20" y="435" class="sm">0.000845</text>
+<rect x="100" y="425" width="59" height="12" fill="#00f"/>
+<rect x="202" y="425" width="208" height="12" fill="#00f"/>
+<rect x="461" y="425" width="215" height="12" fill="#00f"/>
+<line x1="159" y1="431" x2="201" y2="431" stroke="#00f"/>
+<line x1="410" y1="431" x2="460" y2="431" stroke="#00f"/>
+<rect x="103" y="426" width="56" height="10" fill="#ff0"/>
+<rect x="203" y="426" width="207" height="10" fill="#ff0"/>
+<rect x="462" y="426" width="7" height="10" fill="#ff0"/>
+<text x="20" y="455" class="sm">0.0007278</text>
+<rect x="100" y="445" width="59" height="12" fill="#00f"/>
+<rect x="221" y="445" width="185" height="12" fill="#00f"/>
+<rect x="461" y="445" width="215" height="12" fill="#00f"/>
+<line x1="159" y1="451" x2="220" y2="451" stroke="#00f"/>
+<line x1="406" y1="451" x2="460" y2="451" stroke="#00f"/>
+<rect x="269" y="446" width="137" height="10" fill="#ff0"/>
+<rect x="462" y="446" width="191" height="10" fill="#ff0"/>
+<text x="20" y="475" class="sm">0.0006954</text>
+<rect x="100" y="465" width="44" height="12" fill="#00f"/>
+<rect x="202" y="465" width="474" height="12" fill="#00f"/>
+<line x1="144" y1="471" x2="201" y2="471" stroke="#00f"/>
+<rect x="103" y="466" width="41" height="10" fill="#ff0"/>
+<rect x="203" y="466" width="218" height="10" fill="#ff0"/>
+<text x="20" y="495" class="sm">0.0005966</text>
+<rect x="100" y="485" width="306" height="12" fill="#00f"/>
+<rect x="585" y="485" width="91" height="12" fill="#00f"/>
+<line x1="406" y1="491" x2="584" y2="491" stroke="#00f"/>
+<rect x="269" y="486" width="137" height="10" fill="#ff0"/>
+<rect x="586" y="486" width="5" height="10" fill="#ff0"/>
+<text x="20" y="515" class="sm">0.0005864</text>
+<rect x="100" y="505" width="59" height="12" fill="#00f"/>
+<rect x="202" y="505" width="193" height="12" fill="#00f"/>
+<rect x="461" y="505" width="215" height="12" fill="#00f"/>
+<line x1="159" y1="511" x2="201" y2="511" stroke="#00f"/>
+<line x1="395" y1="511" x2="460" y2="511" stroke="#00f"/>
+<rect x="103" y="506" width="56" height="10" fill="#ff0"/>
+<rect x="203" y="506" width="192" height="10" fill="#ff0"/>
+<rect x="462" y="506" width="7" height="10" fill="#ff0"/>
+</svg>
