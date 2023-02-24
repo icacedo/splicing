@@ -27,14 +27,85 @@ for gt in dons:
 		intdons.append((gt,ag))
 	introns.append(intdons)
 print(introns)
+print('*****')
 
+'''
 for i in introns:
 	dons = iter(i)
 	for j in range(len(i)):
 		print(next(dons))
-	print('***')
+'''
+
+lengths = []
+for i in range(len(introns)):
+	lengths.append(len(introns[i]))
+
+'''
+for i in range(len(introns)-1):
+	isoform = []
+	for j in range(len(introns[i])):
+		isoform.append(introns[i][j])
+		for k in introns[i+1]:
+			isoform.append(k)
+	print(isoform)
+'''
+'''
+isoforms = []
+for i in range(len(introns)-1):
+
+	for j in range(len(introns[i])):
+		isoforms.append(introns[i][j])
+		print(introns[i][j])
+		isoform = [None] * len(introns)
+		isoform[0] = introns[i][j]
+		count = 0
+		
+		for intron in introns[i+1]:
+			print(intron)
+			if count == 0:
+				isoforms.append(intron)
+			isoform[i+1] = intron
+			#print(isoform)
+			isoforms.append(isoform)
+		count += 1
+print(isoforms)
+'''
+
+isoforms = []
+for i in range(len(introns)-1):
+
+	count = 0
+	for j in range(len(introns[i])):
+		isoforms.append([introns[i][j]])
+		isoform = [None] * len(introns)
+		isoform[0] = introns[i][j]
+
+		for intron in introns[i+1]:
+			if count == 0:
+				isoforms.append([intron])
+			isoform[i+1] = intron
+			isoforms.append(isoform)
+
+print(isoforms)
 
 
+
+
+'''
+listy = [None] * 4
+print(listy)
+listii = [[1,2],[3,4]]
+print(listii[1])
+'''
+
+'''
+print('***')
+one = ['1', '2', '3']
+two = ['11', '22', '33', '44']
+three = ['0', '00']
+result = zip(one,two,three)
+print(list(result))
+'''
 
 '''
 isoforms = []
