@@ -111,7 +111,7 @@ print(isoforms)
 # this code takes forever
 # need to see how long it took the old code run
 
-'''
+
 print('************')
 # testing old code
 minex = 1
@@ -121,7 +121,7 @@ flank = 1
 #for i isoform.all_possible(seq,minin,minex,maxs,flank)[0]:
 #	print(i)
 print(isoform.all_possible(seq,minin,minex,maxs, flank)[0])
-'''
+
 # time with seq3: 0.084s
 # WAAAAAAAAAY faster
 # i messed up
