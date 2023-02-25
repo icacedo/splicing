@@ -6,6 +6,16 @@ seq3 = 'CTTTAACTGTTTCTCTATTCAGTTGTATAGTCGAGTTTATTTTGTAAAATTAGTTCACGTCTATCAAGAAA'
 seq = seq1
 minin = 3
 
+def filter_dup_sites(iso):
+
+	listy = []
+	for i in iso:
+		for s in i:
+			listy.append(s)
+
+	if len(listy) == len(set(listy)):
+		return True
+
 dons = []
 accs = []
 for i in range(len(seq)):
@@ -29,57 +39,48 @@ for gt in dons:
 print(introns)
 print('*****')
 
-'''
-for i in introns:
-	dons = iter(i)
-	for j in range(len(i)):
-		print(next(dons))
-'''
-
 lengths = []
 for i in range(len(introns)):
 	lengths.append(len(introns[i]))
+	
 
-'''
-for i in range(len(introns)-1):
-	isoform = []
+
+for i in range(len(introns)):
 	for j in range(len(introns[i])):
-		isoform.append(introns[i][j])
-		for k in introns[i+1]:
-			isoform.append(k)
-	print(isoform)
-'''
+		iso = []
+		for k in range(len(introns)):
+			print(i,k,j)
+			#introns[k][j]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 '''
 isoforms = []
 for i in range(len(introns)-1):
-
-	for j in range(len(introns[i])):
-		isoforms.append(introns[i][j])
-		print(introns[i][j])
-		isoform = [None] * len(introns)
-		isoform[0] = introns[i][j]
-		count = 0
-		
-		for intron in introns[i+1]:
-			print(intron)
-			if count == 0:
-				isoforms.append(intron)
-			isoform[i+1] = intron
-			#print(isoform)
-			isoforms.append(isoform)
-		count += 1
-print(isoforms)
-'''
-
-isoforms = []
-for i in range(len(introns)-1):
-
 	count = 0
 	for j in range(len(introns[i])):
 		isoforms.append([introns[i][j]])
+		isoform = []
 		isoform = [None] * len(introns)
 		isoform[0] = introns[i][j]
-
 		for intron in introns[i+1]:
 			if count == 0:
 				isoforms.append([intron])
@@ -87,7 +88,12 @@ for i in range(len(introns)-1):
 			isoforms.append(isoform)
 
 print(isoforms)
+# before it was 15
+#print(len(isoforms))
 
+#print(set(isoforms[12]))
+#print(len(isoforms))
+'''
 
 
 
