@@ -7,21 +7,12 @@ import sys
 import os
 from grimoire.genome import Reader
 
+# isoform structure info comes from the apc .gff3
+# apc generates a gff file for the gene
+# geniso makes a gff annotation for each isoform
 fasta = sys.argv[1]
 #apc_info = 
 
 #for i,j in seqlib.read_fasta(fasta):
 #    print(i,j)
-
-# where does intron information come from?
-# copy pasted from apc2html.py
-
-def get_isoforms(fasta,  params):
-	os.system(f'isoformer {fasta} {params} > tmp.gff')
-	genome = Reader(gff='tmp.gff', fasta=fasta)
-	chrom = next(genome)
-	for gene in chrom.ftable.build_genes():
-		for tx in gene.transcripts():
-			tx.use_longest_orf()
-			yield tx
 
