@@ -1,10 +1,13 @@
-#from itertools import combinations
+from itertools import combinations
 
 seq1 = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 seq3 = 'CTTTAACTGTTTCTCTATTCAGTTGTATAGTCGAGTTTATTTTGTAAAATTAGTTCACGTCTATCAAGAAA'
 
 seq = seq1
 minin = 3
+minex = 1
+maxs = 100
+flank = 1
 
 def filter_dup_sites(iso):
 
@@ -38,7 +41,7 @@ for gt in dons:
 	introns.append(intdons)
 print(introns)
 print('*****')
-
+'''
 lengths = []
 for i in range(len(introns)):
 	lengths.append(len(introns[i]))
@@ -51,22 +54,55 @@ for i in range(len(introns)):
 		for k in range(len(introns)):
 			print(i,k,j)
 			#introns[k][j]
+'''
+sites = min(len(introns), maxs)
+for i in range(1, sites+1):
+    for k in combinations(introns, i):
+        print(k)
+
+for i in combinations('abc',len(introns)):
+    print(i)
+print('*****')
 
 
+for i in range(len(introns)):
+    print(introns[i])
+    
+def countdown(n):
+    print(n)
+    if n == 0:
+        return
+    else:
+        countdown(n - 1)
 
+countdown(5)
+print('*****')
+set1 = (0,1,2)
+set2 = (3,4)
+set3 = [set1, set2]
 
+#for i in set1:
+ #   print(i)
 
+def printer(var1):
+    
+    for i in var1:
+        yield i
 
+def something(var2):
 
+    for i in printer(var2):
+        print(i)
+        something(i)
 
+something(set3)
 
-
-
-
-
-
-
-
+'''
+def something(var1):
+    for i in range(len(var1)):
+        print(i)
+        if i == 0:
+'''
 
 
 
