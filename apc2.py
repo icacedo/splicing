@@ -79,23 +79,63 @@ countdown(5)
 print('*****')
 set1 = (0,1,2)
 set2 = (3,4)
-set3 = [set1, set2]
+set3 = (5,6,7)
+set4 = [set1, set2]
+set5 = [set1, set2, set3]
 
-#for i in set1:
- #   print(i)
+'''
+for i in set1:	
+	for j in set2:
+		print(i)
+		print(j)
 
-def printer(var1):
-    
-    for i in var1:
-        yield i
+def printer(x):
+	for i in x:
+		yield i
+'''
 
-def something(var2):
+test = [x for x in set4]
+tator = iter(test)
+#for i in range(len(test)):
+#	print(next(tator))
 
-    for i in printer(var2):
-        print(i)
-        something(i)
 
-something(set3)
+def nexter(group):
+	test = [x for x in group]
+	tator = iter(test)
+	for i in range(len(test)):
+		yield next(tator)
+
+#for i in nexter(set4):
+#	print(i)
+
+for i in set5:
+	print(i,'wow')
+	for j in nexter(set5):
+		print(j)
+		
+print('*******')
+
+#(5, 6, 7)
+
+for i in (3, 4):
+	for j in (0, 1, 2):
+		print(i,j)
+		
+
+#for i in set4:
+#	print(i)
+
+
+#print(set([9, 16, 9, 31, 9, 38]))
+
+y = [y for y in (3,0,5)]
+print(y)
+
+for i in combinations((3,4,5,6), 2):
+	print(i)
+		
+
 
 '''
 def something(var1):
