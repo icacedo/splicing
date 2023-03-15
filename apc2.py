@@ -1,4 +1,5 @@
 from itertools import combinations
+import sys
 
 seq1 = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 seq3 = 'CTTTAACTGTTTCTCTATTCAGTTGTATAGTCGAGTTTATTTTGTAAAATTAGTTCACGTCTATCAAGAAA'
@@ -40,6 +41,7 @@ for gt in dons:
 		intdons.append((gt,ag))
 	introns.append(intdons)
 print(introns)
+sys.exit()
 print('*****')
 '''
 lengths = []

@@ -90,7 +90,66 @@ tator3 = iter([x for x in pik[1:]])
 
 for i in range(len(pik)-1):
 	store = next(tator3)
+	dct = {}
 	for j in pik[0]:
+		k_list = []
 		for k in store:
 			print(j,k)
+			k_list.append(k)
+			dct[j]=k_list
+	print(dct)
+print('******')
+# when using pik = set8
+dct_list = [{3: [5, 6], 4: [5, 6]}, {3: [7, 8], 4: [7, 8]}]
+
+for i in range(len(dct_list)):
+	dctlist3 = []
+	for j in dct_list[i]:
+		for k in dct_list[i][j]:
+			newdct = {}
+			newdct[j]=k
+			print(newdct)
+			
+
+'''
+for i in dct_list:
+	print(i)
+	for j in i:
+		listy = []
+		listy.append(j)
+		print(i[j])
+		for k in i[j]:
+			print(k)
+			listy.append(k)
+			print(listy, '*')
+print('*********')
+
+#tator4 = iter([x for x in dct_list])
+#print(next(tator4))
+dct2 = {}
+for i in range(len(dct_list)):
+	for j in dct_list[i]:
+		print(j, '*')
+		tator4 = iter([x for x in dct_list])
+		for k in range(len(dct_list)):
+			become = next(tator4)
+			for l in become[j]:
+				print(j,l)
+				#dct2[l]
+#print(dct2)	
+'''	
+print('******')
+# each number represents and individual intron
+# group by the same donor site
+fkint = [[(3), (4)], [(5), (6)], [(7), (8)]]
+# maybe represent each intron as a number? then sort
+
+	
+
+
+
+
+	
+
+
 
