@@ -75,9 +75,12 @@ for i in range(len(pik)):
 		#print(j, next(tator))
 		for k in next(tator):
 			print(j,k)
-
-listy = [11,22,33,44]
-print(listy[1:])
+print('******')
+# this what i was trying to get, but still need to add to a list
+for i in pik[0]:
+	tator2 = iter([x for x in pik[1:]])
+	for j in next(tator2):
+		print(i,j)
 
 
 
