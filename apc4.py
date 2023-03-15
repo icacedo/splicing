@@ -44,9 +44,12 @@ print('*****')
 
 set1 = (0,1,2)
 set2 = (3,4)
-set3 = (5,6,7)
-set4 = [set1, set2]
-set5 = [set1, set2, set3]
+set3 = (5,6)
+set4 = (7,8)
+set5 = (9,10,11)
+set6 = [set1, set2]
+set7 = [set1, set2, set3]
+set8 = [set2, set3, set4]
 '''
 def nexter(group):
 	test = [x for x in group]
@@ -54,7 +57,7 @@ def nexter(group):
 	for i in range(len(test)):
 		yield next(tator)
 '''
-pik = set4
+pik = set8
 
 for i in range(len(pik)):
 	#tator = iter([x for x in pik])
@@ -81,7 +84,13 @@ for i in pik[0]:
 	tator2 = iter([x for x in pik[1:]])
 	for j in next(tator2):
 		print(i,j)
+print('*********')
+# this is the best one yet
+tator3 = iter([x for x in pik[1:]])
 
+for i in range(len(pik)-1):
+	store = next(tator3)
+	for j in pik[0]:
+		for k in store:
+			print(j,k)
 
-
-	
