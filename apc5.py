@@ -97,7 +97,48 @@ for i in range(len(ints)):
 # print everything but the current index?		
 print(ints[1::3])
 
+# to sort into mutuall exclusive lists, have to check if asites
+# are before the previous introns acceptor
+# can't sort into arrays
+#introns2 = [[(9, 16), (9, 31), (9, 38)], [(22, 31), (22, 38)]]
+print('******')
+
+dons = [9, 22]
+accs = [16, 31, 38]
+sites = min(len(dons), len(accs))
+intruns = [(9, 16), (9, 31), (9, 38),(22, 31), (22, 38)]
+for n in range(1, sites+1):
+	for dsites in itertools.combinations(dons, n):
+		for asites in itertools.combinations(accs, n):
+			print(dsites, asites)
+
+exintrons = [[(9, 16), (22, 31)], [(9, 16), (22, 38)], [(9, 31),], [(9, 38),]]
+print('*******')
+
+borb = exintrons
+
+#for x in exintrons:
+	#print(x)
+	#for i in range(len(x)):
+		#for iso in itertools.combinations(x, i):
 
 
+# still not great	
+for x in exintrons:
+	for n in range(1, len(x)+1):
+		for i in itertools.combinations(x, n):
+			print(i)
+#[(9, 38), (22, 38)]]
+#[(9, 38), (22, 38)]]
 
+print('***********')
+
+introns = [[(9, 16), (9, 31), (9, 38)], [(22, 31), (22, 38)]]
+# would still have to check acceptor to donor, too complex
+for i in introns:
+	dith = {}
+	for x in i:
+		dith[x]=x[1]
+
+	print(dith)
 
