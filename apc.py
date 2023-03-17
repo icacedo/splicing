@@ -46,7 +46,7 @@ seq1 = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 # should i count all possible combinations or all possible valid combinations?
 
 seq4 = 'ACACACACGTACACACACACACAGACACACGTACACACCAGACACA'
-
+'''
 with open(sys.argv[1], 'r') as ff:
 
 	seq2 = ''
@@ -56,61 +56,35 @@ with open(sys.argv[1], 'r') as ff:
 			ID = line
 		else:
 			seq2 += line
-
+'''
 seq = seq3
 print(seq)
 # default is 25
 minin = 3
 # still need to do exons
+maxs = 100
+# max number of splices
 
-
-
-don = []
-acc = []
+dons = []
+accs = []
 for i in range(len(seq)):
 	if seq[i:i+2] == 'GT':
-		don.append(i)
+		dons.append(i)
 	if seq[i:i+2] == 'AG':
-		acc.append(i+1)
-
-introns = []
-short_introns = []
-for gt in don:
-	for ag in acc:
-		if gt > ag:
-			continue
-		if ag - gt + 1 < minin:
-			short_introns =+ 1
-			continue
-		introns.append((gt,ag))
-print(introns)
-
+		accs.append(i+1)
+print(dons, accs)
 print('************')
+# make an apc algorithm that does not use weights for each individual gene
+# make a single set of weights apply to all genes
+# how to do?
 
-# to speed up, maybe don't generate sites in the APC loop?
-# try using previously coded sanity checks instead of building them in?
-isoforms = []
-for i in range(1, len(introns)+1):
-	for com in combinations(introns, i):
-		sites = []
-		for k,j in com:
-			sites += k,j
-		if len(sites) != len(set(sites)):
-			continue
-		elif sites != sorted(sites):
-			continue
-		else:
-			isoforms.append(com)
+nsites = min(len(dons), len(accs), maxs)
+print(nsites)
+for n in range(1, nsites+1):
+	for dsites in combinations(dons, n):
+		for asites in combinations(accs, n):
+			print(dsites, asites)
 			
-# need to get isoform information, where exons and introns and don/acc sites are
-			
-
-print(isoforms)
-
-# time with seq3: real 28.582s
-# this code takes forever
-# need to see how long it took the old code run
-
 
 print('************')
 # testing old code
@@ -120,7 +94,7 @@ flank = 1
 # gets the same sequence each time
 #for i isoform.all_possible(seq,minin,minex,maxs,flank)[0]:
 #	print(i)
-print(isoform.all_possible(seq,minin,minex,maxs, flank)[0])
+#print(isoform.all_possible(seq,minin,minex,maxs, flank)[0])
 
 # time with seq3: 0.084s
 # WAAAAAAAAAY faster
