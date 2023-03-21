@@ -32,7 +32,7 @@ import sys
 import isoform
 
 
-#       0        9      16    22       31     38         
+#       0        9      16    22       31     38       47  
 #                D      A     D        A      A          
 seq1 = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 # iso1: AACATGACC        TTACCGTCACATTAGTTCGGAGCCCTATATA
@@ -46,7 +46,7 @@ seq1 = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 # should i count all possible combinations or all possible valid combinations?
 
 seq4 = 'ACACACACGTACACACACACACAGACACACGTACACACCAGACACA'
-'''
+
 with open(sys.argv[1], 'r') as ff:
 
 	seq2 = ''
@@ -56,12 +56,21 @@ with open(sys.argv[1], 'r') as ff:
 			ID = line
 		else:
 			seq2 += line
-'''
-seq = seq3
+
+# from gff3, to get gene sequence from transcript
+# ch.9940	WormBase	gene	102	724	.	+	.	Parent=Transcript:H06H21.11.1
+# ch.9940 WormBase        three_prime_UTR
+# ch.9940 WormBase        five_prime_UTR
+
+print(seq2[101:110])
+print(seq2[495:498])
+seq = seq1
 print(seq)
 # default is 25
 minin = 3
-# still need to do exons
+minex = 3
+minflank5 = 1
+minflank3 = 1
 maxs = 100
 # max number of splices
 
@@ -78,21 +87,42 @@ print('************')
 # make a single set of weights apply to all genes
 # how to do?
 
+def short_introns(dons, accs, minin):
+	
+	for d, a in zip(dons, accs):
+		intron_length = a - d + 1
+		if intron_length < minin:
+			return True
+	return False
+
+nshort_introns = 0
 nsites = min(len(dons), len(accs), maxs)
-print(nsites)
 for n in range(1, nsites+1):
 	for dsites in combinations(dons, n):
 		for asites in combinations(accs, n):
+			if short_introns(dsites, asites, minin):		
+				nshort_introns += 1
+				continue
 			print(dsites, asites)
 			
 
 print('************')
+
+print(len(seq))
+dons, accs = (9, 22), (31, 38)
+
+if dons[0] >= minflank5: print('keep')
+print(accs[-1])
+
+for d, a in zip(dons, accs):
+	if d >= minflank5:
+		print('keep')
+	
+
 # testing old code
-minex = 1
-maxs = 100
 flank = 1
 # gets the same sequence each time
-#for i isoform.all_possible(seq,minin,minex,maxs,flank)[0]:
+#for i in isoform.all_possible(seq,minin,minex,maxs,flank)[0]:
 #	print(i)
 #print(isoform.all_possible(seq,minin,minex,maxs, flank)[0])
 
