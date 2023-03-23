@@ -69,8 +69,8 @@ print(seq)
 # default is 25
 minin = 3
 minex = 3
-minflank5 = 1
-minflank3 = 1
+# default should be 100
+flank = 5
 maxs = 100
 # max number of splices
 
@@ -108,14 +108,35 @@ for n in range(1, nsites+1):
 
 print('************')
 
-print(len(seq))
 dons, accs = (9, 22), (31, 38)
 
-if dons[0] >= minflank5: print('keep')
-print(accs[-1])
+# first exon begins/ends at
+fexbeg = dons[0] - flank + 1
+fexend = accs[0]
+
+print(fexbeg, fexend)
+
+# last exon begins/ends at
+lexbeg = accs[-1] + 1
+lexend = len(seq) - flank - 1
+
+print(lexbeg, lexend)
+
+# check if there is enough genomic flank
+def chk_flank(dons, accs, flank):
+	
+	fl5 = dons[0]
+	fl3 = len(seq) - 1  - accs[-1]
+
+	if fl5 >= flank and fl3 >= flank:
+		return True
+	else:
+		return False
+
+print('*******')
 
 for d, a in zip(dons, accs):
-	if d >= minflank5:
+	if d >= flank:
 		print('keep')
 	
 
