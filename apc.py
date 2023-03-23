@@ -68,7 +68,7 @@ seq = seq1
 print(seq)
 # default is 25
 minin = 3
-minex = 3
+minex = 5
 # default should be 100
 flank = 5
 maxs = 100
@@ -95,36 +95,10 @@ def short_introns(dons, accs, minin):
 			return True
 	return False
 
-nshort_introns = 0
-nsites = min(len(dons), len(accs), maxs)
-for n in range(1, nsites+1):
-	for dsites in combinations(dons, n):
-		for asites in combinations(accs, n):
-			if short_introns(dsites, asites, minin):		
-				nshort_introns += 1
-				continue
-			print(dsites, asites)
-			
-
-print('************')
-
-dons, accs = (9, 22), (31, 38)
-
-# first exon begins/ends at
-fexbeg = dons[0] - flank + 1
-fexend = accs[0]
-
-print(fexbeg, fexend)
-
-# last exon begins/ends at
-lexbeg = accs[-1] + 1
-lexend = len(seq) - flank - 1
-
-print(lexbeg, lexend)
-
-# check if there is enough genomic flank
+# check genomic flank
 def chk_flank(dons, accs, flank):
 	
+	# flank at 5' and 3' ends
 	fl5 = dons[0]
 	fl3 = len(seq) - 1  - accs[-1]
 
@@ -133,15 +107,66 @@ def chk_flank(dons, accs, flank):
 	else:
 		return False
 
-print('*******')
+def short_exons(dons, accs, minex):
+	
+	# check 5' first exon
+	fexbeg = dons[0] - flank + 1
+	fexend = accs[0]
+	fexlen = fexend - fexbeg + 1
+	if fexlen < minex:
+		return True
 
-for d, a in zip(dons, accs):
-	if d >= flank:
-		print('keep')
+	# check 3' last exon
+	lexbeg = dons[-1] + 1
+	lexend = len(seq) - flank - 1	
+	lexlen = lexend - lexbeg + 1
+	if lexlen < minex:
+		return True
+
+	# check interior exons
+	for i in range(1, len(dons) - 1):
+		iexlen = accs[i] - dons[i] + 1
+		if iexlen < minex:
+			return True
+
+	return False	
 	
 
+# not sure i see the utility in counting discarded isoforms
+# by short exons on introns
+# if discarded due to short exon first
+# but there is a short intron
+# then it will only count it as a short exon?
+# maybe just go by discarded isoforms
+trials = 0
+short_introns_exons = 0
+nsites = min(len(dons), len(accs), maxs)
+for n in range(1, nsites+1):
+	for dsites in combinations(dons, n):
+		for asites in combinations(accs, n):
+			if short_introns(dsites, asites, minin):		
+				short_introns_exons += 1
+				print(dsites, asites)
+				continue
+			if short_exons(dsites, asites, minex):
+				short_introns_exons += 1
+				continue
+			if chk_flank(dsites, asites, flank):
+				continue
+			print(dsites, asites)
+			
+
+print('************')
+
+dons, accs = (9, 22), (31, 38)
+#dons, accs = (9,), (16,)
+dons, accs = (9, 22, 41), (31, 38, 54)
+
+
+
+
 # testing old code
-flank = 1
+#flank = 1
 # gets the same sequence each time
 #for i in isoform.all_possible(seq,minin,minex,maxs,flank)[0]:
 #	print(i)
