@@ -74,14 +74,18 @@ flank = 5
 maxs = 100
 # max number of splices
 
-dons = []
-accs = []
-for i in range(len(seq)):
-	if seq[i:i+2] == 'GT':
-		dons.append(i)
-	if seq[i:i+2] == 'AG':
-		accs.append(i+1)
-print(dons, accs)
+def get_gtag(seq):
+
+	dons = []
+	accs = []
+	for i in range(len(seq)):
+		if seq[i:i+2] == 'GT':
+			dons.append(i)
+		if seq[i:i+2] == 'AG':
+			accs.append(i+1)
+	return dons, accs
+
+dons, accs = get_gtag(seq)
 print('************')
 # make an apc algorithm that does not use weights for each individual gene
 # make a single set of weights apply to all genes
@@ -116,26 +120,36 @@ def chk_flank(dons, accs, flank):
 	else:
 		return False
 
-def short_exons(dons, accs, minex):
+def short_exons(dons, accs, flank, minex):
 	
 	# check 5' first exon
-	fexbeg = dons[0] - flank + 1
-	fexend = accs[0]
-	fexlen = fexend - fexbeg + 1
+	#fexbeg = dons[0] - flank + 1
+	#fexend = accs[0]
+	#fexlen = fexend - fexbeg + 1
+	#if fexlen < minex:
+	#	return True
+
+	fexlen = dons[0] - flank
 	if fexlen < minex:
-		return True
+		return True 
 
 	# check 3' last exon
-	lexbeg = dons[-1] + 1
-	lexend = len(seq) - flank - 1	
+	#lexbeg = dons[-1] + 1
+	#lexend = len(seq) - flank - 1	
+	#lexlen = lexend - lexbeg + 1
+	#if lexlen < minex:
+	#	return True
+
+	lexbeg = accs[-1] + 1
+	lexend = len(seq) - flank
 	lexlen = lexend - lexbeg + 1
 	if lexlen < minex:
 		return True
+	
 
 	# check interior exons
-	for i in range(1, len(dons)-1):
-		iexlen = accs[i] - dons[i] + 1
-		if iexlen < minex:
+	for i in range(len(dsites)-1):
+		if dsites[i+1] - asites[i] < minex:
 			return True
 
 	return False	
@@ -147,6 +161,17 @@ def short_exons(dons, accs, minex):
 # but there is a short intron
 # then it will only count it as a short exon?
 # maybe just go by discarded isoforms
+
+
+apc_isoform = {
+	'seq': '',
+	'beg': '',
+	'end': '',
+	'exons': [],
+	'introns': [],
+	'score': 0
+}
+
 trials = 0
 short_introns_exons = 0
 nsites = min(len(dons), len(accs), maxs)
@@ -156,7 +181,7 @@ for n in range(1, nsites+1):
 			if short_introns(dsites, asites, minin):		
 				short_introns_exons += 1
 				continue
-			if short_exons(dsites, asites, minex):
+			if short_exons(dsites, asites, flank, minex):
 				short_introns_exons += 1
 				continue
 			if chk_flank(dsites, asites, flank):
@@ -164,15 +189,26 @@ for n in range(1, nsites+1):
 			print(dsites, asites)
 			
 
+dictionary = {
+	'One': '',
+	'Two': ''
+}
+print(dictionary)
+dictionary['One'] = 'ten'
+print(dictionary) 
+
+
+
+
 print('************')
 
 #dons, accs = (9, 22), (31, 38)
-dons, accs = (9,), (16,)
+#dons, accs = (9,), (16,)
 #dons, accs = (9, 22, 41), (31, 38, 54)
 
 
 # i don't understand how ian's code removes overlapping introns
-print(chk_overlap(dons, accs))
+#print(chk_overlap(dons, accs))
 
 
 #chk_overlap(dons, accs)
@@ -180,7 +216,7 @@ print(chk_overlap(dons, accs))
 #print(short_introns(dons, accs, minin))
 #print(chk_flank(dons, accs, flank))
 
-print('********')
+#print('********')
 # testing old code
 #flank = 1
 # gets the same sequence each time
@@ -202,9 +238,19 @@ print(isoform.all_possible(seq,minin,minex,maxs, flank)[0])
 # 'introns': [(9, 16), (22, 31)]
 # 'introns': [(9, 16), (22, 38)]
 
-
-
-
+'''
+print('*************')
+# ???
+sites = min(len(dons), len(accs), maxs)
+for n in range(1, sites+1):
+	for dsites in combinations(dons, n):
+		for asites in combinations(accs, n):
+			if isoform.short_intron(dsites, asites, minin):
+				continue
+			if isoform.short_exon(dsites, asites, len(seq), flank, minex):
+				continue
+			print(dsites, asites)
+'''
 
 
 
