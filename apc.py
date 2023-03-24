@@ -87,6 +87,15 @@ print('************')
 # make a single set of weights apply to all genes
 # how to do?
 
+# check for introns that overlap with the next intron
+def chk_overlap(dons, accs):
+
+	for i in range(len(dons)):
+		if i < len(dons) - 1:
+			if accs[i] > dons[i+1]:
+				return True
+		return False
+
 def short_introns(dons, accs, minin):
 	
 	for d, a in zip(dons, accs):
@@ -100,9 +109,9 @@ def chk_flank(dons, accs, flank):
 	
 	# flank at 5' and 3' ends
 	fl5 = dons[0]
-	fl3 = len(seq) - 1  - accs[-1]
+	fl3 = len(seq) - 1 - accs[-1]
 
-	if fl5 >= flank and fl3 >= flank:
+	if fl5 <= flank and fl3 <= flank:
 		return True
 	else:
 		return False
@@ -124,7 +133,7 @@ def short_exons(dons, accs, minex):
 		return True
 
 	# check interior exons
-	for i in range(1, len(dons) - 1):
+	for i in range(1, len(dons)-1):
 		iexlen = accs[i] - dons[i] + 1
 		if iexlen < minex:
 			return True
@@ -146,7 +155,6 @@ for n in range(1, nsites+1):
 		for asites in combinations(accs, n):
 			if short_introns(dsites, asites, minin):		
 				short_introns_exons += 1
-				print(dsites, asites)
 				continue
 			if short_exons(dsites, asites, minex):
 				short_introns_exons += 1
@@ -158,19 +166,27 @@ for n in range(1, nsites+1):
 
 print('************')
 
-dons, accs = (9, 22), (31, 38)
-#dons, accs = (9,), (16,)
-dons, accs = (9, 22, 41), (31, 38, 54)
+#dons, accs = (9, 22), (31, 38)
+dons, accs = (9,), (16,)
+#dons, accs = (9, 22, 41), (31, 38, 54)
 
 
+# i don't understand how ian's code removes overlapping introns
+print(chk_overlap(dons, accs))
 
 
+#chk_overlap(dons, accs)
+#print(short_exons(dons, accs, minin))
+#print(short_introns(dons, accs, minin))
+#print(chk_flank(dons, accs, flank))
+
+print('********')
 # testing old code
 #flank = 1
 # gets the same sequence each time
-#for i in isoform.all_possible(seq,minin,minex,maxs,flank)[0]:
-#	print(i)
-#print(isoform.all_possible(seq,minin,minex,maxs, flank)[0])
+for i in isoform.all_possible(seq,minin,minex,maxs,flank)[0]:
+	print(i)
+print(isoform.all_possible(seq,minin,minex,maxs, flank)[0])
 
 # time with seq3: 0.084s
 # WAAAAAAAAAY faster
