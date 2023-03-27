@@ -83,6 +83,7 @@ def get_gtag(seq):
 			dons.append(i)
 		if seq[i:i+2] == 'AG':
 			accs.append(i+1)
+
 	return dons, accs
 
 dons, accs = get_gtag(seq)
@@ -91,65 +92,37 @@ print('************')
 # make a single set of weights apply to all genes
 # how to do?
 
-# check for introns that overlap with the next intron
-def chk_overlap(dons, accs):
-
-	for i in range(len(dons)):
-		if i < len(dons) - 1:
-			if accs[i] > dons[i+1]:
-				return True
-		return False
-
 def short_introns(dons, accs, minin):
 	
 	for d, a in zip(dons, accs):
 		intron_length = a - d + 1
 		if intron_length < minin:
 			return True
+
 	return False
-
-# check genomic flank
-def chk_flank(dons, accs, flank):
-	
-	# flank at 5' and 3' ends
-	fl5 = dons[0]
-	fl3 = len(seq) - 1 - accs[-1]
-
-	if fl5 <= flank and fl3 <= flank:
-		return True
-	else:
-		return False
 
 def short_exons(dons, accs, flank, minex):
 	
 	# check 5' first exon
-	#fexbeg = dons[0] - flank + 1
-	#fexend = accs[0]
-	#fexlen = fexend - fexbeg + 1
-	#if fexlen < minex:
-	#	return True
-
-	fexlen = dons[0] - flank
+	fexlen = accs[0] - flank
 	if fexlen < minex:
-		return True 
-
+		return True
+	
 	# check 3' last exon
-	#lexbeg = dons[-1] + 1
-	#lexend = len(seq) - flank - 1	
-	#lexlen = lexend - lexbeg + 1
-	#if lexlen < minex:
-	#	return True
-
 	lexbeg = accs[-1] + 1
 	lexend = len(seq) - flank
 	lexlen = lexend - lexbeg + 1
 	if lexlen < minex:
 		return True
 	
+	# check interior exons
+	for i in range(len(dons)-1):
+		if dons[i+1] - asites[i] < minex:
+			return True
 
 	# check interior exons
 	for i in range(len(dsites)-1):
-		if dsites[i+1] - asites[i] < minex:
+		if dsites[i+1] - accs[i] < minex:
 			return True
 
 	return False	
@@ -178,15 +151,11 @@ nsites = min(len(dons), len(accs), maxs)
 for n in range(1, nsites+1):
 	for dsites in combinations(dons, n):
 		for asites in combinations(accs, n):
-			if short_introns(dsites, asites, minin):		
-				short_introns_exons += 1
+			if short_introns(dsites, asites, minin):
 				continue
 			if short_exons(dsites, asites, flank, minex):
-				short_introns_exons += 1
 				continue
-			if chk_flank(dsites, asites, flank):
-				continue
-			print(dsites, asites)
+			print(dsites, asites)	
 			
 
 dictionary = {
