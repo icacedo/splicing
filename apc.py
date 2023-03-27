@@ -124,6 +124,17 @@ def short_exons(dons, accs, flank, minex):
 
 	return False	
 	
+def get_exons(dsites, asites, flank, seq):
+
+	exons = []
+	exons.append((flank, dsites[0]-1))
+	for i in range(1, len(dsites)):
+		exbeg = asites[i-1] + 1
+		exend = dsites[i] - 1
+		exons.append((exbeg, exend))
+	exons.append((asites[-1]+1, len(seq)-flank-1))
+
+	return exons	
 
 # not sure i see the utility in counting discarded isoforms
 # by short exons on introns
@@ -155,45 +166,11 @@ for n in range(1, nsites+1):
 			apc_isoform['seq'] = seq
 			apc_isoform['beg'] = flank
 			apc_isoform['end'] = len(seq) - flank - 1
-			print(dsites, asites)
-			'''
-			exons = []
-			for d, a in zip(dsites, asites):
-				if d == dsites[0]:
-					exbeg = flank
-					exend = accs[0]
-					exons.append((exbeg, exend))
-				if d == dsites[-1]:
-					exbeg = 
-				print(d, a)
-			print(exons)
-			'''
+			apc_isoform['exons'] = get_exons(dsites, asites, flank, seq)
+			
+print(apc_isoform)
 
-dictionary = {
-	'One': '',
-	'Two': ''
-}
-print(dictionary)
-dictionary['One'] = 'ten'
-print(dictionary) 
-
-print('************')
-
-#dons, accs = (9, 22), (31, 38)
-#dons, accs = (9,), (16,)
-#dons, accs = (9, 22, 41), (31, 38, 54)
-
-
-# i don't understand how ian's code removes overlapping introns
-#print(chk_overlap(dons, accs))
-
-
-#chk_overlap(dons, accs)
-#print(short_exons(dons, accs, minin))
-#print(short_introns(dons, accs, minin))
-#print(chk_flank(dons, accs, flank))
-
-#print('********')
+#print('************')
 # testing old code
 #flank = 1
 # gets the same sequence each time
@@ -214,23 +191,6 @@ print(isoform.all_possible(seq,minin,minex,maxs, flank)[0])
 # 'introns': [(22, 38)]
 # 'introns': [(9, 16), (22, 31)]
 # 'introns': [(9, 16), (22, 38)]
-
-'''
-print('*************')
-# ???
-sites = min(len(dons), len(accs), maxs)
-for n in range(1, sites+1):
-	for dsites in combinations(dons, n):
-		for asites in combinations(accs, n):
-			if isoform.short_intron(dsites, asites, minin):
-				continue
-			if isoform.short_exon(dsites, asites, len(seq), flank, minex):
-				continue
-			print(dsites, asites)
-'''
-
-
-
 
 
 
