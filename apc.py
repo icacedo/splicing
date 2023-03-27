@@ -92,6 +92,7 @@ print('************')
 # make a single set of weights apply to all genes
 # how to do?
 
+# using index starting at 0
 def short_introns(dons, accs, minin):
 	
 	for d, a in zip(dons, accs):
@@ -101,28 +102,24 @@ def short_introns(dons, accs, minin):
 
 	return False
 
+# using index starting at 0
 def short_exons(dons, accs, flank, minex):
 	
 	# check 5' first exon
-	fexlen = accs[0] - flank
+	fexlen = accs[0] - flank + 1
 	if fexlen < minex:
 		return True
 	
 	# check 3' last exon
-	lexbeg = accs[-1] + 1
-	lexend = len(seq) - flank
+	lexbeg = dons[-1]
+	lexend = len(seq) - flank - 1 
 	lexlen = lexend - lexbeg + 1
 	if lexlen < minex:
 		return True
 	
 	# check interior exons
 	for i in range(len(dons)-1):
-		if dons[i+1] - asites[i] < minex:
-			return True
-
-	# check interior exons
-	for i in range(len(dsites)-1):
-		if dsites[i+1] - accs[i] < minex:
+		if dons[i+1] - accs[i] - 1 < minex:
 			return True
 
 	return False	
@@ -155,7 +152,10 @@ for n in range(1, nsites+1):
 				continue
 			if short_exons(dsites, asites, flank, minex):
 				continue
-			print(dsites, asites)	
+			apc_isoform['seq'] = seq
+			apc_isoform['beg'] = flank
+			apc_isoform['end'] = len(seq) - flank
+			print(dsites, asites)
 			
 
 dictionary = {
@@ -165,9 +165,6 @@ dictionary = {
 print(dictionary)
 dictionary['One'] = 'ten'
 print(dictionary) 
-
-
-
 
 print('************')
 
