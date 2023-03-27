@@ -13,7 +13,7 @@ seq = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 
 minin = 3
 minex = 5
-flank = 4
+flank = 5
 maxs = 100
 
 def get_gtag(seq):
@@ -40,7 +40,7 @@ def short_introns(dons, accs, minin):
 # (9, 22) (16, 38)
 def short_exons(dons, accs, flank, minex):
 		
-	fexlen = dons[0] - flank
+	fexlen = accs[0] - flank
 	if fexlen < minex:
 		return True
 
