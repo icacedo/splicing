@@ -68,7 +68,7 @@ seq = seq1
 print(seq)
 # default is 25
 minin = 3
-minex = 5
+minex = 4
 # default should be 100
 flank = 5
 maxs = 100
@@ -106,12 +106,12 @@ def short_introns(dons, accs, minin):
 def short_exons(dons, accs, flank, minex):
 	
 	# check 5' first exon
-	fexlen = accs[0] - flank + 1
+	fexlen = dons[0] - flank
 	if fexlen < minex:
 		return True
 	
 	# check 3' last exon
-	lexbeg = dons[-1]
+	lexbeg = accs[-1] + 1
 	lexend = len(seq) - flank - 1 
 	lexlen = lexend - lexbeg + 1
 	if lexlen < minex:
@@ -154,9 +154,20 @@ for n in range(1, nsites+1):
 				continue
 			apc_isoform['seq'] = seq
 			apc_isoform['beg'] = flank
-			apc_isoform['end'] = len(seq) - flank
+			apc_isoform['end'] = len(seq) - flank - 1
 			print(dsites, asites)
-			
+			'''
+			exons = []
+			for d, a in zip(dsites, asites):
+				if d == dsites[0]:
+					exbeg = flank
+					exend = accs[0]
+					exons.append((exbeg, exend))
+				if d == dsites[-1]:
+					exbeg = 
+				print(d, a)
+			print(exons)
+			'''
 
 dictionary = {
 	'One': '',
