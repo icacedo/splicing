@@ -136,6 +136,14 @@ def get_exons(dsites, asites, flank, seq):
 
 	return exons	
 
+def get_introns(dsites, asites):
+
+	introns = []	
+	for d, a in zip(dsites, asites):	
+		introns.append((d, a))
+	
+	return introns
+
 # not sure i see the utility in counting discarded isoforms
 # by short exons on introns
 # if discarded due to short exon first
@@ -159,6 +167,7 @@ nsites = min(len(dons), len(accs), maxs)
 for n in range(1, nsites+1):
 	for dsites in combinations(dons, n):
 		for asites in combinations(accs, n):
+			trials += 1
 			if short_introns(dsites, asites, minin):
 				continue
 			if short_exons(dsites, asites, flank, minex):
@@ -167,10 +176,10 @@ for n in range(1, nsites+1):
 			apc_isoform['beg'] = flank
 			apc_isoform['end'] = len(seq) - flank - 1
 			apc_isoform['exons'] = get_exons(dsites, asites, flank, seq)
-			
-print(apc_isoform)
-
-#print('************')
+			apc_isoform['introns'] = get_introns(dsites, asites)
+			print(apc_isoform)
+print(trials)
+print('************')
 # testing old code
 #flank = 1
 # gets the same sequence each time
