@@ -1,6 +1,64 @@
-# staring with the intron length model
-# use arch/data/intron.txt.gz
-# as an exercise
+import sys
+import gzip
+
+fp = sys.argv[1]
+
+def read_file(fp):
+
+	if fp.endswith(".gz"):
+		with gzip.open(fp, 'r') as intfile:                       
+			for line in fp.readlines():
+				line = line.rstrip()
+				if isinstance(line, bytes):
+					line = line.decode()
+				yield line
+
+	else:
+		with open(fp, 'r') as intfile:
+			for line in intfile.readlines():
+				line = line.rstrip()
+				yield line
+
+xlines = 5
+
+intlines = []
+count = 0
+for l in read_file(fp):
+	if count <= xlines:
+		intlines.append(l)
+		count += 1	
+
+intlines = [
+	'AAATGCTATA',
+	'ATCTA',
+	'CGACTCT',
+	'ACTACGTACG',
+	'ACTAGG',
+	'CGCGATCGTT',
+	'AGCGATTTACAGCG',
+	'AGCAC',
+	'CTACTG',
+	'AGAG',
+	'AGCT'
+]
+
+print(intlines)	
+
+intsizes = []
+for i in intlines:
+	intsizes.append(len(i))
+print(intsizes)
+
+intbins = [0 for x in range(max(intsizes)+1)]
+print(intbins)
+
+for i in range(len(intsizes)):
+	intbins[intsizes[i]] += 1
+
+print(intbins)
+		
+print('***********')
+	
 # try different smoothing techniques
 # rectangular and with a slope
 # or parabolic (goes to 0)
@@ -12,24 +70,16 @@
 # can create a slope that goes by a set distance
 # slope m, would be dependent on distance n
 # how much distance? don't want to say intron of 0 is possible
+# resources:
+# https://terpconnect.umd.edu/~toh/spectrum/Smoothing.html
+# http://sepwww.stanford.edu/sep/prof/pvi/zp/paper_html/node6.html#SECTION00121000000000000000
+# http://sepwww.stanford.edu/sep/prof/pvi/zp/paper_html/node7.html
 
-import sys
-import gzip
+for i in intbins:
+	print(i)
 
-fp = sys.argv[1]
 
-if fp.endswith(".gz"):
-	with gzip.open(fp, 'r') as intfile:                       
-	# everything is a byte string
-	# can still slice and index like normal	
-		for line in fp.readlines():
-			line = line.rstrip()
-			if isinstance(line, bytes):
-				line = line.decode()
-			print(line)
 
-else:
-	with open(fp, 'r') as intfile:
-		for line in ifile.readlines():
-			line = line.rstrip()
-			print(line)
+
+
+
