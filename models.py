@@ -75,10 +75,31 @@ print('***********')
 # http://sepwww.stanford.edu/sep/prof/pvi/zp/paper_html/node6.html#SECTION00121000000000000000
 # http://sepwww.stanford.edu/sep/prof/pvi/zp/paper_html/node7.html
 
-for i in intbins:
-	print(i)
+# m must be odd, smooth width
+m = 5
+'''
+intbins = [1,2,3,4,5,6,7,8,9]
+for i in range(len(intbins)):
+	m2 = int((m/2) + 0.5 - 1)
+	print(intbins[i-m2:i])
+	print(intbins[i])
+	print(intbins[i+1:i+m2+1])
+	print('***')
+'''
+smoodata = []
+for i in range(len(intbins)):
+	m2 = int((m/2) + 0.5 - 1)
+	bef = intbins[i-m2:i]
+	now = intbins[i]
+	aft = intbins[i+1:i+m2+1]
+	total = sum(bef) + now + sum(aft)
+	smoopt = total/m
+	smoodata.append(smoopt)
+	print(bef, now, aft, total, smoopt)
 
-
+print(smoodata)
+	
+	
 
 
 
