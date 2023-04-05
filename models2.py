@@ -35,9 +35,24 @@ for i in range(len(intbins)):
 	now = intbins[i]
 	aft = intbins[i+1:i+m2+1]
 	nowx = now * (m2 + 1)
+	tbefx = 0
+	cbefx = 0
 	for j in range(len(bef)):
-		print(bef[j], m2-1+j, '***')
+		#print(bef[j], m2-1+j, '***')
+		coefb = m2 - 1 + j
+		befx = bef[j] * coefb
+		tbefx += befx
+		cbefx += coefb
+	taftx = 0
+	caftx = 0
 	for k in range(len(aft)):
-		print(aft[k], m2-k, '@@@')
-	print(bef, now, aft)
+		#print(aft[k], m2-k, '@@@')
+		coefa = m2 - k
+		aftx = aft[k] * coefa
+		taftx += aftx
+		caftx += coefa
+	total_coef = (m2 + 1) + cbefx + caftx
+	total = nowx + tbefx + taftx
+	smoopt = total/total_coef
+	print(bef, now, aft, smoopt)
 
