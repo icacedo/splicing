@@ -98,9 +98,24 @@ for i in range(len(intbins)):
 	print(bef, now, aft, total, smoopt)
 
 print(smoodata)
-	
-	
+print('***********')
+# two different ways of rectangular smoothing?	
+smoodata2 = []
+for i in range(len(intbins)):
+	m2 = int((m/2) + 0.5 - 1)
+	bef = intbins[i-m2:i]
+	now = intbins[i]
+	aft = intbins[i+1:i+m2+1]
+	total = 0
+	for n in bef:
+		total += n + now
+	for n in aft:
+		total += n + now
+	total += now + now
+	smoopt2 = total/m
+	smoodata2.append(smoopt2)
+	print(bef, now, aft, total, smoopt2)
 
-
+print(smoodata2)
 
 
