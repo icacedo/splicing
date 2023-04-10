@@ -1,6 +1,13 @@
 # triangular smoothing
 # new goal: look into curve fitting in python
 # fit a gumbel distribution to the length data?
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--out_file', type=str, required=False)
+arg = parser.parse_args()
+
 intlines = [
 	'AAATGCTATA',
 	'ATCTA',
@@ -25,7 +32,7 @@ intbins = [0 for x in range(max(intsizes))]
 
 for i in range(len(intsizes)):
 	intbins[intsizes[i]-1] += 1
-print(intbins)
+#print(intbins)
 m2 = int((m/2) + 0.5 - 1)
 for i in range(len(intbins)):
 	inx = i-m2
@@ -54,5 +61,13 @@ for i in range(len(intbins)):
 	total_coef = (m2 + 1) + cbefx + caftx
 	total = nowx + tbefx + taftx
 	smoopt = total/total_coef
-	print(bef, now, aft, smoopt)
+	#print(bef, now, aft, smoopt)
+	print('{0},{1}'.format(i, smoopt))
 
+
+'''
+if arg.out_file is not None:
+	with open('arg.out_file', 'w') as csvfile:
+		csvwriter = csv.writer(csvfile:
+		for row in result.items():
+'''
