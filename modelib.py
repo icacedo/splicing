@@ -13,7 +13,7 @@ fp = sys.argv[1]
 def read_intfile(fp):
 
 	if fp.endswith(".gz"):
-		with gzip.open(fp, 'r') as intfile:                       
+		with gzip.open(fp, 'r') as intfile:            
 			for line in fp.readlines():
 				line = line.rstrip()
 				if isinstance(line, bytes):
@@ -38,11 +38,10 @@ def get_intbins(fp, nbins=None, prec=3):
 	intsizes = []
 	for intron in intlines:
 		intsizes.append(len(intron))
-
-	intcount_bins = [0 for x in range(max(intsizes)+1)]
-
+	
+	intcount_bins = [0 for x in range(max(intsizes))]
 	for i in range(len(intsizes)):
-		intcount_bins[intsizes[i]] += 1
+		intcount_bins[intsizes[i]-1] += 1
 
 	intfreq_bins = []
 	for i in range(len(intcount_bins)):
@@ -51,9 +50,17 @@ def get_intbins(fp, nbins=None, prec=3):
 		intfreq_bins.append(float(f))
 	
 	# only append up to nbins, for testing
-	return intcount_bins[:nbins], intfreq_bins[:nbins]
+	return intcount_bins[:nbins], intfreq_bins[:nbins], intsizes
 
-print(get_intbins(fp))
+#fbins = get_intbins(fp)[1]
+#print(fbins)
+
+# need to finish putting the smoothing code in here
+# forgot i needed only a list of intron lengths for curve fitting?
+
+
+
+
 
 
 
