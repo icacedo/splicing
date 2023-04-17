@@ -39,9 +39,9 @@ def get_intbins(fp, nbins=None, prec=3):
 	for intron in intlines:
 		intsizes.append(len(intron))
 	
-	intcount_bins = [0 for x in range(max(intsizes))]
+	intcount_bins = [0 for x in range(max(intsizes)+1)]
 	for i in range(len(intsizes)):
-		intcount_bins[intsizes[i]-1] += 1
+		intcount_bins[intsizes[i]] += 1
 
 	intfreq_bins = []
 	for i in range(len(intcount_bins)):
