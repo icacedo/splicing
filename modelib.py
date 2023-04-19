@@ -39,6 +39,13 @@ def get_intbins(fp, nbins=None, prec=3):
 	for intron in intlines:
 		intsizes.append(len(intron))
 	
+	intfreqs = []
+	total = len(intsizes)
+	for count in intsizes:
+		fq = count/total
+		fq2 = f"{fq:.{prec}f}"
+		intfreqs.append(float(fq2))
+	
 	intcount_bins = [0 for x in range(max(intsizes)+1)]
 	for i in range(len(intsizes)):
 		intcount_bins[intsizes[i]] += 1
@@ -50,7 +57,7 @@ def get_intbins(fp, nbins=None, prec=3):
 		intfreq_bins.append(float(f))
 	
 	# only append up to nbins, for testing
-	return intcount_bins[:nbins], intfreq_bins[:nbins], intsizes
+	return intcount_bins[:nbins], intfreq_bins[:nbins], intsizes, intfreqs
 
 #fbins = get_intbins(fp)[1]
 #print(fbins)
