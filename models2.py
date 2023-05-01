@@ -3,10 +3,15 @@
 # fit a gumbel distribution to the length data?
 
 import argparse
+import modelib as ml
+import sys
 
+
+'''
 parser = argparse.ArgumentParser()
 parser.add_argument('--out_file', type=str, required=False)
 arg = parser.parse_args()
+'''
 
 intlines = [
 	'AAATGCTATA',
@@ -22,17 +27,14 @@ intlines = [
 	'AGCT'
 ]
 
+fp = sys.argv[1]
+
 m = 5
 
-intsizes = []
-for size in intlines:
-	intsizes.append(len(size))
+intbins = ml.get_intbins(fp)[0]
 
-intbins = [0 for x in range(max(intsizes))]
+print(intbins)
 
-for i in range(len(intsizes)):
-	intbins[intsizes[i]-1] += 1
-#print(intbins)
 m2 = int((m/2) + 0.5 - 1)
 for i in range(len(intbins)):
 	inx = i-m2
@@ -45,7 +47,6 @@ for i in range(len(intbins)):
 	tbefx = 0
 	cbefx = 0
 	for j in range(len(bef)):
-		#print(bef[j], m2-1+j, '***')
 		coefb = m2 - 1 + j
 		befx = bef[j] * coefb
 		tbefx += befx
@@ -53,7 +54,6 @@ for i in range(len(intbins)):
 	taftx = 0
 	caftx = 0
 	for k in range(len(aft)):
-		#print(aft[k], m2-k, '@@@')
 		coefa = m2 - k
 		aftx = aft[k] * coefa
 		taftx += aftx
@@ -61,8 +61,9 @@ for i in range(len(intbins)):
 	total_coef = (m2 + 1) + cbefx + caftx
 	total = nowx + tbefx + taftx
 	smoopt = total/total_coef
-	#print(bef, now, aft, smoopt)
-	print('{0},{1}'.format(i, smoopt))
+	print(bef, now, aft, total, smoopt)
+	# index is wrong
+	#print('{0},{1}'.format(i, smoopt))
 
 
 '''

@@ -7,8 +7,9 @@ import gzip
 # for testing
 fp = sys.argv[1]
 
-# definitions of rectangular and triangular smoothing found here:
-# https://terpconnect.umd.edu/~toh/spectrum/Smoothing.html
+########################################
+##### Begin Length Model Section #######
+########################################
 
 def read_intfile(fp):
 
@@ -26,11 +27,11 @@ def read_intfile(fp):
 				line = line.rstrip()
 				yield line
 
-# returns a histogram for frequencies and counts
-def get_intbins(fp, nbins=None, prec=3):
+# returns a count/frequency  histogram or raw counts
+def get_intbins(fp, nbins=None, prec=5):
 	
 	intlines = []
-	total_obs= 0
+	total_obs = 0
 	for l in read_intfile(fp):
 		intlines.append(l)
 		total_obs += 1
@@ -59,11 +60,71 @@ def get_intbins(fp, nbins=None, prec=3):
 	# only append up to nbins, for testing
 	return intcount_bins[:nbins], intfreq_bins[:nbins], intsizes, intfreqs
 
-#fbins = get_intbins(fp)[1]
-#print(fbins)
+# definitions of rectangular and triangular smoothing found here:
+# https://terpconnect.umd.edu/~toh/spectrum/Smoothing.html
 
-# need to finish putting the smoothing code in here
-# forgot i needed only a list of intron lengths for curve fitting?
+# rectangular smoothing
+def rec_smoo(intbins, m=5, prec=None):
+	
+	smoodata = []
+	for i in range(len(intbins)):
+		m2 = int((m/2) + 0.5 - 1)
+		bef = intbins[i-m2:i]
+		now = intbins[i]
+		aft = intbins[i+1:i+m2+1]
+		total = sum(bef) + now + sum(aft)
+		smoopt = total/m
+		if prec:
+			fmat = f'{smoopt:.{prec}f}'
+			smoodata.append(fmat)
+		else:
+			smoodata.append(smoopt)
+		#print(bef, now, aft, total, smoopt)
+	
+	return smoodata
+
+# triangular smoothing
+def tri_smoo(intbins, m=5, prec=None):	
+
+	smoodata = []
+	m2 = int((m/2) + 0.5 - 1)
+	for i in range(len(intbins)):
+		inx = i-m2
+		if inx < 0: inx = 0
+		bef = intbins[inx:i]
+		now = intbins[i]
+		aft = intbins[i+1:i+m2+1]
+		nowx = now * (m2 + 1)
+		tbefx = 0
+		cbefx = 0
+		for j in range(len(bef)):
+			coefb = m2 - 1 + j
+			befx = bef[j] * coefb
+			tbefx += befx
+			cbefx += coefb
+		taftx = 0
+		caftx = 0
+		for k in range(len(aft)):
+			coefa = m2 - k
+			aftx = aft[k] * coefa
+			taftx += aftx
+			caftx += coefa
+		total_coef = (m2 + 1) + cbefx + caftx
+		total = nowx + tbefx + taftx
+		smoopt = total/total_coef
+		if prec: 
+			fmat = f'{smoopt:.{prec}f}'
+			smoodata.append(fmat)
+		else:
+			smoodata.append(smoopt)
+		#print(bef, now, aft, total, smoopt)
+
+	return smoodata
+
+########################################
+##### End Length Model Section #########
+########################################
+
 
 
 

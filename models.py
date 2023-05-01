@@ -86,6 +86,7 @@ for i in range(len(intbins)):
 	print(intbins[i+1:i+m2+1])
 	print('***')
 '''
+# rectangular smoothing as described at terpconnect.umd.edu
 smoodata = []
 for i in range(len(intbins)):
 	m2 = int((m/2) + 0.5 - 1)
