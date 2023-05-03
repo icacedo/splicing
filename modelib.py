@@ -1,5 +1,7 @@
 import sys
 import gzip
+import openturns as ot
+import math
 
 # unit testing in python
 # https://www.dataquest.io/blog/unit-tests-python/
@@ -28,7 +30,7 @@ def read_intfile(fp):
 				yield line
 
 # returns a count/frequency  histogram or raw counts
-def get_intbins(fp, nbins=None, prec=5):
+def get_intbins(fp, nbins=None, prec=None):
 	
 	intlines = []
 	total_obs = 0
@@ -44,8 +46,10 @@ def get_intbins(fp, nbins=None, prec=5):
 	total = len(intsizes)
 	for count in intsizes:
 		fq = count/total
-		fq2 = f"{fq:.{prec}f}"
-		intfreqs.append(float(fq2))
+		if prec:
+			fq2 = f"{fq:.{prec}f}"
+			intfreqs.append(float(fq2))
+		else: intfreqs.append(float(fq))
 	
 	intcount_bins = [0 for x in range(max(intsizes)+1)]
 	for i in range(len(intsizes)):
@@ -53,12 +57,16 @@ def get_intbins(fp, nbins=None, prec=5):
 
 	intfreq_bins = []
 	for i in range(len(intcount_bins)):
-		freq = intcount_bins[i]/total_obs
-		f = f"{freq:.{prec}f}"
-		intfreq_bins.append(float(f))
-	
+		fqb = intcount_bins[i]/total_obs
+		if nbins:
+			fqb2 = f"{fqb:.{prec}f}"
+			intfreq_bins.append(float(fqb))
+		else: intfreq_bins.append(float(fqb))	
+
 	# only append up to nbins, for testing
 	return intcount_bins[:nbins], intfreq_bins[:nbins], intsizes, intfreqs
+
+##### smoothing ########################
 
 # definitions of rectangular and triangular smoothing found here:
 # https://terpconnect.umd.edu/~toh/spectrum/Smoothing.html
@@ -120,6 +128,53 @@ def tri_smoo(intbins, m=5, prec=None):
 		#print(bef, now, aft, total, smoopt)
 
 	return smoodata
+
+##### curve fitting ####################
+
+def frechet_pdf(x, a, b, g):
+	if x < g: return 0
+	z = (x-g)/b
+	term1 = (a/b)
+	term2 = z**(-1-a)
+	term3 = math.exp(-z**-a)
+	return term1 * term2 * term3
+
+def memoize_fdist(fp, nbins=None, prec=None, size_limit=250):
+
+	data = get_intbins(fp, nbins=None, prec=None)[2]
+	
+	# data is used to get the parameters
+	# this function does not score the data
+	# only add introns below certain size to sample 
+	sample = ot.Sample([[x] for x in data if x < size_limit])
+
+	distFrechet = ot.FrechetFactory().buildAsFrechet(sample)
+
+	a = distFrechet.getAlpha()
+	b = distFrechet.getBeta()
+	g = distFrechet.getGamma()
+		
+	x_values = []
+	y_values = []
+	y_scores = []
+	for i in range(min(len(data), size_limit)):
+		x_values.append(i)
+		y = frechet_pdf(i, a, b, g)
+		y_values.append(y)
+		if y == 0: y_scores.append(-99)
+		else: y_scores.append(math.log2(y))
+
+	data = {
+		'x': x_values,
+		'y': y_values
+	}
+	
+	# only scores are useful?
+	return y_scores
+
+print(memoize_fdist(fp))
+
+
 
 ########################################
 ##### End Length Model Section #########

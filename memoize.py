@@ -12,7 +12,7 @@ import sys
 fp = sys.argv[1]
 
 data = modelib.get_intbins(fp, 500, 5)[2]
-
+print(data)
 size_limit = 250
 
 sample = ot.Sample([[x] for x in data if x < size_limit])
