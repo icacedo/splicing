@@ -431,7 +431,7 @@ def all_possible(seq, minin, minex, maxs, flank, gff=None):
 					continue
 
 				# create isoform and save
-				tx = build_mRNA(seq, flank, len(seq) -flank, dsites, asites)
+				tx = build_mRNA(seq, flank, len(seq) -flank -1, dsites, asites)
 				isoforms.append(tx)
 
 	return isoforms, info
