@@ -64,7 +64,10 @@ with open(sys.argv[1], 'r') as ff:
 
 #print(seq2[101:110])
 #print(seq2[495:498])
-seq = seq1
+seq5 = 'CCCCCAAAAAGTCCCCCCAGAAAAACCCCC'
+# 5 nt flank, 5nt exon, 10nt intron, 5nt exon, 5nt flank
+# 0-4 flank, 5-9 exon, 10-19 intron, 20-24 exon, 25-29 flank
+seq = seq5
 print(seq)
 # default is 25
 minin = 3
