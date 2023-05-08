@@ -44,3 +44,4 @@ fp = sys.argv[1]
 name, seq = next(isoform.read_fasta(fp))
 print(name, seq)
 
+
