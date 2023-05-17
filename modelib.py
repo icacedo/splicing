@@ -11,6 +11,51 @@ from itertools import combinations
 #fp = sys.argv[1]
 
 ########################################
+##### Begin File Reading Section #######
+########################################
+
+def read_fastas(fastafile):
+
+	with open(fastafile) as fp:
+
+		seqid = ''
+		seq = ''	
+
+		for line in fp.readlines():
+			line = line.rstrip()
+			if line.startswith('>'): seqid += line
+			else: seq += line
+		yield (seqid, seq)			
+	fp.close()		
+
+def read_gff_sites(seq, gff, gtag=True):
+
+	dons = []
+	accs = []
+
+	with open(gff) as fp:
+		while True:
+			line = fp.readline()
+			line = line.rstrip()
+			if not line: break
+			fields = line.split('\t')
+			if fields[2] == 'intron':
+				beg = int(fields[3]) - 1
+				end = int(fields[4]) - 1
+				if gtag:
+					if seq[beg:beg+2] == 'GT': 
+						dons.append(beg)
+					if seq[end-1:end+1] == 'AG': 
+						accs.append(end)
+	fp.close()	
+	return sorted(set(dons)), sorted(set(accs))
+
+
+########################################
+##### End File Reading Section #########
+########################################
+
+########################################
 ##### Begin Length Model Section #######
 ########################################
 
