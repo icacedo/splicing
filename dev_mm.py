@@ -1,12 +1,41 @@
 # code exon/intron markov model
 import isoform
 import sys
+import math
 
 
 s = 'ATGGGCGCGTTATATGGCTACGATAATATCGACTATC'
 #s = 'ACTGACTGAC'
-n = 4
+order = 3
 
+context = {}
+for i in range(len(s)-order):
+	prev = s[i:i+order]
+	now = s[i+order]
+	print(prev, now)
+	if prev not in context:
+		context[prev] = now
+	else:
+		context[s[i:i+order]] += now
+print(context)
+
+flist = []
+for i in context:
+	print(i, context[i])
+	for j in context [i]:
+		print(j)
+
+
+
+
+
+
+
+
+
+
+
+'''
 def kcounts(seq, n):
 
 	kmers = {}
@@ -49,16 +78,18 @@ for seq in exin_seqs:
 print(allk)
 print(allk_counts)
 print(allk['AAAA']/allk_counts)
-'''
+
+print(math.log(allk['AAAA']/allk_counts, 2))
+
 kmers, total = kcounts(s, k)
 
 for i in kmers:
 	print(i, kmers[i]/total)
-'''
+
 print('********')
 # idk how to work
 #print(isoform.create_markov(sys.argv[1], 2, 0, 1111))
-
+'''
 
 
 
