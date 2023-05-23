@@ -50,6 +50,18 @@ def read_gff_sites(seq, gff, gtag=True):
 	fp.close()	
 	return sorted(set(dons)), sorted(set(accs))
 
+# read exon/intron sequences file
+def read_exin_seqs(sfile):
+	
+	exin_seqs = []
+	with open(sfile, 'r') as fp:	
+		exin_seq = ''
+		for line in fp.readlines():
+			line = line.rstrip()
+			exin_seq = line
+			exin_seqs.append(exin_seq)
+	return exin_seqs
+	fp.close()
 
 ########################################
 ##### End File Reading Section #########
@@ -224,6 +236,42 @@ def memoize_fdist(fp, nbins=None, prec=None, size_limit=250):
 
 ########################################
 ##### End Length Model Section #########
+########################################
+
+########################################
+##### Begin Markov Model Section #######
+########################################
+
+def make_mm(exin_seqs, order=3):
+
+	order = 3
+	context = {}
+	for seq in exin_seqs:
+		for i in range(len(seq)-order):
+			prev = seq[i:i+order]
+			now = seq[i+order]
+			if prev not in context:
+				context[prev] = now
+			else:
+				context[seq[i:i+order]] += now
+	mm = {}
+	for nts in sorted(context):	
+		A = 0
+		C = 0
+		G = 0
+		T = 0
+		for nt in context[nts]:
+			if nt == 'A': A += 1
+			if nt == 'C': C += 1
+			if nt == 'G': G += 1
+			if nt == 'T': T += 1
+			d = int(len(context[nts]))
+		if nts not in mm:
+			mm[nts] = (A/d, C/d, G/d, T/d)
+	return mm
+
+########################################
+##### End Markov Model Section #########
 ########################################
 
 ########################################

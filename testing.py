@@ -11,6 +11,7 @@ print(ml.rec_smoo(intbins))
 
 print(ml.tri_smoo(intbins))
 '''
+
 #       0        9      16    22       31     38       47  
 #                D      A     D        A      A          
 seq1 = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
@@ -34,7 +35,7 @@ minin = 3
 minex = 4
 flank = 5
 maxs = 100
-
+'''
 dons, accs = ml.get_gtag(seq1)
 print(dons)
 print(accs)
@@ -43,5 +44,14 @@ ml.apc(dons, accs, maxs, minin, minex, flank, seq1)
 fp = sys.argv[1]
 name, seq = next(isoform.read_fasta(fp))
 print(name, seq)
+'''
+
+sfile = sys.argv[1]
+
+exin_seqs = ml.read_exin_seqs(sfile)
+mm = ml.make_mm(exin_seqs)
+
+print(mm)
+
 
 
