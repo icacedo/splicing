@@ -50,8 +50,8 @@ def read_gff_sites(seq, gff, gtag=True):
 	fp.close()	
 	return sorted(set(dons)), sorted(set(accs))
 
-# read exon/intron sequences file
-def read_exin_seqs(sfile):
+# read exon/intron or donor/acceptor sequences file
+def read_txt_seqs(sfile):
 	
 	exin_seqs = []
 	with open(sfile, 'r') as fp:	
