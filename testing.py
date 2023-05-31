@@ -45,13 +45,18 @@ fp = sys.argv[1]
 name, seq = next(isoform.read_fasta(fp))
 print(name, seq)
 '''
-
+'''
 sfile = sys.argv[1]
 
 exin_seqs = ml.read_exin_seqs(sfile)
 mm = ml.make_mm(exin_seqs)
 
 print(mm)
+'''
 
+exin_seqs = ml.read_txt_seqs(sys.argv[1])
 
+pwm = ml.pwm_score(exin_seqs)
+
+print(pwm)
 

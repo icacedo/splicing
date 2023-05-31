@@ -275,6 +275,36 @@ def make_mm(exin_seqs, order=3):
 ########################################
 
 ########################################
+##### Begin PWM section ################
+########################################
+
+def pwm_score(seqs):
+
+	pfm = [{'A': 0, 'C': 0, 'G': 0, 'T':0} for x in range(len(seqs[0]))]
+	for i in range(len(seqs)):
+		for j in range(len(seqs[i])):
+			pfm[j][seqs[i][j]] += 1
+
+	ppm = [{'A': 0, 'C': 0, 'G': 0, 'T':0} for x in range(len(pfm))]
+	for i in range(len(pfm)):
+		for n in pfm[i]:
+			ppm[i][n] = pfm[i][n]/len(seqs)
+
+	pwm = [{'A': 0, 'C': 0, 'G': 0, 'T': 0} for x in range(len(ppm))]
+	for i in range(len(ppm)):	
+		for n in ppm[i]:
+			if ppm [i][n] == 0:
+				pwm[i][n] = -100
+			else:
+				pwm[i][n] = math.log2(ppm[i][n]/0.25)
+
+	return pwm
+		
+########################################
+##### End PWM section ##################
+########################################
+
+########################################
 ##### Begin APC Section ################
 ########################################
 
