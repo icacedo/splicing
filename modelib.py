@@ -51,17 +51,31 @@ def read_gff_sites(seq, gff, gtag=True):
 	return sorted(set(dons)), sorted(set(accs))
 
 # read exon/intron or donor/acceptor sequences file
-def read_txt_seqs(sfile):
-	
-	exin_seqs = []
-	with open(sfile, 'r') as fp:	
-		exin_seq = ''
-		for line in fp.readlines():
-			line = line.rstrip()
-			exin_seq = line
-			exin_seqs.append(exin_seq)
-	return exin_seqs
-	fp.close()
+def read_txt_seqs(fp):
+
+	tn_seqs = [] # training sequences
+
+	if fp.endswith(".gz"):
+		with gzip.open(fp, 'r') as tnseqfile:
+			tn_seq = ''
+			for line in tnseqfile.readlines():
+				line = line.rstrip()
+				if isinstance(line, bytes):
+					line = line.decode()
+				tn_seq = line
+				tn_seqs.append(tn_seq)
+		tnseqfile.close()
+		return tn_seqs 
+
+	else:
+		with open(fp, 'r') as tnseqfile:
+			tn_seq = ''
+			for line in tnseqfile.readlines():
+				line = line.rstrip()
+				tn_seq = line
+				tn_seqs.append(tn_seq)
+			tnseqfile.close()
+		return tn_seqs
 
 ########################################
 ##### End File Reading Section #########
@@ -71,58 +85,43 @@ def read_txt_seqs(sfile):
 ##### Begin Length Model Section #######
 ########################################
 
-def read_intfile(fp):
-
-	if fp.endswith(".gz"):
-		with gzip.open(fp, 'r') as intfile:            
-			for line in fp.readlines():
-				line = line.rstrip()
-				if isinstance(line, bytes):
-					line = line.decode()
-				yield line
-
-	else:
-		with open(fp, 'r') as intfile:
-			for line in intfile.readlines():
-				line = line.rstrip()
-				yield line
-
 # returns a count/frequency  histogram or raw counts
-def get_intbins(fp, nbins=None, prec=None):
-	
-	intlines = []
+# uses a list of exons/introns as input
+def get_exinbins(exinseqs, nbins=None, prec=None):
+
+	lines = []
 	total_obs = 0
-	for l in read_intfile(fp):
-		intlines.append(l)
+	for l in exinseqs:
+		lines.append(l)
 		total_obs += 1
 
-	intsizes = []
-	for intron in intlines:
-		intsizes.append(len(intron))
+	sizes = []
+	for exin in lines:
+		sizes.append(len(exin))
 	
-	intfreqs = []
-	total = len(intsizes)
-	for count in intsizes:
+	freqs = []
+	total = len(sizes)
+	for count in sizes:
 		fq = count/total
 		if prec:
 			fq2 = f"{fq:.{prec}f}"
-			intfreqs.append(float(fq2))
-		else: intfreqs.append(float(fq))
+			freqs.append(float(fq2))
+		else: freqs.append(float(fq))
 	
-	intcount_bins = [0 for x in range(max(intsizes)+1)]
-	for i in range(len(intsizes)):
-		intcount_bins[intsizes[i]] += 1
+	count_bins = [0 for x in range(max(sizes)+1)]
+	for i in range(len(sizes)):
+		count_bins[sizes[i]] += 1
 
-	intfreq_bins = []
-	for i in range(len(intcount_bins)):
-		fqb = intcount_bins[i]/total_obs
+	freq_bins = []
+	for i in range(len(count_bins)):
+		fqb = count_bins[i]/total_obs
 		if nbins:
 			fqb2 = f"{fqb:.{prec}f}"
-			intfreq_bins.append(float(fqb))
-		else: intfreq_bins.append(float(fqb))	
+			freq_bins.append(float(fqb))
+		else: freq_bins.append(float(fqb))	
 
 	# only append up to nbins, for testing
-	return intcount_bins[:nbins], intfreq_bins[:nbins], intsizes, intfreqs
+	return count_bins[:nbins], freq_bins[:nbins], sizes, freqs
 
 ##### smoothing ########################
 
@@ -199,7 +198,7 @@ def frechet_pdf(x, a, b, g):
 
 def memoize_fdist(fp, nbins=None, prec=None, size_limit=250):
 
-	data = get_intbins(fp, nbins=None, prec=None)[2]
+	data = get_exinbins(fp, nbins=None, prec=None)[2]
 	
 	# data is used to get the parameters
 	# this function does not score the data
@@ -228,11 +227,10 @@ def memoize_fdist(fp, nbins=None, prec=None, size_limit=250):
 	}
 	
 	# only scores are useful?
-	return y_scores
+	# y beore log transforming
+	return y_scores, y_values
 
 #print(memoize_fdist(fp))
-
-
 
 ########################################
 ##### End Length Model Section #########
@@ -244,7 +242,6 @@ def memoize_fdist(fp, nbins=None, prec=None, size_limit=250):
 
 def make_mm(exin_seqs, order=3):
 
-	order = 3
 	context = {}
 	for seq in exin_seqs:
 		for i in range(len(seq)-order):
@@ -254,7 +251,8 @@ def make_mm(exin_seqs, order=3):
 				context[prev] = now
 			else:
 				context[seq[i:i+order]] += now
-	mm = {}
+	mm_scores = {}
+	mm_probs = {}
 	for nts in sorted(context):	
 		A = 0
 		C = 0
@@ -266,9 +264,19 @@ def make_mm(exin_seqs, order=3):
 			if nt == 'G': G += 1
 			if nt == 'T': T += 1
 			d = int(len(context[nts]))
-		if nts not in mm:
-			mm[nts] = (A/d, C/d, G/d, T/d)
-	return mm
+		if nts not in mm_scores:
+			if A/d == 0: ad = -100
+			else: ad = math.log2(A/d)
+			if C/d == 0: cd = -100
+			else: cd = math.log2(C/d)
+			if G/d == 0: gd = -100 
+			else: gd = math.log2(G/d)
+			if T/d == 0: td = -100
+			else: td = math.log2(T/d)	
+			mm_scores[nts] = (ad, cd, gd, td)
+		if nts not in mm_probs:
+			mm_probs[nts] = (A/d, C/d, G/d, T/d)
+	return mm_scores, mm_probs
 
 ########################################
 ##### End Markov Model Section #########
