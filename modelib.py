@@ -306,7 +306,7 @@ def pwm_score(seqs):
 			else:
 				pwm[i][n] = math.log2(ppm[i][n]/0.25)
 
-	return pwm
+	return pwm, ppm
 		
 ########################################
 ##### End PWM section ##################
