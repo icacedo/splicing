@@ -14,11 +14,18 @@ parser.add_argument('--dntxt', type=str, metavar='<file>',
 	help='input text file with donor site sequences')
 parser.add_argument('--actxt', type=str, metavar='<file>',
 	help='input text file with acceptor site sequences')
+parser.add_argument('-mm', action='store_true')
+parser.add_argument('-len', action='store_true')
+parser.add_argument('-pwm', action='store_true')
+
 args = parser.parse_args()
 
-def mm_tsv_write(exintxt):
+#if args.mm:
+#	print('wowowo')
 
-	exins = ml.read_txt_seqs(exintxt)
+#exins = ml.read_txt_seqs(args.extxt)
+
+def mm_tsv_write(exins):
 
 	exinmm_scores, exinmm_probs = ml.make_mm(exins)
 
@@ -38,12 +45,41 @@ def mm_tsv_write(exintxt):
 				exinmm_scores[key][3]])
 	tsvfile.close()
 
-# input exon.txt output exon_mm.tsv
-#mm_tsv_write(args.extxt)
-# input intron.txt output intron_mm.tsv
-#mm_tsv_write(args.intxt)
-
 if args.extxt:
-	mm_tsv_write(args.extxt)
+	exons = ml.read_txt_seqs(args.extxt)
 if args.intxt:
-	mm_tsv_write(args.intxt)
+	introns = ml.read_txt_seqs(args.intxt)
+
+# this works but it might be too confusing
+if args.extxt and args.mm:
+	print('mm only ex')
+elif args.extxt and args.len:
+	print('len only ex')
+elif args.extxt:
+	print('mm and len ex')
+
+if args.intxt and args.mm:
+	print('mm only in')
+elif args.intxt and args.len:
+	print('len only in')
+elif args.intxt:
+	print('mm and len in')
+
+
+'''
+if args.extxt and args.mm:
+	mm_tsv_write(exins)
+if args.intxt and args.mm:
+	mm_tsv_write(exins)
+'''
+
+
+
+
+
+
+
+
+
+
+
