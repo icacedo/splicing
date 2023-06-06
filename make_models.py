@@ -20,16 +20,24 @@ parser.add_argument('-pwm', action='store_true')
 
 args = parser.parse_args()
 
-#if args.mm:
-#	print('wowowo')
+exons = ml.read_txt_seqs(args.extxt)
 
-#exins = ml.read_txt_seqs(args.extxt)
+exinlen_yscores, exinlen_yvalues = ml.memoize_fdist(exons, pre2=6)
 
-def mm_tsv_write(exins):
+print(exinlen_yscores)
+print(exinlen_yvalues)
+
+with open('lenmod.csv', 'w', newline='') as tsvfile:
+	writer = csv.writer(tsvfile, delimiter=',', lineterminator='\n')
+	for i in range(len(exinlen_yscores)):
+		writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
+tsvfile.close()
+
+def mm_tsv_write(exins, fp):
 
 	exinmm_scores, exinmm_probs = ml.make_mm(exins)
 
-	root, ext = args.extxt.split('.')
+	root, ext = fp.split('.')
 	filename = root + '_mm' + '.tsv'
 
 	with open(filename, 'w', newline='') as tsvfile:
@@ -45,33 +53,31 @@ def mm_tsv_write(exins):
 				exinmm_scores[key][3]])
 	tsvfile.close()
 
-if args.extxt:
+
+'''
+if args.extxt and args.mm:
 	exons = ml.read_txt_seqs(args.extxt)
-if args.intxt:
-	introns = ml.read_txt_seqs(args.intxt)
-
-# this works but it might be too confusing
-if args.extxt and args.mm:
-	print('mm only ex')
+	mm_tsv_write(exons, args.extxt)
 elif args.extxt and args.len:
-	print('len only ex')
+	# len_tsv_write(exons)
+	exons = ml.read_txt_seqs(args.extxt)	
 elif args.extxt:
-	print('mm and len ex')
-
+	exons = ml.read_txt_seqs(args.extxt)
+	# len_tsv_write(exons)
+	mm_tsv_write(exons, args.extxt)
+							
 if args.intxt and args.mm:
-	print('mm only in')
+	introns = ml.read_txt_seqs(args.intxt)
+	mm_tsv_write(introns, args.intxt)
 elif args.intxt and args.len:
-	print('len only in')
+	introns = ml.read_txt_seqs(args.intxt)
+	# len_tsv_write(introns)
 elif args.intxt:
-	print('mm and len in')
-
-
+	introns = ml.read_txt_seqs(args.intxt)
+	# len_tsv_write(introns)
+	mm_tsv_write(introns, args.intxt)
 '''
-if args.extxt and args.mm:
-	mm_tsv_write(exins)
-if args.intxt and args.mm:
-	mm_tsv_write(exins)
-'''
+
 
 
 

@@ -87,7 +87,7 @@ def read_txt_seqs(fp):
 
 # returns a count/frequency  histogram or raw counts
 # uses a list of exons/introns as input
-def get_exinbins(exinseqs, nbins=None, prec=None):
+def get_exinbins(exinseqs, nbins=None, pre=None):
 
 	lines = []
 	total_obs = 0
@@ -103,8 +103,8 @@ def get_exinbins(exinseqs, nbins=None, prec=None):
 	total = len(sizes)
 	for count in sizes:
 		fq = count/total
-		if prec:
-			fq2 = f"{fq:.{prec}f}"
+		if pre:
+			fq2 = f"{fq:.{pre}f}"
 			freqs.append(float(fq2))
 		else: freqs.append(float(fq))
 	
@@ -115,9 +115,9 @@ def get_exinbins(exinseqs, nbins=None, prec=None):
 	freq_bins = []
 	for i in range(len(count_bins)):
 		fqb = count_bins[i]/total_obs
-		if nbins:
-			fqb2 = f"{fqb:.{prec}f}"
-			freq_bins.append(float(fqb))
+		if pre:	
+			fqb2 = f"{fqb:.{pre}f}"
+			freq_bins.append(float(fqb2))	
 		else: freq_bins.append(float(fqb))	
 
 	# only append up to nbins, for testing
@@ -129,7 +129,7 @@ def get_exinbins(exinseqs, nbins=None, prec=None):
 # https://terpconnect.umd.edu/~toh/spectrum/Smoothing.html
 
 # rectangular smoothing
-def rec_smoo(intbins, m=5, prec=None):
+def rec_smoo(intbins, m=5, pre=None):
 	
 	smoodata = []
 	for i in range(len(intbins)):
@@ -139,8 +139,8 @@ def rec_smoo(intbins, m=5, prec=None):
 		aft = intbins[i+1:i+m2+1]
 		total = sum(bef) + now + sum(aft)
 		smoopt = total/m
-		if prec:
-			fmat = f'{smoopt:.{prec}f}'
+		if pre:
+			fmat = f'{smoopt:.{pre}f}'
 			smoodata.append(fmat)
 		else:
 			smoodata.append(smoopt)
@@ -149,7 +149,7 @@ def rec_smoo(intbins, m=5, prec=None):
 	return smoodata
 
 # triangular smoothing
-def tri_smoo(intbins, m=5, prec=None):	
+def tri_smoo(intbins, m=5, pre=None):	
 
 	smoodata = []
 	m2 = int((m/2) + 0.5 - 1)
@@ -177,8 +177,8 @@ def tri_smoo(intbins, m=5, prec=None):
 		total_coef = (m2 + 1) + cbefx + caftx
 		total = nowx + tbefx + taftx
 		smoopt = total/total_coef
-		if prec: 
-			fmat = f'{smoopt:.{prec}f}'
+		if pre: 
+			fmat = f'{smoopt:.{pre}f}'
 			smoodata.append(fmat)
 		else:
 			smoodata.append(smoopt)
@@ -196,9 +196,11 @@ def frechet_pdf(x, a, b, g):
 	term3 = math.exp(-z**-a)
 	return term1 * term2 * term3
 
-def memoize_fdist(fp, nbins=None, prec=None, size_limit=250):
+def memoize_fdist(exinseqs, nbins=None, 
+				pre1=None, pre2=None, size_limit=250):
 
-	data = get_exinbins(fp, nbins=None, prec=None)[2]
+	pre = pre1
+	data = get_exinbins(exinseqs, nbins=None, pre=None)[2]
 	
 	# data is used to get the parameters
 	# this function does not score the data
@@ -217,9 +219,18 @@ def memoize_fdist(fp, nbins=None, prec=None, size_limit=250):
 	for i in range(min(len(data), size_limit)):
 		x_values.append(i)
 		y = frechet_pdf(i, a, b, g)
-		y_values.append(y)
-		if y == 0: y_scores.append(-99)
-		else: y_scores.append(math.log2(y))
+		if pre2:
+			y2 = f"{y:.{pre2}f}"
+			y_values.append(y2)
+			if y == 0: y_scores.append(-100)
+			else: 
+				ys = math.log2(y)
+				ys2 =  f"{ys:.{pre2}f}"
+				y_scores.append(ys2)
+		else: 
+			y_values.append(y)
+			if y == 0: y_scores.append(-100)
+			else: y_scores.append(math.log2(y))
 
 	data = {
 		'x': x_values,
@@ -240,10 +251,10 @@ def memoize_fdist(fp, nbins=None, prec=None, size_limit=250):
 ##### Begin Markov Model Section #######
 ########################################
 
-def make_mm(exin_seqs, order=3):
+def make_mm(exinseqs, order=3):
 
 	context = {}
-	for seq in exin_seqs:
+	for seq in exinseqs:
 		for i in range(len(seq)-order):
 			prev = seq[i:i+order]
 			now = seq[i+order]
