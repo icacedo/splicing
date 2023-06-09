@@ -288,7 +288,7 @@ def make_mm(exinseqs, order=3):
 ##### Begin PWM section ###########
 ###################################
 
-def pwm_score(seqs):
+def make_pwm(seqs):
 
 	pfm = [{'A': 0, 'C': 0, 'G': 0, 'T':0} for x in range(len(seqs[0]))]
 	for i in range(len(seqs)):

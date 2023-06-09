@@ -80,7 +80,48 @@ elif args.intxt:
 	len_tsv_write(introns, args.intxt)
 	mm_tsv_write(introns, args.intxt)
 
+####################################################
 
+if args.dntxt:
+	donors = ml.read_txt_seqs(args.dntxt)
+	pwm, ppm = ml.make_pwm(donors)
+
+def pdread(dictionary):
+
+	for site in dictionary:
+		A = None
+		C = None
+		G = None
+		T = None
+		for key in site:
+			if key == 'A':
+				A = site[key]
+			if key == 'C':
+				C = site[key]
+			if key == 'G':
+				G = site[key]
+			if key == 'T':
+				T = site[key]
+		yield [A, C, G, T]
+
+fp = args.dntxt
+root, ext = fp.split('.')
+filename = root + '_pwm' + '.tsv'
+
+
+'''
+for i in pdread(ppm):
+	print(i)
+	print(i[0], i[1], i[2], i[3])
+'''
+
+# need to make each number have the same amout of decimal places
+
+with open(filename, 'w', newline='') as tsvfile:
+	writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
+	for site in pdread(ppm):
+			writer.writerow([site[0], site[1], site[2], site[3]])
+tsvfile.close()
 
 
 
