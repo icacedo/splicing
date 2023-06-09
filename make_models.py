@@ -20,18 +20,23 @@ parser.add_argument('-pwm', action='store_true')
 
 args = parser.parse_args()
 
-exons = ml.read_txt_seqs(args.extxt)
+# note: parameters/best fit dist change depending on maximum length considered
+# exon lens cutoff at 250 have a weibull distribution
+# exon lens cutoff at 500/1000 have a frechet distribution
+# if no cutoff, both are frechet
+# leave default in ml.memoize_fdist to 1000 so both have a frechet distribution
+def len_tsv_write(exins, fp):
+	
+	exinlen_yscores, exinlen_yvalues = ml.memoize_fdist(exins, pre2=6)
 
-exinlen_yscores, exinlen_yvalues = ml.memoize_fdist(exons, pre2=6)
+	root, ext = fp.split('.')
+	filename = root + '_len' + '.tsv'
 
-print(exinlen_yscores)
-print(exinlen_yvalues)
-
-with open('lenmod.csv', 'w', newline='') as tsvfile:
-	writer = csv.writer(tsvfile, delimiter=',', lineterminator='\n')
-	for i in range(len(exinlen_yscores)):
-		writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
-tsvfile.close()
+	with open(filename, 'w', newline='') as tsvfile:
+		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
+		for i in range(len(exinlen_yscores)):
+			writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
+	tsvfile.close()
 
 def mm_tsv_write(exins, fp):
 
@@ -53,17 +58,15 @@ def mm_tsv_write(exins, fp):
 				exinmm_scores[key][3]])
 	tsvfile.close()
 
-
-'''
 if args.extxt and args.mm:
 	exons = ml.read_txt_seqs(args.extxt)
 	mm_tsv_write(exons, args.extxt)
 elif args.extxt and args.len:
-	# len_tsv_write(exons)
+	len_tsv_write(exons, args.extxt)
 	exons = ml.read_txt_seqs(args.extxt)	
 elif args.extxt:
 	exons = ml.read_txt_seqs(args.extxt)
-	# len_tsv_write(exons)
+	len_tsv_write(exons, args.extxt)
 	mm_tsv_write(exons, args.extxt)
 							
 if args.intxt and args.mm:
@@ -71,12 +74,11 @@ if args.intxt and args.mm:
 	mm_tsv_write(introns, args.intxt)
 elif args.intxt and args.len:
 	introns = ml.read_txt_seqs(args.intxt)
-	# len_tsv_write(introns)
+	len_tsv_write(introns, args.intxt)
 elif args.intxt:
 	introns = ml.read_txt_seqs(args.intxt)
-	# len_tsv_write(introns)
+	len_tsv_write(introns, args.intxt)
 	mm_tsv_write(introns, args.intxt)
-'''
 
 
 

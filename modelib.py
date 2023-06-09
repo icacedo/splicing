@@ -10,9 +10,9 @@ from itertools import combinations
 # for testing
 #fp = sys.argv[1]
 
-########################################
-##### Begin File Reading Section #######
-########################################
+###################################
+##### File Reading Section ########
+###################################
 
 def read_fastas(fastafile):
 
@@ -77,13 +77,9 @@ def read_txt_seqs(fp):
 			tnseqfile.close()
 		return tn_seqs
 
-########################################
-##### End File Reading Section #########
-########################################
-
-########################################
-##### Begin Length Model Section #######
-########################################
+###################################
+##### Length Model Section ########
+###################################
 
 # returns a count/frequency  histogram or raw counts
 # uses a list of exons/introns as input
@@ -123,7 +119,7 @@ def get_exinbins(exinseqs, nbins=None, pre=None):
 	# only append up to nbins, for testing
 	return count_bins[:nbins], freq_bins[:nbins], sizes, freqs
 
-##### smoothing ########################
+##### smoothing ###################
 
 # definitions of rectangular and triangular smoothing found here:
 # https://terpconnect.umd.edu/~toh/spectrum/Smoothing.html
@@ -186,7 +182,7 @@ def tri_smoo(intbins, m=5, pre=None):
 
 	return smoodata
 
-##### curve fitting ####################
+##### curve fitting ###############
 
 def frechet_pdf(x, a, b, g):
 	if x < g: return 0
@@ -196,8 +192,11 @@ def frechet_pdf(x, a, b, g):
 	term3 = math.exp(-z**-a)
 	return term1 * term2 * term3
 
+# at size_limit 500-1000 exon/intron fit frechet dist
+# max intron size is 5862
+# max exon size is 2921
 def memoize_fdist(exinseqs, nbins=None, 
-				pre1=None, pre2=None, size_limit=250):
+				pre1=None, pre2=None, size_limit=1000):
 
 	pre = pre1
 	data = get_exinbins(exinseqs, nbins=None, pre=None)[2]
@@ -243,13 +242,9 @@ def memoize_fdist(exinseqs, nbins=None,
 
 #print(memoize_fdist(fp))
 
-########################################
-##### End Length Model Section #########
-########################################
-
-########################################
-##### Begin Markov Model Section #######
-########################################
+###################################
+##### Markov Model Section ########
+###################################
 
 def make_mm(exinseqs, order=3):
 
@@ -289,13 +284,9 @@ def make_mm(exinseqs, order=3):
 			mm_probs[nts] = (A/d, C/d, G/d, T/d)
 	return mm_scores, mm_probs
 
-########################################
-##### End Markov Model Section #########
-########################################
-
-########################################
-##### Begin PWM section ################
-########################################
+###################################
+##### Begin PWM section ###########
+###################################
 
 def pwm_score(seqs):
 
@@ -319,13 +310,9 @@ def pwm_score(seqs):
 
 	return pwm, ppm
 		
-########################################
-##### End PWM section ##################
-########################################
-
-########################################
-##### Begin APC Section ################
-########################################
+###################################
+##### Begin APC Section ###########
+###################################
 
 def get_gtag(seq):
 
