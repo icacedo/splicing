@@ -16,10 +16,14 @@ parser.add_argument('--actxt', type=str, metavar='<file>',
 	help='input text file with acceptor site sequences')
 parser.add_argument('-mm', action='store_true')
 parser.add_argument('-len', action='store_true')
-parser.add_argument('-pwm', action='store_true')
+#parser.add_argument('-pwm', action='store_true')
 
 args = parser.parse_args()
 
+fp = args.actxt
+print(fp)
+
+'''
 # note: parameters/best fit dist change depending on maximum length considered
 # exon lens cutoff at 250 have a weibull distribution
 # exon lens cutoff at 500/1000 have a frechet distribution
@@ -34,6 +38,7 @@ def len_tsv_write(exins, fp):
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
+		writer.writerow([root+' len %', root+' len log2(%)'])
 		for i in range(len(exinlen_yscores)):
 			writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
 	tsvfile.close()
@@ -47,6 +52,7 @@ def mm_tsv_write(exins, fp):
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
+		writer.writerow([root+' mm kmer', root+' mm %', root+' mm log2(%)'])
 		for key in exinmm_scores:
 			writer.writerow([key + 'A', exinmm_probs[key][0], 
 				exinmm_scores[key][0]])
@@ -82,10 +88,6 @@ elif args.intxt:
 
 ####################################################
 
-if args.dntxt:
-	donors = ml.read_txt_seqs(args.dntxt)
-	pwm, ppm = ml.make_pwm(donors)
-
 def pdread(dictionary):
 
 	for site in dictionary:
@@ -104,28 +106,45 @@ def pdread(dictionary):
 				T = site[key]
 		yield [A, C, G, T]
 
-fp = args.dntxt
-root, ext = fp.split('.')
-filename = root + '_pwm' + '.tsv'
+def de(num, pre=6):
+	
+	num2 = f'{num:.{pre}f}'
+	return num2
 
+def pwm_tsv_write(donacc, fp):
 
+	pwm, ppm = ml.make_pwm(donacc)
+
+	fp = args.dntxt
+	root, ext = fp.split('.')
+	filename = root + '_pwm' + '.tsv'
+
+	with open(filename, 'w', newline='') as tsvfile:
+		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
+		writer.writerow([root+' % ppm'])
+		for site in pdread(ppm):
+			a = de(site[0])
+			c = de(site[1])
+			g = de(site[2])
+			t = de(site[3])
+			writer.writerow([a, c, g, t])
+		writer.writerow([root+' log2(%) pwm'])
+		for site in pdread(pwm):
+			a = de(site[0])
+			c = de(site[1])
+			g = de(site[2])
+			t = de(site[3])	
+			writer.writerow([a, c, g, t])
+	tsvfile.close()
+
+if args.dntxt:
+	donors = ml.read_txt_seqs(args.dntxt)
+	pwm_tsv_write(donors, args.dntxt)
+
+if args.actxt:
+	acceptors = ml.read_txt_seqs(args.actxt)
+	pwm_tsv_write(acceptors, args.actxt)
 '''
-for i in pdread(ppm):
-	print(i)
-	print(i[0], i[1], i[2], i[3])
-'''
-
-# need to make each number have the same amout of decimal places
-
-with open(filename, 'w', newline='') as tsvfile:
-	writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-	for site in pdread(ppm):
-			writer.writerow([site[0], site[1], site[2], site[3]])
-tsvfile.close()
-
-
-
-
 
 
 

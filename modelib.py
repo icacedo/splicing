@@ -298,16 +298,18 @@ def make_pwm(seqs):
 	ppm = [{'A': 0, 'C': 0, 'G': 0, 'T':0} for x in range(len(pfm))]
 	for i in range(len(pfm)):
 		for n in pfm[i]:
-			ppm[i][n] = pfm[i][n]/len(seqs)
+			frequency = pfm[i][n]/len(seqs)		
+			ppm[i][n] = frequency	
 
 	pwm = [{'A': 0, 'C': 0, 'G': 0, 'T': 0} for x in range(len(ppm))]
 	for i in range(len(ppm)):	
 		for n in ppm[i]:
-			if ppm [i][n] == 0:
+			if ppm[i][n] == 0:
 				pwm[i][n] = -100
 			else:
-				pwm[i][n] = math.log2(ppm[i][n]/0.25)
-
+				weight = math.log2(ppm[i][n]/0.25)		
+				pwm[i][n] = weight
+	
 	return pwm, ppm
 		
 ###################################
