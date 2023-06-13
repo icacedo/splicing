@@ -1,6 +1,8 @@
 import sys
 
-fasta = sys.argv[1]
+fp = sys.argv[1]
+
+print(fp)
 
 
 
