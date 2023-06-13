@@ -9,32 +9,34 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--extxt', type=str, metavar='<file>', 
 	required=False, help='input text file with exon sequences')
 parser.add_argument('--intxt', type=str, metavar='<file>',
-	help='input text file with intron sequences')
+	required=False, help='input text file with intron sequences')
 parser.add_argument('--dntxt', type=str, metavar='<file>',
-	help='input text file with donor site sequences')
+	required=False, help='input text file with donor site sequences')
 parser.add_argument('--actxt', type=str, metavar='<file>',
-	help='input text file with acceptor site sequences')
+	required=False, help='input text file with acceptor site sequences')
+parser.add_argument('--outdir', type=str, metavar='<directory>',
+	required=False, help='output directory name')
 parser.add_argument('-mm', action='store_true')
 parser.add_argument('-len', action='store_true')
 #parser.add_argument('-pwm', action='store_true')
 
 args = parser.parse_args()
 
-fp = args.actxt
-print(fp)
-
-'''
 # note: parameters/best fit dist change depending on maximum length considered
 # exon lens cutoff at 250 have a weibull distribution
 # exon lens cutoff at 500/1000 have a frechet distribution
 # if no cutoff, both are frechet
 # leave default in ml.memoize_fdist to 1000 so both have a frechet distribution
-def len_tsv_write(exins, fp):
+def len_tsv_write(exins, fp, outdir=None):
 	
 	exinlen_yscores, exinlen_yvalues = ml.memoize_fdist(exins, pre2=6)
 
-	root, ext = fp.split('.')
-	filename = root + '_len' + '.tsv'
+	path = fp.split('/')
+	root, ext = path[-1].split('.')
+	if outdir:
+		filename = outdir + root + '_len' + '.tsv'
+	else:
+		filename = root + '_len' + '.tsv'
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
@@ -43,12 +45,16 @@ def len_tsv_write(exins, fp):
 			writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
 	tsvfile.close()
 
-def mm_tsv_write(exins, fp):
+def mm_tsv_write(exins, fp, outdir=None):
 
 	exinmm_scores, exinmm_probs = ml.make_mm(exins)
-
-	root, ext = fp.split('.')
-	filename = root + '_mm' + '.tsv'
+	
+	path = fp.split('/')
+	root, ext = path[-1].split('.')
+	if outdir:
+		filename = outdir + root + '_mm' + '.tsv'
+	else:
+		filename = root + '_mm' + '.tsv'
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
@@ -66,25 +72,25 @@ def mm_tsv_write(exins, fp):
 
 if args.extxt and args.mm:
 	exons = ml.read_txt_seqs(args.extxt)
-	mm_tsv_write(exons, args.extxt)
+	mm_tsv_write(exons, args.extxt, args.outdir)
 elif args.extxt and args.len:
-	len_tsv_write(exons, args.extxt)
-	exons = ml.read_txt_seqs(args.extxt)	
+	exons = ml.read_txt_seqs(args.extxt)
+	len_tsv_write(exons, args.extxt, args.outdir)	
 elif args.extxt:
 	exons = ml.read_txt_seqs(args.extxt)
-	len_tsv_write(exons, args.extxt)
-	mm_tsv_write(exons, args.extxt)
+	len_tsv_write(exons, args.extxt, args.outdir)
+	mm_tsv_write(exons, args.extxt, args.outdir)
 							
 if args.intxt and args.mm:
 	introns = ml.read_txt_seqs(args.intxt)
-	mm_tsv_write(introns, args.intxt)
+	mm_tsv_write(introns, args.intxt, args.outdir)
 elif args.intxt and args.len:
 	introns = ml.read_txt_seqs(args.intxt)
-	len_tsv_write(introns, args.intxt)
+	len_tsv_write(introns, args.intxt, args.outdir)
 elif args.intxt:
 	introns = ml.read_txt_seqs(args.intxt)
-	len_tsv_write(introns, args.intxt)
-	mm_tsv_write(introns, args.intxt)
+	len_tsv_write(introns, args.intxt, args.outdir)
+	mm_tsv_write(introns, args.intxt, args.outdir)
 
 ####################################################
 
@@ -111,13 +117,16 @@ def de(num, pre=6):
 	num2 = f'{num:.{pre}f}'
 	return num2
 
-def pwm_tsv_write(donacc, fp):
+def pwm_tsv_write(donacc, fp, outdir=None):
 
 	pwm, ppm = ml.make_pwm(donacc)
 
-	fp = args.dntxt
-	root, ext = fp.split('.')
-	filename = root + '_pwm' + '.tsv'
+	path = fp.split('/')
+	root, ext = path[-1].split('.')
+	if outdir:
+		filename = outdir + root + '_pwm' + '.tsv'
+	else:
+		filename = root + '_pwm' + '.tsv'
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
@@ -139,12 +148,12 @@ def pwm_tsv_write(donacc, fp):
 
 if args.dntxt:
 	donors = ml.read_txt_seqs(args.dntxt)
-	pwm_tsv_write(donors, args.dntxt)
+	pwm_tsv_write(donors, args.dntxt, args.outdir)
 
 if args.actxt:
 	acceptors = ml.read_txt_seqs(args.actxt)
-	pwm_tsv_write(acceptors, args.actxt)
-'''
+	pwm_tsv_write(acceptors, args.actxt, args.outdir)
+
 
 
 
