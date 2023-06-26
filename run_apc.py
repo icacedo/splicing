@@ -27,16 +27,47 @@ minin = 25
 minex = 25
 flank = 100
 
-# for seq1:
-#maxs = 100
-#minin = 3
-#minex = 4
-#flank = 5
+# for test seq:
+maxs = 100
+minin = 3
+minex = 4
+flank = 5
 
+def read_pwm(ptsv):
+
+	re_ppm = []
+	re_pwm = []
+	count = 0
+	with open(ptsv, 'r') as fp:
+		for line in fp.readlines():
+			line = line.rstrip()
+			if count != 0 and  count <= 5:
+				re_ppm.append(line.split('\t'))
+			if count >= 7:
+				re_pwm.append(line.split('\t'))
+			count += 1
+	return re_ppm, re_pwm
+
+def get_pwm_score(da_seqs, da_pwm):
+
+	for i in range(len(da_seqs)):
+		da_score = 0
+		for j in range(len(da_seqs[i])):
+			if da_seqs[i][j] == 'A':
+				da_score += float(da_pwm[j][0])
+			if da_seqs[i][j] == 'C':
+				da_score += float(da_pwm[j][1])
+			if da_seqs[i][j] == 'G':
+				da_score += float(da_pwm[j][2])
+			if da_seqs[i][j] == 'T':
+				da_score += float(da_pwm[j][3])
+		yield da_seqs[i], da_score
 
 dons, accs = ml.get_gtag(seq)
-# ml.apc(dons, accs, maxs, minin, minex, flank, seq)
-apc_isoforms, trials = ml.apc(dons, accs, 100, 3, 4, 5, seq)
+#apc_isos, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
+apc_isoforms, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
+
+donor_ppm, donor_pwm = read_pwm(sys.argv[2])
 
 for iso in apc_isoforms:
 	print(iso)
@@ -49,50 +80,13 @@ for iso in apc_isoforms:
 		a_start = a_end - 6
 		d_seqs.append(seq[d_start:d_end])
 		a_seqs.append(seq[a_start:a_end])
-		#print(seq[d_start:d_end], seq[a_start:a_end])
 	print(d_seqs, a_seqs)
-	break
-	'''
-	dstart = iso['introns'][0][0]
-	dend = dstart + 5
-	print(dstart, dend)
-	print(seq[dstart:dend])
-	break
-	'''
-print('***')
-print(d_seqs, a_seqs)
+	for d_seq, d_score in get_pwm_score(d_seqs, donor_pwm):
+		print(d_seq, d_score)
 
-donor_ppm = []
-donor_pwm = []
-count = 0
-with open(sys.argv[2], 'r') as fp1:
-	for line in fp1.readlines():
-		line = line.rstrip()
-		print(line.split('\t'))
-		if count != 0 and  count <= 5:
-			donor_ppm.append(line.split('\t'))
-		if count >= 7:
-			donor_pwm.append(line.split('\t'))
-		count += 1
-print('***')
-print(donor_ppm)
-print('***')
-print(donor_pwm)
-print('*****')
 
-d_score = 0
-for i in range(len(d_seqs)):
-	print(d_seqs[i])
-	for j in range(len(d_seqs[i])):
-		if d_seqs[i][j] == 'A':
-			print(d_seqs[i][j], i, j, donor_pwm[j][0])
-		if d_seqs[i][j] == 'C':
-			print(d_seqs[i][j], i, j, donor_pwm[j][1])
-		if d_seqs[i][j] == 'G':
-			print(d_seqs[i][j], i, j, donor_pwm[j][2])
-		if d_seqs[i][j] == 'T':
-			print(d_seqs[i][j], i, j, donor_pwm[j][3])
-	break	
+	
+
 
 
 

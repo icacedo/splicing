@@ -381,7 +381,8 @@ def get_introns(dsites, asites):
 	return introns
 
 def apc(dons, accs, maxs, minin, minex, flank, seq):
-
+	
+	# use .copy() when appending dictionaries to lists
 	apc_isoforms = []
 
 	apc_isoform = {
@@ -392,7 +393,7 @@ def apc(dons, accs, maxs, minin, minex, flank, seq):
 		'introns': [],
 		'score': 0
 	}	
-
+	
 	trials = 0
 	short_introns_exons = 0
 	nsites = min(len(dons), len(accs), maxs)
@@ -407,9 +408,7 @@ def apc(dons, accs, maxs, minin, minex, flank, seq):
 				apc_isoform['end'] = len(seq) - flank - 1
 				apc_isoform['exons'] = get_exons(dsites, asites, flank, seq)
 				apc_isoform['introns'] = get_introns(dsites, asites)
-				#print(apc_isoform)
-				apc_isoforms.append(apc_isoform)
-	#print(trials)
+				apc_isoforms.append(apc_isoform.copy())	
 	return apc_isoforms, trials
 
 
