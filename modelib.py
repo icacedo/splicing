@@ -407,8 +407,10 @@ def apc(dons, accs, maxs, minin, minex, flank, seq):
 				apc_isoform['end'] = len(seq) - flank - 1
 				apc_isoform['exons'] = get_exons(dsites, asites, flank, seq)
 				apc_isoform['introns'] = get_introns(dsites, asites)
-				print(apc_isoform)
-	print(trials)
+				#print(apc_isoform)
+				apc_isoforms.append(apc_isoform)
+	#print(trials)
+	return apc_isoforms, trials
 
 
 
