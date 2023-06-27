@@ -33,20 +33,51 @@ minin = 3
 minex = 4
 flank = 5
 
-def read_pwm(ptsv):
+def read_pwm(pwm_tsv):
 
 	re_ppm = []
 	re_pwm = []
 	count = 0
-	with open(ptsv, 'r') as fp:
+	with open(pwm_tsv, 'r') as fp:
 		for line in fp.readlines():
 			line = line.rstrip()
-			if count != 0 and  count <= 5:
+			if len(line.split('\t')) == 1:
+				count +=1
+				continue
+			elif count == 1:
 				re_ppm.append(line.split('\t'))
-			if count >= 7:
+			elif count == 2:
 				re_pwm.append(line.split('\t'))
-			count += 1
 	return re_ppm, re_pwm
+
+def get_donacc_seqs(apc_isoforms):
+
+	for iso in apc_isoforms:
+		#print(iso)
+		d_seqs = []
+		a_seqs = []
+		for intron in iso['introns']:
+			d_start = intron[0]
+			d_end = d_start + 5
+			a_end = intron[1] + 1
+			a_start = a_end - 6
+			d_seqs.append(seq[d_start:d_end])
+			a_seqs.append(seq[a_start:a_end])
+			#print(d_seqs, a_seqs)
+		yield iso, d_seqs, a_seqs
+
+def get_donacc_seqs2(isoform):
+	
+	d_seqs = []
+	a_seqs = []
+	for intron in isoform['introns']:
+		d_start = intron[0]
+		d_end = d_start + 5
+		a_end = intron[1] + 1
+		a_start = a_end - 6
+		d_seqs.append(seq[d_start:d_end])
+		a_seqs.append(seq[a_start:a_end])
+	return d_seqs, a_seqs
 
 def get_pwm_score(da_seqs, da_pwm):
 
@@ -67,28 +98,29 @@ dons, accs = ml.get_gtag(seq)
 #apc_isos, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
 apc_isoforms, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
 
-donor_ppm, donor_pwm = read_pwm(sys.argv[2])
 
 for iso in apc_isoforms:
 	print(iso)
-	d_seqs = []
-	a_seqs = []
-	for intron in iso['introns']:
-		d_start = intron[0]
-		d_end = d_start + 5
-		a_end = intron[1] + 1
-		a_start = a_end - 6
-		d_seqs.append(seq[d_start:d_end])
-		a_seqs.append(seq[a_start:a_end])
-	print(d_seqs, a_seqs)
-	for d_seq, d_score in get_pwm_score(d_seqs, donor_pwm):
-		print(d_seq, d_score)
-
-
-	
+	get_donacc_seqs2(iso)
 
 
 
+donor_ppm, donor_pwm = read_pwm(sys.argv[2])
+
+acceptor_ppm, acceptor_pwm = read_pwm(sys.argv[3])
+
+
+for iso, d_seqs, a_seqs in get_donacc_seqs(apc_isoforms):
+	print(iso['score'])
+	dscore_total = 0
+	ascore_total = 0
+	for d_seq, dscore in get_pwm_score(d_seqs, donor_pwm):
+		print(d_seq, dscore)
+		dscore_total += dscore
+	for a_seq, ascore in get_pwm_score(a_seqs, acceptor_pwm):
+		print(a_seq, ascore)
+		ascore_total += ascore
+	print(dscore_total, ascore_total)
 
 
 
