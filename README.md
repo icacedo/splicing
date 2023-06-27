@@ -1,7 +1,22 @@
 # Code for modeling the stochastic background of RNA splicing...
 
 ## MANIFEST ##
-
+### splicing/
++ modelib.py - apc function library
++ make_models.py - generates probabilistic models
++ pwm_scoring.py - scores donor and acceptor sites with pwm
++ isotyper.py - categorizes isoforms
+### splicing/data/
++ copied from arch/
++ apc dataset, exon/intron sequences, donor/acceptor sequences
+### splicing/mkmdls_out/
++ output of make_models.py
++ .tsv files for each model
+### splicing/results/
++ output from Ian's code
++ svg files
++ kinda forget how this works
+### splicing/arch/
 + isoform.py - library for most functions
 + geniso - generates isoforms
 + cmpiso - compares isoforms
@@ -10,9 +25,13 @@
 + data - directory training data and scripts
 	+ extract_sequences.py - uses Lyman2020 favorites
 	+ build_models.py - creates pwms, etc
+ ### splicing/arch2/
+ + devlopment scripts for apc rewrite
+
+
 
 ## To Do ##
-
+- Compare Ian's apc code to rewrite
 - Compare RNA-seq data with simulated data
 - Compare RNA-seq data with gff-generated isoforms (biologically likely)
 - Compare simulated data with gff-generated isoforms (biologically likely)
