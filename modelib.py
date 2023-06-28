@@ -196,7 +196,7 @@ def frechet_pdf(x, a, b, g):
 # max intron size is 5862
 # max exon size is 2921
 def memoize_fdist(exinseqs, nbins=None, 
-				pre1=None, pre2=None, size_limit=1000):
+				pre1=None, pre2=None, size_limit=500):
 
 	pre = pre1
 	data = get_exinbins(exinseqs, nbins=None, pre=None)[2]

@@ -20,39 +20,51 @@ flank = 5
 dons, accs = ml.get_gtag(seq)
 apc_isoforms, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
 
-exon_len_model = sys.argv[1]
+exon_len_tsv = sys.argv[1]
 
-count = 0
-with open(exon_len_model, 'r') as fp:
-	re_len_pdf = []
-	re_len_sco = []
-	for line in fp.readlines():
-		line = line.rstrip()
-		if line.startswith('%'): continue
-		if count <= 30:
+def read_exin_len(exin_len_tsv):
+
+	with open(exin_len_tsv, 'r') as fp:
+		re_len_pdf = []
+		re_len_sco = []
+		for line in fp.readlines():
+			line = line.rstrip()
+			if line.startswith('%'): continue
 			line = line.split('\t')
-			print(line)
 			re_len_pdf.append(line[0])
 			re_len_sco.append(line[1])
-			
-		count += 1
-print(re_len_pdf)
-print(re_len_sco)
+	return re_len_pdf, re_len_sco
 
-for iso in apc_isoforms:
+def get_exin_lengths(isoform):
+	
 	ex_lens = []
-	print(iso)
-	print(iso['exons'])
-	for exon in iso['exons']:
+	for exon in isoform['exons']:
 		ex_len = exon[1] - exon[0] + 1
-		print(exon, ex_len)
 		ex_lens.append(ex_len)
-	print(ex_lens)
-	break
-# double check if len model starts at 1 or 0
-for elen in ex_lens:
-	score = re_len_sco[elen]
-	print(elen, score)
+	in_lens = []
+	for intron in isoform['introns']:
+		in_len = intron[1] - intron[0] +1
+		in_lens.append(in_len)
+	return ex_lens, in_lens
+
+def get_len_score(exin_lens, exin_len_model):
+
+	exin_score_total = 0
+	for length in ex_lens:
+		exin_score = exin_len_model[length]
+		exin_score_total += float(exin_score)
+	return(exin_score_total)
+
+exon_len_pdf, exon_len_sco = read_exin_len(exon_len_tsv)
+
+for iso in apc_isoforms:	
+	ex_lens, in_lens = get_exin_lengths(iso)
+	elen_sc = get_len_score(ex_lens, exon_len_sco)
+	iso['score'] = elen_sc 
+	print(iso)
+	
+
+
 
 
 
