@@ -40,7 +40,7 @@ def len_tsv_write(exins, fp, outdir=None):
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow([root+' len %', root+' len log2(%)'])
+		writer.writerow(['% '+root+' len', 'log2(%) '+root+' len'])
 		for i in range(len(exinlen_yscores)):
 			writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
 	tsvfile.close()
@@ -130,14 +130,14 @@ def pwm_tsv_write(donacc, fp, outdir=None):
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow([root+' % ppm'])
+		writer.writerow(['% ppm '+root])
 		for site in pdread(ppm):
 			a = de(site[0])
 			c = de(site[1])
 			g = de(site[2])
 			t = de(site[3])
 			writer.writerow([a, c, g, t])
-		writer.writerow([root+' log2(%) pwm'])
+		writer.writerow(['log2(%) pwm '+root])
 		for site in pdread(pwm):
 			a = de(site[0])
 			c = de(site[1])
