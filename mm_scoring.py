@@ -37,9 +37,8 @@ def read_exin_mm(exin_mm_tsv):
 		
 ex_mm_pb, ex_mm_sc = read_exin_mm(exon_mm_tsv)
 
-
-#print(ex_mm_sc)
 print(apc_isoforms)
+print('*****')
 
 def get_exin_seqs(isoform, seq):
 
@@ -59,16 +58,22 @@ def get_exin_seqs(isoform, seq):
 
 	return ex_seqs, in_seqs
 
-
-
-
-
 #def get_mm_score(exin_seqs, exin_mm_model):
 one_iso = apc_isoforms[0]
 ex_seqs, in_seqs = get_exin_seqs(one_iso, seq)
 
 one_seq = ex_seqs[0]
+
+print(one_iso)
 print(one_seq)
+print('***')
 
+k = 2
+for i in range(len(one_seq)):
+	if len(one_seq[i:i+k]) == k:
+		kmer = one_seq[i:i+k]
+		score = ex_mm_sc[kmer]
+		print(kmer, score)
 
+print(ex_mm_sc)
 

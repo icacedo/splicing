@@ -51,7 +51,7 @@ def read_pwm(pwm_tsv):
 				re_pwm.append(line.split('\t'))
 	return re_ppm, re_pwm
 
-def get_donacc_seqs(isoform):
+def get_donacc_seqs(isoform, seq):
 	
 	d_seqs = []
 	a_seqs = []
@@ -92,7 +92,7 @@ donor_ppm, donor_pwm = read_pwm(donor_pwm_tsv)
 acceptor_ppm, acceptor_pwm = read_pwm(acceptor_pwm_tsv)
 
 for iso in apc_isoforms:
-	d_seqs, a_seqs = get_donacc_seqs(iso)
+	d_seqs, a_seqs = get_donacc_seqs(iso, seq)
 	dpwm_sc = get_pwm_score(d_seqs, donor_pwm)
 	apwm_sc = get_pwm_score(a_seqs, acceptor_pwm)
 	iso['score'] = dpwm_sc + apwm_sc
