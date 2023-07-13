@@ -282,7 +282,7 @@ def make_mm(exinseqs, order=3):
 			mm_scores[nts] = (ad, cd, gd, td)
 		if nts not in mm_probs:
 			mm_probs[nts] = (A/d, C/d, G/d, T/d)
-	return mm_scores, mm_probs
+	return mm_scores, mm_probs, order
 
 ###################################
 ##### Begin PWM section ###########

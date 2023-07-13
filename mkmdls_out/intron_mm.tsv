@@ -1,4 +1,4 @@
-intron mm kmer	intron mm %	intron mm log2(%)
+intron mm 4mer	intron mm %	intron mm log2(%)
 AAAA	0.4999192626819695	-1.0002329774671566
 AAAC	0.11431783176827148	-3.12887763624186
 AAAG	0.0827992249217469	-3.5942389269629955

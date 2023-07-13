@@ -59,21 +59,36 @@ def get_exin_seqs(isoform, seq):
 	return ex_seqs, in_seqs
 
 #def get_mm_score(exin_seqs, exin_mm_model):
-one_iso = apc_isoforms[0]
-ex_seqs, in_seqs = get_exin_seqs(one_iso, seq)
 
-one_seq = ex_seqs[0]
+ex_seqs, in_seqs = get_exin_seqs(apc_isoforms[0], seq)
 
-print(one_iso)
-print(one_seq)
+def get_mm_score(exin_seqs, exin_mm):
+
+	k = 0
+	for key in exin_mm:
+		string = key.split(' ')[2]
+		k = int(string[0])
+		break
+
+	exin_score_total = 0
+	for exin_seq in exin_seqs:
+		print(exin_seq, '@@@')
+		exin_score = 0
+		for i in range(len(exin_seq)):
+			if len(exin_seq[i:i+k]) == k:
+				kmer = exin_seq[i:i+k]
+				score = exin_mm[kmer]
+				print(kmer, score)
+				exin_score += float(score)
+		print(exin_score)
+		exin_score_total += exin_score
+	print(exin_score_total)
+
+get_mm_score(ex_seqs, ex_mm_sc)
+
+print('***')
+print(ex_mm_sc)
+print(ex_seqs)
 print('***')
 
-k = 2
-for i in range(len(one_seq)):
-	if len(one_seq[i:i+k]) == k:
-		kmer = one_seq[i:i+k]
-		score = ex_mm_sc[kmer]
-		print(kmer, score)
-
-print(ex_mm_sc)
-
+#sc, pb = ml.make_mm(

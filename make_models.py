@@ -47,7 +47,7 @@ def len_tsv_write(exins, fp, outdir=None):
 
 def mm_tsv_write(exins, fp, outdir=None):
 
-	exinmm_scores, exinmm_probs = ml.make_mm(exins)
+	exinmm_scores, exinmm_probs, order = ml.make_mm(exins)
 	
 	path = fp.split('/')
 	root, ext = path[-1].split('.')
@@ -58,7 +58,8 @@ def mm_tsv_write(exins, fp, outdir=None):
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow([root+' mm kmer', root+' mm %', root+' mm log2(%)'])
+		writer.writerow([root+' mm '+str(order+1)+'mer', root+' mm %', root \
+			+' mm log2(%)'])
 		for key in exinmm_scores:
 			writer.writerow([key + 'A', exinmm_probs[key][0], 
 				exinmm_scores[key][0]])
