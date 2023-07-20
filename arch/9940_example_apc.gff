@@ -1,0 +1,109 @@
+# name: ch.9940 IV:4806597-4807419 Gene:WBGene00044483
+# length: 823
+# donors: 27
+# acceptors: 44
+# trials: 39071934
+# isoforms: 1292800
+# complexity: 20.3021
+ch.9940	asg	gene	6	818	.	+	.	ID=Gene-ch.9940
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-1;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-1
+ch.9940	asg	exon	65	818	7.735e-07	+	.	Parent=tx-ch.9940-1
+ch.9940	asg	intron	21	64	7.735e-07	+	.	Parent=tx-ch.9940-1
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-2;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-2
+ch.9940	asg	exon	68	818	7.735e-07	+	.	Parent=tx-ch.9940-2
+ch.9940	asg	intron	21	67	7.735e-07	+	.	Parent=tx-ch.9940-2
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-3;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-3
+ch.9940	asg	exon	71	818	7.735e-07	+	.	Parent=tx-ch.9940-3
+ch.9940	asg	intron	21	70	7.735e-07	+	.	Parent=tx-ch.9940-3
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-4;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-4
+ch.9940	asg	exon	102	818	7.735e-07	+	.	Parent=tx-ch.9940-4
+ch.9940	asg	intron	21	101	7.735e-07	+	.	Parent=tx-ch.9940-4
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-5;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-5
+ch.9940	asg	exon	129	818	7.735e-07	+	.	Parent=tx-ch.9940-5
+ch.9940	asg	intron	21	128	7.735e-07	+	.	Parent=tx-ch.9940-5
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-6;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-6
+ch.9940	asg	exon	138	818	7.735e-07	+	.	Parent=tx-ch.9940-6
+ch.9940	asg	intron	21	137	7.735e-07	+	.	Parent=tx-ch.9940-6
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-7;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-7
+ch.9940	asg	exon	212	818	7.735e-07	+	.	Parent=tx-ch.9940-7
+ch.9940	asg	intron	21	211	7.735e-07	+	.	Parent=tx-ch.9940-7
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-8;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-8
+ch.9940	asg	exon	224	818	7.735e-07	+	.	Parent=tx-ch.9940-8
+ch.9940	asg	intron	21	223	7.735e-07	+	.	Parent=tx-ch.9940-8
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-9;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-9
+ch.9940	asg	exon	243	818	7.735e-07	+	.	Parent=tx-ch.9940-9
+ch.9940	asg	intron	21	242	7.735e-07	+	.	Parent=tx-ch.9940-9
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-10;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-10
+ch.9940	asg	exon	265	818	7.735e-07	+	.	Parent=tx-ch.9940-10
+ch.9940	asg	intron	21	264	7.735e-07	+	.	Parent=tx-ch.9940-10
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-11;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-11
+ch.9940	asg	exon	294	818	7.735e-07	+	.	Parent=tx-ch.9940-11
+ch.9940	asg	intron	21	293	7.735e-07	+	.	Parent=tx-ch.9940-11
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-12;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-12
+ch.9940	asg	exon	297	818	7.735e-07	+	.	Parent=tx-ch.9940-12
+ch.9940	asg	intron	21	296	7.735e-07	+	.	Parent=tx-ch.9940-12
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-13;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-13
+ch.9940	asg	exon	327	818	7.735e-07	+	.	Parent=tx-ch.9940-13
+ch.9940	asg	intron	21	326	7.735e-07	+	.	Parent=tx-ch.9940-13
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-14;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-14
+ch.9940	asg	exon	356	818	7.735e-07	+	.	Parent=tx-ch.9940-14
+ch.9940	asg	intron	21	355	7.735e-07	+	.	Parent=tx-ch.9940-14
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-15;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-15
+ch.9940	asg	exon	364	818	7.735e-07	+	.	Parent=tx-ch.9940-15
+ch.9940	asg	intron	21	363	7.735e-07	+	.	Parent=tx-ch.9940-15
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-16;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-16
+ch.9940	asg	exon	376	818	7.735e-07	+	.	Parent=tx-ch.9940-16
+ch.9940	asg	intron	21	375	7.735e-07	+	.	Parent=tx-ch.9940-16
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-17;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-17
+ch.9940	asg	exon	390	818	7.735e-07	+	.	Parent=tx-ch.9940-17
+ch.9940	asg	intron	21	389	7.735e-07	+	.	Parent=tx-ch.9940-17
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-18;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-18
+ch.9940	asg	exon	405	818	7.735e-07	+	.	Parent=tx-ch.9940-18
+ch.9940	asg	intron	21	404	7.735e-07	+	.	Parent=tx-ch.9940-18
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-19;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-19
+ch.9940	asg	exon	407	818	7.735e-07	+	.	Parent=tx-ch.9940-19
+ch.9940	asg	intron	21	406	7.735e-07	+	.	Parent=tx-ch.9940-19
+
+ch.9940	asg	mRNA	6	818	7.735e-07	+	.	ID=tx-ch.9940-20;Parent=Gene-ch.9940
+ch.9940	asg	exon	6	20	7.735e-07	+	.	Parent=tx-ch.9940-20
+ch.9940	asg	exon	431	818	7.735e-07	+	.	Parent=tx-ch.9940-20
+ch.9940	asg	intron	21	430	7.735e-07	+	.	Parent=tx-ch.9940-20
+
