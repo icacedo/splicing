@@ -1,5 +1,6 @@
 import argparse
 import modelib as ml
+
 # params for test seq: maxs 100, minin 3, minex 4, flank 5
 parser = argparse.ArgumentParser(
 	description='generate and score alternative isoforms')
@@ -7,6 +8,7 @@ parser.add_argument('fasta', type=str, metavar='<file>',
 	help='input single sequence fasta file')
 parser.add_argument('--gff', type=str, metavar='<file>', required=False,
 	help='input .gff3 for single gene')
+
 # apc parameters
 parser.add_argument('--max_splice', required=False, type=int, default=100,
 	metavar='<int>', help='maximum number of splicing events %(default)d')
@@ -16,6 +18,7 @@ parser.add_argument('--min_exon', required=False, type=int, default=25,
 	metavar='<int>', help='minimum length of exon %(default)d')
 parser.add_argument('--flank', required=False, type=int, default=100,
 	metavar='<int>', help='length of genomic flank on each side %(default)d')
+
 # probabilistic models
 parser.add_argument('--exon_len', required=False, type=int, metavar='<file>', 
 	help='exon length model .tsv')
@@ -71,7 +74,9 @@ acceptor_ppm, acceptor_pwm = read_pwm(args.acceptor_pwm)
 
 
 
-
+# log of intron seq/total seq
+# this is for all the sequences
+# there is the same cost for each isoform
 
 
 

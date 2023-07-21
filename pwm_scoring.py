@@ -42,9 +42,9 @@ def read_pwm(pwm_tsv):
 	with open(pwm_tsv, 'r') as fp:
 		for line in fp.readlines():
 			line = line.rstrip()
-			if len(line.split('\t')) == 1:
-				count +=1
-				continue
+			if line.startswith('%'): 
+				count += 1
+				continue	
 			elif count == 1:
 				re_ppm.append(line.split('\t'))
 			elif count == 2:

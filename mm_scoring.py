@@ -29,11 +29,16 @@ def read_exin_mm(exin_mm_tsv):
 		re_mm_pb = {}
 		re_mm_sc = {}
 		for line in fp.readlines():
+			if line.startswith('%'): continue
 			line = line.rstrip()
 			line = line.split('\t')
 			re_mm_pb[line[0]] = line[1]
 			re_mm_sc[line[0]] = line[2]
 		return re_mm_pb, re_mm_sc
+
+pb, sc = read_exin_mm(exon_mm_tsv)
+print(pb)
+print(sc)
 
 def get_exin_seqs(isoform, seq):
 
@@ -54,11 +59,10 @@ def get_exin_seqs(isoform, seq):
 	return ex_seqs, in_seqs
 
 def get_mm_score(exin_seqs, exin_mm):
-
+	
 	k = 0
 	for key in exin_mm:
-		string = key.split(' ')[2]
-		k = int(string[0])
+		k = len(key)
 		break
 
 	exin_score_total = 0
@@ -81,7 +85,7 @@ for iso in apc_isoforms:
 	imm_sc = get_mm_score(in_seqs, in_mm_sc)
 	iso['score'] = emm_sc + imm_sc
 	print(iso)
-	
+
 
 
 

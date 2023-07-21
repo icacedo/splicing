@@ -40,7 +40,7 @@ def len_tsv_write(exins, fp, outdir=None):
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow(['% '+root+' len', 'log2(%) '+root+' len'])
+		writer.writerow(['% len '+root+' P', root+' log2(P)'])
 		for i in range(len(exinlen_yscores)):
 			writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
 	tsvfile.close()
@@ -58,8 +58,8 @@ def mm_tsv_write(exins, fp, outdir=None):
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow([root+' mm '+str(order+1)+'mer', root+' mm %', root \
-			+' mm log2(%)'])
+		writer.writerow(['% mm '+root+' '+str(order+1)+'mer', 'mm '+root+' P', \
+			'mm '+root+' log2(P)'])
 		for key in exinmm_scores:
 			writer.writerow([key + 'A', exinmm_probs[key][0], 
 				exinmm_scores[key][0]])
@@ -131,21 +131,22 @@ def pwm_tsv_write(donacc, fp, outdir=None):
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow(['% ppm '+root])
-		for site in pdread(ppm):
-			a = de(site[0])
-			c = de(site[1])
-			g = de(site[2])
-			t = de(site[3])
-			writer.writerow([a, c, g, t])
-		writer.writerow(['log2(%) pwm '+root])
+		writer.writerow(['% pwm '+root+' log2(PA)', 'log2(PC)', 'log2(PG)', \
+			'log2(PT)'])
 		for site in pdread(pwm):
 			a = de(site[0])
 			c = de(site[1])
 			g = de(site[2])
 			t = de(site[3])	
 			writer.writerow([a, c, g, t])
-	tsvfile.close()
+		writer.writerow(['% ppm '+root+' PA', 'PC', 'PG', 'PT'])
+		for site in pdread(ppm):
+			a = de(site[0])
+			c = de(site[1])
+			g = de(site[2])
+			t = de(site[3])
+			writer.writerow([a, c, g, t])
+		tsvfile.close()
 
 if args.dntxt:
 	donors = ml.read_txt_seqs(args.dntxt)
