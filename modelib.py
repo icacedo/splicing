@@ -242,6 +242,41 @@ def memoize_fdist(exinseqs, nbins=None,
 
 #print(memoize_fdist(fp))
 
+##### len model scoring #####
+
+def read_exin_len(exin_len_tsv):
+
+	with open(exin_len_tsv, 'r') as fp:
+		re_len_pdf = []
+		re_len_sco = []
+		for line in fp.readlines():
+			line = line.rstrip()
+			if line.startswith('%'): continue
+			line = line.split('\t')
+			re_len_pdf.append(line[0])
+			re_len_sco.append(line[1])
+	return re_len_pdf, re_len_sco
+
+def get_exin_lengths(isoform):
+	
+	ex_lens = []
+	for exon in isoform['exons']:
+		ex_len = exon[1] - exon[0] + 1
+		ex_lens.append(ex_len)
+	in_lens = []
+	for intron in isoform['introns']:
+		in_len = intron[1] - intron[0] +1
+		in_lens.append(in_len)
+	return ex_lens, in_lens
+
+def get_len_score(exin_lens, exin_len_model):
+
+	exin_score_total = 0
+	for length in ex_lens:
+		exin_score = exin_len_model[length]
+		exin_score_total += float(exin_score)
+	return(exin_score_total)
+
 ################################
 ##### Markov Model Section #####
 ################################
@@ -284,6 +319,57 @@ def make_mm(exinseqs, order=3):
 			mm_probs[nts] = (A/d, C/d, G/d, T/d)
 	return mm_scores, mm_probs, order
 
+##### Markov model scoring #####
+
+def read_exin_mm(exin_mm_tsv):
+
+	with open(exon_mm_tsv, 'r') as fp:
+		re_mm_pb = {}
+		re_mm_sc = {}
+		for line in fp.readlines():
+			if line.startswith('%'): continue
+			line = line.rstrip()
+			line = line.split('\t')
+			re_mm_pb[line[0]] = line[1]
+			re_mm_sc[line[0]] = line[2]
+		return re_mm_pb, re_mm_sc
+
+def get_exin_seqs(isoform, seq):
+
+	ex_seqs = []
+	for exon in isoform['exons']:
+		ex_beg = exon[0] 
+		ex_end = exon[1] + 1
+		exon_seq = seq[ex_beg:ex_end]
+		ex_seqs.append(exon_seq)
+
+	in_seqs = []
+	for intron in isoform['introns']:
+		in_beg = intron[0]
+		in_end = intron[1] + 1
+		intron_seq = seq[in_beg:in_end]
+		in_seqs.append(intron_seq)
+
+	return ex_seqs, in_seqs
+
+def get_mm_score(exin_seqs, exin_mm):
+	
+	k = 0
+	for key in exin_mm:
+		k = len(key)
+		break
+
+	exin_score_total = 0
+	for exin_seq in exin_seqs:
+		exin_score = 0
+		for i in range(len(exin_seq)):
+			if len(exin_seq[i:i+k]) == k:
+				kmer = exin_seq[i:i+k]
+				score = exin_mm[kmer]
+				exin_score += float(score)
+		exin_score_total += exin_score
+	return exin_score_total
+
 #######################
 ##### PWM section #####
 #######################
@@ -311,7 +397,57 @@ def make_pwm(seqs):
 				pwm[i][n] = weight
 	
 	return pwm, ppm
-		
+
+##### PWM scoring ###
+
+def read_pwm(pwm_tsv):
+
+	re_ppm = []
+	re_pwm = []
+	count = 0
+	with open(pwm_tsv, 'r') as fp:
+		for line in fp.readlines():
+			line = line.rstrip()
+			if line.startswith('%'): 
+				count += 1
+				continue	
+			elif count == 1:
+				re_ppm.append(line.split('\t'))
+			elif count == 2:
+				re_pwm.append(line.split('\t'))
+	return re_ppm, re_pwm
+
+def get_donacc_seqs(isoform, seq):
+	
+	d_seqs = []
+	a_seqs = []
+	for intron in isoform['introns']:
+		d_start = intron[0]
+		d_end = d_start + 5
+		a_end = intron[1] + 1
+		a_start = a_end - 6
+		d_seqs.append(seq[d_start:d_end])
+		a_seqs.append(seq[a_start:a_end])
+	return d_seqs, a_seqs
+
+def get_pwm_score(da_seqs, da_pwm):
+
+	da_score_total = 0
+	for i in range(len(da_seqs)):
+		da_score = 0
+		for j in range(len(da_seqs[i])):
+			if da_seqs[i][j] == 'A':
+				da_score += float(da_pwm[j][0])
+			if da_seqs[i][j] == 'C':
+				da_score += float(da_pwm[j][1])
+			if da_seqs[i][j] == 'G':
+				da_score += float(da_pwm[j][2])
+			if da_seqs[i][j] == 'T':
+				da_score += float(da_pwm[j][3])
+		da_score_total += da_score
+		#print(da_seqs[i], da_score)
+	return da_score_total
+
 #######################
 ##### APC Section #####
 #######################
@@ -445,7 +581,7 @@ def get_exin_lengths(isoform):
 def get_len_score(exin_lens, exin_len_model):
 
 	exin_score_total = 0
-	for length in ex_lens:
+	for length in exin_lens:
 		exin_score = exin_len_model[length]
 		exin_score_total += float(exin_score)
 	return(exin_score_total)
@@ -460,9 +596,9 @@ def read_pwm(pwm_tsv):
 	with open(pwm_tsv, 'r') as fp:
 		for line in fp.readlines():
 			line = line.rstrip()
-			if len(line.split('\t')) == 1:
-				count +=1
-				continue
+			if line.startswith('%'):
+				count += 1
+				continue	
 			elif count == 1:
 				re_ppm.append(line.split('\t'))
 			elif count == 2:
@@ -504,10 +640,11 @@ def get_pwm_score(da_seqs, da_pwm):
 
 def read_exin_mm(exin_mm_tsv):
 
-	with open(exon_mm_tsv, 'r') as fp:
+	with open(exin_mm_tsv, 'r') as fp:
 		re_mm_pb = {}
 		re_mm_sc = {}
 		for line in fp.readlines():
+			if line.startswith('%'): continue
 			line = line.rstrip()
 			line = line.split('\t')
 			re_mm_pb[line[0]] = line[1]
@@ -536,10 +673,10 @@ def get_mm_score(exin_seqs, exin_mm):
 
 	k = 0
 	for key in exin_mm:
-		string = key.split(' ')[2]
-		k = int(string[0])
+		k = len(key)
 		break
-
+	print(key)
+	print(k)
 	exin_score_total = 0
 	for exin_seq in exin_seqs:
 		exin_score = 0
