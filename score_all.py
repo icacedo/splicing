@@ -99,3 +99,18 @@ for iso in apc_isoforms:
 # test geniso in arch/
 # python3 geniso --min_intron 3 --min_exon 4 --flank 5 ../test_seq.fa
 # https://useast.ensembl.org/info/website/upload/gff.html
+print('##########')
+# test old apc code
+import isoform_fixed as isof
+
+name, seq = next(isof.read_fasta(args.fasta))
+txs, info = isof.all_possible(seq, args.min_intron, args.min_exon,
+	args.max_splice, args.flank)
+
+for tx in txs:
+	print(tx)
+print('##########')
+for iso in apc_isoforms:
+	print(iso)
+
+

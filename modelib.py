@@ -215,6 +215,8 @@ def memoize_fdist(exinseqs, nbins=None,
 	x_values = []
 	y_values = []
 	y_scores = []
+	# is this necessary for extreme value distribution?
+	expect = 1/size_limit
 	for i in range(min(len(data), size_limit)):
 		x_values.append(i)
 		y = frechet_pdf(i, a, b, g)
@@ -222,14 +224,16 @@ def memoize_fdist(exinseqs, nbins=None,
 			y2 = f"{y:.{pre2}f}"
 			y_values.append(y2)
 			if y == 0: y_scores.append(-100)
-			else: 
-				ys = math.log2(y)
+			else:
+				#ys = math.log2(y) 
+				ys = math.log2(y/expect)
 				ys2 =  f"{ys:.{pre2}f}"
 				y_scores.append(ys2)
 		else: 
 			y_values.append(y)
 			if y == 0: y_scores.append(-100)
-			else: y_scores.append(math.log2(y))
+			#else: y_scores.append(math.log2(y/expect))
+			else: y_scores.append(math.log2(y/expect))			
 
 	data = {
 		'x': x_values,
@@ -307,13 +311,13 @@ def make_mm(exinseqs, order=3):
 			d = int(len(context[nts]))
 		if nts not in mm_scores:
 			if A/d == 0: ad = -100
-			else: ad = math.log2(A/d)
+			else: ad = math.log2((A/d)/0.25)
 			if C/d == 0: cd = -100
-			else: cd = math.log2(C/d)
+			else: cd = math.log2((C/d)/0.25)
 			if G/d == 0: gd = -100 
-			else: gd = math.log2(G/d)
+			else: gd = math.log2((G/d)/0.25)
 			if T/d == 0: td = -100
-			else: td = math.log2(T/d)	
+			else: td = math.log2((T/d)/0.25)	
 			mm_scores[nts] = (ad, cd, gd, td)
 		if nts not in mm_probs:
 			mm_probs[nts] = (A/d, C/d, G/d, T/d)
