@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-import isoform
+import isoform_fixed as isoform
 
 ## Command Line Interface ##
 
@@ -75,6 +75,8 @@ for tx in txs:
 	if imm:  score += isoform.score_imm(imm, tx, dpwm, apwm) * arg.wimm
 	score -= len(tx['introns']) * arg.icost
 	tx['score'] = score
+	# print scores to compare
+	print(tx)
 
 # summary output
 
