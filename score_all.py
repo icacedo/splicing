@@ -77,9 +77,10 @@ if args.donor_pwm:
 if args.acceptor_pwm:
 	re_appm, re_apwm = ml.read_pwm(args.acceptor_pwm)
 
-
+# there are differences in how mm and pwm are calculated in geniso
+# need to investigate further
 for iso in apc_isoforms:
-	print(iso)
+	#print(iso)
 	exon_lengths, intron_lengths = ml.get_exin_lengths(iso)
 	elen_score = ml.get_len_score(exon_lengths, re_elen_log2)
 	ilen_score = ml.get_len_score(intron_lengths, re_ilen_log2)
@@ -92,6 +93,10 @@ for iso in apc_isoforms:
 	dpwm_score = ml.get_pwm_score(donor_seqs, re_dpwm)
 	apwm_score = ml.get_pwm_score(acceptor_seqs, re_apwm)
 	print('pwm d a', dpwm_score, apwm_score)
+	iso['score'] = elen_score + ilen_score + emm_score + imm_score + \
+		dpwm_score + apwm_score
+	print(iso)
+	break
 
 # log of intron seq/total seq
 # this is for all the sequences
@@ -113,4 +118,8 @@ print('##########')
 for iso in apc_isoforms:
 	print(iso)
 
+# testing geniso
+'''
+python3 geniso_test sqtst.fa --min_intron 3 --min_exon 4 --flank 5 --dpwm arch/data/donor.pwm --apwm arch/data/acceptor.pwm --emm arch/data/exon.mm --imm arch/data/intron.mm --elen arch/data/exon.len --ilen arch/data/intron.len 
+'''
 

@@ -68,16 +68,30 @@ txs, info = isoform.all_possible(seq, arg.min_intron, arg.min_exon,
 for tx in txs:
 	score = 0
 	if apwm: score += isoform.score_apwm(apwm, tx) * arg.wapwm
+	print('apwm', isoform.score_apwm(apwm, tx) * arg.wapwm)
+
 	if dpwm: score += isoform.score_dpwm(dpwm, tx) * arg.wdpwm
+	print('dpwm', isoform.score_dpwm(dpwm, tx) * arg.wdpwm)
+
 	if elen: score += isoform.score_elen(elen, tx) * arg.welen
+	print('elen', isoform.score_elen(elen, tx) * arg.welen)
+
 	if ilen: score += isoform.score_ilen(ilen, tx) * arg.wilen
+	print('ilen', isoform.score_ilen(ilen, tx) * arg.wilen)
+
 	if emm:  score += isoform.score_emm(emm, tx) * arg.wemm
+	print('emm', isoform.score_emm(emm, tx) * arg.wemm)
+
+	# not sure what dpwm and apwm are doing here
 	if imm:  score += isoform.score_imm(imm, tx, dpwm, apwm) * arg.wimm
+	print('imm', isoform.score_imm(imm, tx, dpwm, apwm) * arg.wimm)
+	
 	score -= len(tx['introns']) * arg.icost
 	tx['score'] = score
 	# print scores to compare
 	print(tx)
-
+	break
+print('##########')
 # summary output
 
 print('# name:', name)
