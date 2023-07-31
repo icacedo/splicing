@@ -355,7 +355,7 @@ def get_exin_seqs(isoform, seq):
 		in_seqs.append(intron_seq)
 
 	return ex_seqs, in_seqs
-
+'''
 def get_mm_score(exin_seqs, exin_mm):
 	
 	k = 0
@@ -365,6 +365,34 @@ def get_mm_score(exin_seqs, exin_mm):
 
 	exin_score_total = 0
 	for exin_seq in exin_seqs:
+		exin_score = 0
+		for i in range(len(exin_seq)):
+			if len(exin_seq[i:i+k]) == k:
+				kmer = exin_seq[i:i+k]
+				score = exin_mm[kmer]
+				exin_score += float(score)
+		exin_score_total += exin_score
+	return exin_score_total
+'''
+
+def get_mm_score(exin_seqs, exin_mm, dpwm=None, apwm=None):
+	
+	k = 0
+	for key in exin_mm:
+		k = len(key)
+		break
+	
+	exin_seqs2 = []	
+	if dpwm and apwm:
+		for in_seq in exin_seqs:
+			in_seq = in_seq[len(dpwm):-len(apwm)]
+			exin_seqs2.append(in_seq)
+	else:
+		exin_seqs2 = exin_seqs
+
+
+	exin_score_total = 0
+	for exin_seq in exin_seqs2:
 		exin_score = 0
 		for i in range(len(exin_seq)):
 			if len(exin_seq[i:i+k]) == k:

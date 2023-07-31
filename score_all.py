@@ -87,7 +87,7 @@ for iso in apc_isoforms:
 	print('len ex in', elen_score, ilen_score)	
 	exon_seqs, intron_seqs = ml.get_exin_seqs(iso, seq)
 	emm_score = ml.get_mm_score(exon_seqs, re_emm_log2)
-	imm_score = ml.get_mm_score(intron_seqs, re_imm_log2)
+	imm_score = ml.get_mm_score(intron_seqs, re_imm_log2, 'GT', 'AG')
 	print('mm ex in', emm_score, imm_score)
 	donor_seqs, acceptor_seqs = ml.get_donacc_seqs(iso, seq)
 	dpwm_score = ml.get_pwm_score(donor_seqs, re_dpwm)

@@ -299,6 +299,7 @@ def score_emm(mm, tx):
 def score_imm(mm, tx, dpwm, apwm):
 	score = 0
 	for intron in tx['introns']:
+		print(len(dpwm), len(apwm), 'HERE')
 		beg = intron[0] + len(dpwm)
 		end = intron[1] - len(apwm)
 		score += score_markov(mm, tx['seq'], beg, end)

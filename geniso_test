@@ -82,9 +82,9 @@ for tx in txs:
 	if emm:  score += isoform.score_emm(emm, tx) * arg.wemm
 	print('emm', isoform.score_emm(emm, tx) * arg.wemm)
 
-	# not sure what dpwm and apwm are doing here
-	if imm:  score += isoform.score_imm(imm, tx, dpwm, apwm) * arg.wimm
-	print('imm', isoform.score_imm(imm, tx, dpwm, apwm) * arg.wimm)
+	# test with donor/acceptor pwm length of 2
+	if imm:  score += isoform.score_imm(imm, tx, 'GT', 'AG') * arg.wimm
+	print('imm', isoform.score_imm(imm, tx, 'GT', 'AG') * arg.wimm)
 	
 	score -= len(tx['introns']) * arg.icost
 	tx['score'] = score
