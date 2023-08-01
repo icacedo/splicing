@@ -434,8 +434,8 @@ def make_pwm(seqs):
 
 def read_pwm(pwm_tsv):
 
-	re_ppm = []
 	re_pwm = []
+	re_ppm = []
 	count = 0
 	with open(pwm_tsv, 'r') as fp:
 		for line in fp.readlines():
@@ -444,9 +444,9 @@ def read_pwm(pwm_tsv):
 				count += 1
 				continue	
 			elif count == 1:
-				re_ppm.append(line.split('\t'))
-			elif count == 2:
 				re_pwm.append(line.split('\t'))
+			elif count == 2:
+				re_ppm.append(line.split('\t'))
 	return re_ppm, re_pwm
 
 def get_donacc_seqs(isoform, seq):
