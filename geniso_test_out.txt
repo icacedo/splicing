@@ -1,0 +1,58 @@
+apwm -7.053965734900418
+dpwm -0.8923498962049816
+elen -102.85725982788392
+ilen -100.0
+emm -2.9090604877439743
+2 2 HERE
+2 2 HERE
+imm -0.7014542894184398
+{'seq': 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA', 'beg': 5, 'end': 42, 'exons': [(5, 8), (17, 42)], 'introns': [(9, 16)], 'score': -214.41409023615174}
+##########
+# name:  test
+# length: 48
+# donors: 2
+# acceptors: 3
+# trials: 9
+# isoforms: 7
+# complexity: 2.5850
+test	asg	gene	6	43	.	+	.	ID=Gene-test
+
+test	asg	mRNA	6	43	0.1667	+	.	ID=tx-test-1;Parent=Gene-test
+test	asg	exon	6	9	0.1667	+	.	Parent=tx-test-1
+test	asg	exon	33	43	0.1667	+	.	Parent=tx-test-1
+test	asg	intron	10	32	0.1667	+	.	Parent=tx-test-1
+
+test	asg	mRNA	6	43	0.1667	+	.	ID=tx-test-2;Parent=Gene-test
+test	asg	exon	6	9	0.1667	+	.	Parent=tx-test-2
+test	asg	exon	40	43	0.1667	+	.	Parent=tx-test-2
+test	asg	intron	10	39	0.1667	+	.	Parent=tx-test-2
+
+test	asg	mRNA	6	43	0.1667	+	.	ID=tx-test-3;Parent=Gene-test
+test	asg	exon	6	22	0.1667	+	.	Parent=tx-test-3
+test	asg	exon	33	43	0.1667	+	.	Parent=tx-test-3
+test	asg	intron	23	32	0.1667	+	.	Parent=tx-test-3
+
+test	asg	mRNA	6	43	0.1667	+	.	ID=tx-test-4;Parent=Gene-test
+test	asg	exon	6	22	0.1667	+	.	Parent=tx-test-4
+test	asg	exon	40	43	0.1667	+	.	Parent=tx-test-4
+test	asg	intron	23	39	0.1667	+	.	Parent=tx-test-4
+
+test	asg	mRNA	6	43	0.1667	+	.	ID=tx-test-5;Parent=Gene-test
+test	asg	exon	6	9	0.1667	+	.	Parent=tx-test-5
+test	asg	exon	18	22	0.1667	+	.	Parent=tx-test-5
+test	asg	exon	33	43	0.1667	+	.	Parent=tx-test-5
+test	asg	intron	10	17	0.1667	+	.	Parent=tx-test-5
+test	asg	intron	23	32	0.1667	+	.	Parent=tx-test-5
+
+test	asg	mRNA	6	43	0.1667	+	.	ID=tx-test-6;Parent=Gene-test
+test	asg	exon	6	9	0.1667	+	.	Parent=tx-test-6
+test	asg	exon	18	22	0.1667	+	.	Parent=tx-test-6
+test	asg	exon	40	43	0.1667	+	.	Parent=tx-test-6
+test	asg	intron	10	17	0.1667	+	.	Parent=tx-test-6
+test	asg	intron	23	39	0.1667	+	.	Parent=tx-test-6
+
+test	asg	mRNA	6	43	4.751e-66	+	.	ID=tx-test-7;Parent=Gene-test
+test	asg	exon	6	9	4.751e-66	+	.	Parent=tx-test-7
+test	asg	exon	18	43	4.751e-66	+	.	Parent=tx-test-7
+test	asg	intron	10	17	4.751e-66	+	.	Parent=tx-test-7
+

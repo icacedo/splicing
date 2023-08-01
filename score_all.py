@@ -77,8 +77,6 @@ if args.donor_pwm:
 if args.acceptor_pwm:
 	re_appm, re_apwm = ml.read_pwm(args.acceptor_pwm)
 
-# there are differences in how mm and pwm are calculated in geniso
-# need to investigate further
 for iso in apc_isoforms:
 	#print(iso)
 	exon_lengths, intron_lengths = ml.get_exin_lengths(iso)
@@ -104,22 +102,31 @@ for iso in apc_isoforms:
 # test geniso in arch/
 # python3 geniso --min_intron 3 --min_exon 4 --flank 5 ../test_seq.fa
 # https://useast.ensembl.org/info/website/upload/gff.html
-print('##########')
-# test old apc code
-import isoform_fixed as isof
 
-name, seq = next(isof.read_fasta(args.fasta))
-txs, info = isof.all_possible(seq, args.min_intron, args.min_exon,
-	args.max_splice, args.flank)
-
-for tx in txs:
-	print(tx)
-print('##########')
-for iso in apc_isoforms:
-	print(iso)
-
-# testing geniso
 '''
-python3 geniso_test sqtst.fa --min_intron 3 --min_exon 4 --flank 5 --dpwm arch/data/donor.pwm --apwm arch/data/acceptor.pwm --emm arch/data/exon.mm --imm arch/data/intron.mm --elen arch/data/exon.len --ilen arch/data/intron.len 
+For the test seq 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
+and first isoform
+parameters for testing: min_intron 3, min_exon 4, flank 5
+{'seq': 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA', 'beg': 5, 'end': 42, 
+'exons': [(5, 8), (17, 42)], 'introns': [(9, 16)], 'score': 0}
+individual scores should be (there are small decimal differences between this
+output and geniso) using reformatted length models from geniso:
+
+score_all:
+len ex in -102.85725982788392 -100.0
+mm ex in -2.9090535606612224 -0.7277110496653949
+pwm d a -0.8923380000000001 -7.053903999999999
+{'seq': 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA', 'beg': 5, 'end': 42, 
+'exons': [(5, 8), (17, 42)], 'introns': [(9, 16)], 'score': -214.44026643821053}
+
+geniso:
+apwm -7.053965734900418
+dpwm -0.8923498962049816
+elen -102.85725982788392
+ilen -100.0
+emm -2.9090604877439743
+imm -0.7014542894184398
+{'seq': 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA', 'beg': 5, 'end': 42, 
+'exons': [(5, 8), (17, 42)], 'introns': [(9, 16)], 'score': -214.41409023615174}
 '''
 
