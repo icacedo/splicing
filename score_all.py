@@ -91,8 +91,10 @@ for iso in apc_isoforms:
 	dpwm_score = ml.get_pwm_score(donor_seqs, re_dpwm)
 	apwm_score = ml.get_pwm_score(acceptor_seqs, re_apwm)
 	print('pwm d a', dpwm_score, apwm_score)
-	iso['score'] = elen_score + ilen_score + emm_score + imm_score + \
+	score = elen_score + ilen_score + emm_score + imm_score + \
 		dpwm_score + apwm_score
+	score -= 0
+	iso['score'] = score
 	print(iso)
 	break
 

@@ -52,9 +52,27 @@ for gff_path in gffs:
 		fid = fa_path.split('.')[1]
 		if gid == fid:
 			fa_gff_pairs[gff_path] = fa_path
-
+intron = 0
+total = 0
 for gff_key in fa_gff_pairs:
 	total_bp, intron_bp = total_iseqs(gff_key, fa_gff_pairs[gff_key])
 	print(total_bp, intron_bp)
-	
+	intron += intron_bp
+	total += total_bp
+
+print(intron, total)
+
+print('**************************')
+
+saved_scores = []
+with open(gff, 'r') as fp:
+	for line in fp.readlines():
+		line = line.rstrip()
+		line = line.split()
+		if line[2] == 'intron':
+			if line[5] == '.':
+				saved_scores.append(0)
+			else:
+				saved_scores.append(float(line[5]))
+print(max(saved_scores))
 
