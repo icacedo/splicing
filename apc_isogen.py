@@ -78,30 +78,57 @@ if args.acceptor_pwm:
 	re_appm, re_apwm = ml.read_pwm(args.acceptor_pwm)
 
 for iso in apc_isoforms:
-	#print(iso)
 	exon_lengths, intron_lengths = ml.get_exin_lengths(iso)
 	elen_score = ml.get_len_score(exon_lengths, re_elen_log2)
 	ilen_score = ml.get_len_score(intron_lengths, re_ilen_log2)
-	print('len ex in', elen_score, ilen_score)	
+	#print('len ex in', elen_score, ilen_score)	
 	exon_seqs, intron_seqs = ml.get_exin_seqs(iso, seq)
 	emm_score = ml.get_mm_score(exon_seqs, re_emm_log2)
 	imm_score = ml.get_mm_score(intron_seqs, re_imm_log2, 'GT', 'AG')
-	print('mm ex in', emm_score, imm_score)
+	#print('mm ex in', emm_score, imm_score)
 	donor_seqs, acceptor_seqs = ml.get_donacc_seqs(iso, seq)
 	dpwm_score = ml.get_pwm_score(donor_seqs, re_dpwm)
 	apwm_score = ml.get_pwm_score(acceptor_seqs, re_apwm)
-	print('pwm d a', dpwm_score, apwm_score)
+	#print('pwm d a', dpwm_score, apwm_score)
 	score = elen_score + ilen_score + emm_score + imm_score + \
 		dpwm_score + apwm_score
-	score -= 0
+	#print(iso['introns'], len(iso['introns']))
+	score -= len(iso['introns']) * args.icost
 	iso['score'] = score
 	print(iso)
-	break
 
-# log of intron seq/total seq
-# this is for all the sequences
-# there is the same cost for each isoform
-# test geniso in arch/
+# print as gff
+# https://useast.ensembl.org/info/website/upload/gff.html
+
+seqname = seqid
+source = 'apc_isogen'
+
+apc_isoforms = sorted(apc_isoforms, key=lambda iso: iso['score'], reverse=True)
+
+weights = []
+total = 0
+for iso in apc_isoforms:
+	weight = 2 ** iso['score']
+	weights.append(weight)
+	total += weight
+	
+probs = []
+for w in weights:
+	probs.append(w / total)
+
+print(probs)
+
+# still differences in geniso calculated probabilities
+
+# to calc an icost:
+# when choosing an intron cost, just start from an arbitrary number like 0-100
+# and see how the cost affects the outcome
+	
+
+
+
+
+# test geniso in arch
 # python3 geniso --min_intron 3 --min_exon 4 --flank 5 ../test_seq.fa
 # https://useast.ensembl.org/info/website/upload/gff.html
 

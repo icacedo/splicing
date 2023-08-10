@@ -90,7 +90,7 @@ for tx in txs:
 	tx['score'] = score
 	# print scores to compare
 	print(tx)
-	break
+	
 print('##########')
 # summary output
 
