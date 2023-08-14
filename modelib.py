@@ -23,7 +23,7 @@ def read_fastas(fastafile):
 
 		for line in fp.readlines():
 			line = line.rstrip()
-			if line.startswith('>'): seqid += line
+			if line.startswith('>'): seqid = line[1:]
 			else: seq += line
 		yield (seqid, seq)			
 	fp.close()		
