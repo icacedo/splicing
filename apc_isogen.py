@@ -12,7 +12,7 @@ parser.add_argument('--gff', type=str, metavar='<file>', required=False,
 	help='input .gff3 for single gene')
 
 # apc parameters
-parser.add_argument('--max_splice', required=False, type=int, default=100,
+parser.add_argument('--max_splice', required=False, type=int, default=3,
 	metavar='<int>', help='maximum number of splicing events %(default)d')
 parser.add_argument('--min_intron', required=False, type=int, default=25,
 	metavar='<int>', help='minimum length of intron %(default)d')
@@ -46,7 +46,7 @@ seq = None
 for seqid, seq in ml.read_fastas(args.fasta):
 	seqid = seqid
 	seq = seq
-
+print(len(seq))
 if args.gff:
 	dons, accs = ml.read_gff_sites(seq, args.gff) 
 else:
@@ -107,6 +107,9 @@ source = 'apc_isogen'
 
 apc_isoforms = sorted(apc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
+for iso in apc_isoforms:
+	print(iso)
+
 weights = []
 total = 0
 for iso in apc_isoforms:
@@ -117,8 +120,6 @@ for iso in apc_isoforms:
 probs = []
 for w in weights:
 	probs.append(w / total)
-
-print(probs)
 
 # still differences in geniso calculated probabilities
 # differences by a few decimals
@@ -133,10 +134,7 @@ print('# donors: ' + str(len(dons)))
 print('# acceptors: ' + str(len(accs)))
 print('# trials: ' + str(trials))
 print('# isoforms: ' + str(len(apc_isoforms)))
-print('# complexity: ')
-
-for iso in apc_isoforms:
-	print(iso)
+print('# complexity: ' + 'later')
 
 # is everything on the + strand? and not worried about frame?
 gff_writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
@@ -145,29 +143,21 @@ gff_writer.writerow([seqid, 'apc_isogen', 'gene', iso['beg']+1, iso['end']+1,
 gff_writer.writerow([])
 count = 0
 for iso in apc_isoforms:
-	probs_f = '{:.5e}'.format(probs[count])
-	gff_writer.writerow([seqid, 'apc', 'mRNA', iso['beg']+1, 
-		iso['end']+1, probs_f, '+', '.', 'ID=iso-'+seqid+'-'+str(count+1)+
-			';Parent=Gene-'+seqid])
-	for exon in iso['exons']:
-		gff_writer.writerow([seqid, 'apc', 'exon', exon[0]+1, exon[1]+1, 
-			probs_f, '+', '.', 'Parent='+'iso-'+seqid+'-'+str(count+1)])
-	for intron in iso['introns']:
-		gff_writer.writerow([seqid, 'apc', 'intron', intron[0]+1, intron[1]+1,
-			probs_f, '+', '.', 'Parent='+'iso-'+seqid+'-'+str(count+1)])
-	gff_writer.writerow([])
-	count += 1
+	if count <= args.limit - 1:
+		probs_f = '{:.5e}'.format(probs[count])
+		gff_writer.writerow([seqid, 'apc', 'mRNA', iso['beg']+1, 
+			iso['end']+1, probs_f, '+', '.', 'ID=iso-'+seqid+'-'+str(count+1)+
+				';Parent=Gene-'+seqid])
+		for exon in iso['exons']:
+			gff_writer.writerow([seqid, 'apc', 'exon', exon[0]+1, exon[1]+1, 
+				probs_f, '+', '.', 'Parent='+'iso-'+seqid+'-'+str(count+1)])
+		for intron in iso['introns']:
+			gff_writer.writerow([seqid, 'apc', 'intron', intron[0]+1, intron[1]+1,
+				probs_f, '+', '.', 'Parent='+'iso-'+seqid+'-'+str(count+1)])
+		gff_writer.writerow([])
+		count += 1
 
 	
-'''
-	writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-	writer.writerow(['% len '+root+' P', root+' log2(P/expect)'])
-	for i in range(len(exinlen_yscores)):
-		writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
-tsvfile.close()
-'''
-
-
 
 
 

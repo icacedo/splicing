@@ -277,6 +277,8 @@ def get_len_score(exin_lens, exin_len_model):
 
 	exin_score_total = 0
 	for length in exin_lens:
+		#print(length) ************************************************************
+		print(len(exin_len_model))
 		exin_score = exin_len_model[length]
 		exin_score_total += float(exin_score)
 	return(exin_score_total)

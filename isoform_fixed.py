@@ -187,7 +187,7 @@ def read_len(file):
 			if line.startswith('%'): continue
 			line = line.rstrip()
 			model.append(float(line))
-
+	print(model[-1])
 	size = len(model)
 	tail = find_tail(model[-1], size)
 	expect = 1 / size;
