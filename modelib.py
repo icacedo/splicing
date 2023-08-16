@@ -195,7 +195,7 @@ def frechet_pdf(x, a, b, g):
 def fdist_params(exinseqs, nbins=None, pre=None, size_limit=None):
 
 	data = get_exinbins(exinseqs, nbins=None, pre=None)[2]
-
+	
 	if size_limit:
 		sample = ot.Sample([[x] for x in data if x < size_limit])
 	else:
@@ -210,6 +210,10 @@ def fdist_params(exinseqs, nbins=None, pre=None, size_limit=None):
 	
 	return data, a, b, g, size_limit
 
+# at size_limit 500-max exon/intron fit frechet dist
+# lower than 500, no longer frechet dist
+# max intron size is 5862
+# max exon size is 2921
 def memoize_fdist(data, a, b, g, size_limit, pre=None):
 		
 	x_values = []
@@ -244,61 +248,6 @@ def memoize_fdist(data, a, b, g, size_limit, pre=None):
 	# y beore log transforming
 	return y_scores, y_values
 
-# at size_limit 500-1000 exon/intron fit frechet dist
-# max intron size is 5862
-# max exon size is 2921
-'''
-def memoize_fdist(exinseqs, nbins=None, 
-				pre1=None, pre2=None, size_limit=500):
-
-	pre = pre1
-	data = get_exinbins(exinseqs, nbins=None, pre=None)[2]
-	
-	# data is used to get the parameters
-	# this function does not score the data
-	# only add introns below certain size to sample 
-	sample = ot.Sample([[x] for x in data if x < size_limit])
-
-	distFrechet = ot.FrechetFactory().buildAsFrechet(sample)
-
-	a = distFrechet.getAlpha()
-	b = distFrechet.getBeta()
-	g = distFrechet.getGamma()
-		
-	x_values = []
-	y_values = []
-	y_scores = []
-	# is this necessary for extreme value distribution?
-	expect = 1/size_limit
-	for i in range(min(len(data), size_limit)):
-		x_values.append(i)
-		y = frechet_pdf(i, a, b, g)
-		if pre2:
-			y2 = f"{y:.{pre2}f}"
-			y_values.append(y2)
-			if y == 0: y_scores.append(-100)
-			else:
-				#ys = math.log2(y) 
-				ys = math.log2(y/expect)
-				ys2 =  f"{ys:.{pre2}f}"
-				y_scores.append(ys2)
-		else: 
-			y_values.append(y)
-			if y == 0: y_scores.append(-100)
-			#else: y_scores.append(math.log2(y/expect))
-			else: y_scores.append(math.log2(y/expect))			
-
-	data = {
-		'x': x_values,
-		'y': y_values
-	}
-	
-	# only scores are useful?
-	# y beore log transforming
-	return y_scores, y_values
-'''
-#print(memoize_fdist(fp))
-
 ##### len model scoring #####
 
 def read_exin_len(exin_len_tsv):
@@ -314,6 +263,22 @@ def read_exin_len(exin_len_tsv):
 			re_len_sco.append(line[1])
 	return re_len_pdf, re_len_sco
 
+def read_len_params(exin_len_tsv):
+	
+	with open(exin_len_tsv, 'r') as fp:
+		a = None
+		b = None
+		g = None
+		for line in fp.readlines():
+			line = line.rstrip()
+			if line.startswith('% EVD params:'):
+				line = line.split(' ')
+				a = float(line[4])
+				b = float(line[6])
+				g = float(line[8])
+			else: break
+		return a, b, g
+
 def get_exin_lengths(isoform):
 	
 	ex_lens = []
@@ -326,15 +291,21 @@ def get_exin_lengths(isoform):
 		in_lens.append(in_len)
 	return ex_lens, in_lens
 
-def get_len_score(exin_lens, exin_len_model):
+def get_len_score(exin_lens, exin_len_model, a, b, g):
 
 	exin_score_total = 0
 	for length in exin_lens:
-		#print(length) ************************************************************
-		print(len(exin_len_model))
-		exin_score = exin_len_model[length]
-		exin_score_total += float(exin_score)
-	return(exin_score_total)
+		if length < len(exin_len_model):
+			exin_score = exin_len_model[length]
+			exin_score_total += float(exin_score)
+		else: 
+			exin_prob = frechet_pdf(length, a, b, g)
+			# not sure how to do the expectation for longer exons/introns
+			expect = 1/length
+			exin_score = math.log2(exin_prob/expect)
+			exin_score_total += float(exin_score)
+			
+	return exin_score_total
 
 ################################
 ##### Markov Model Section #####
@@ -410,25 +381,6 @@ def get_exin_seqs(isoform, seq):
 		in_seqs.append(intron_seq)
 
 	return ex_seqs, in_seqs
-'''
-def get_mm_score(exin_seqs, exin_mm):
-	
-	k = 0
-	for key in exin_mm:
-		k = len(key)
-		break
-
-	exin_score_total = 0
-	for exin_seq in exin_seqs:
-		exin_score = 0
-		for i in range(len(exin_seq)):
-			if len(exin_seq[i:i+k]) == k:
-				kmer = exin_seq[i:i+k]
-				score = exin_mm[kmer]
-				exin_score += float(score)
-		exin_score_total += exin_score
-	return exin_score_total
-'''
 
 def get_mm_score(exin_seqs, exin_mm, dpwm=None, apwm=None):
 	

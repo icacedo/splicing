@@ -6,6 +6,7 @@
 + g parameter is negative, so x=0 (exon len) will be greater
 + see memoize_fdist in modelib, also x < size_limit or <=?
 + probability/score should be 0/-100?
++ calculation score/expecation for outliers?
 
 ## MANIFEST ##
 ### splicing/

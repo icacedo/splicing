@@ -67,9 +67,11 @@ donor_pwm = None
 acceptor_pwm = None
 
 if args.exon_len:
-	re_elen_pdf, re_elen_log2 = ml.read_exin_len(args.exon_len) 
+	re_elen_pdf, re_elen_log2 = ml.read_exin_len(args.exon_len)
+	ea, eb, eg = ml.read_len_params(args.exon_len) 
 if args.intron_len:
 	re_ilen_pdf, re_ilen_log2 = ml.read_exin_len(args.intron_len)
+	ia, ib, ig = ml.read_len_params(args.intron_len)
 if args.exon_mm:
 	re_emm_prob, re_emm_log2 = ml.read_exin_mm(args.exon_mm)
 if args.intron_mm:
@@ -81,8 +83,8 @@ if args.acceptor_pwm:
 
 for iso in apc_isoforms:
 	exon_lengths, intron_lengths = ml.get_exin_lengths(iso)
-	elen_score = ml.get_len_score(exon_lengths, re_elen_log2)
-	ilen_score = ml.get_len_score(intron_lengths, re_ilen_log2)
+	elen_score = ml.get_len_score(exon_lengths, re_elen_log2, ea, eb, eg)
+	ilen_score = ml.get_len_score(intron_lengths, re_ilen_log2, ia, ib, ig)
 	#print('len ex in', elen_score, ilen_score)	
 	exon_seqs, intron_seqs = ml.get_exin_seqs(iso, seq)
 	emm_score = ml.get_mm_score(exon_seqs, re_emm_log2)
@@ -106,9 +108,6 @@ seqname = seqid
 source = 'apc_isogen'
 
 apc_isoforms = sorted(apc_isoforms, key=lambda iso: iso['score'], reverse=True)
-
-for iso in apc_isoforms:
-	print(iso)
 
 weights = []
 total = 0

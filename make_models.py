@@ -18,9 +18,8 @@ parser.add_argument('--actxt', type=str, metavar='<file>',
 	required=False, help='input text file with acceptor site sequences')
 parser.add_argument('--outdir', type=str, metavar='<directory>',
 	required=False, help='output directory name')
-parser.add_argument('-mm', action='store_true')
-parser.add_argument('-len', action='store_true')
-#parser.add_argument('-pwm', action='store_true')
+parser.add_argument('-mm', action='store_true', help='make only mm')
+parser.add_argument('-len', action='store_true', help='make only len')
 
 args = parser.parse_args()
 
