@@ -46,7 +46,7 @@ seq = None
 for seqid, seq in ml.read_fastas(args.fasta):
 	seqid = seqid
 	seq = seq
-print(len(seq))
+
 if args.gff:
 	dons, accs = ml.read_gff_sites(seq, args.gff) 
 else:

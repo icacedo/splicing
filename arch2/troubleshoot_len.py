@@ -3,6 +3,8 @@ import sys
 import isoform_fixed as isoform
 import gzip
 
+# trying to figure out how ian scored introns/exons longer than 500 bp
+
 fasta = sys.argv[1]
 len_model = sys.argv[2]
 exon_seqs = sys.argv[3]

@@ -10,6 +10,8 @@ parser.add_argument('--extxt', type=str, metavar='<file>',
 	required=False, help='input text file with exon sequences')
 parser.add_argument('--intxt', type=str, metavar='<file>',
 	required=False, help='input text file with intron sequences')
+parser.add_argument('--len_limit', type=int, metavar='<int>',
+	required=False, help='size limit for length model')
 parser.add_argument('--dntxt', type=str, metavar='<file>',
 	required=False, help='input text file with donor site sequences')
 parser.add_argument('--actxt', type=str, metavar='<file>',
@@ -27,6 +29,7 @@ args = parser.parse_args()
 # exon lens cutoff at 500/1000 have a frechet distribution
 # if no cutoff, both are frechet
 # leave default in ml.memoize_fdist to 1000 so both have a frechet distribution
+'''
 def len_tsv_write(exins, fp, outdir=None):
 	
 	exinlen_yscores, exinlen_yvalues = ml.memoize_fdist(exins, pre2=6)
@@ -40,6 +43,25 @@ def len_tsv_write(exins, fp, outdir=None):
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
+		writer.writerow(['% len '+root+' P', root+' log2(P/expect)'])
+		for i in range(len(exinlen_yscores)):
+			writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
+	tsvfile.close()
+'''
+def len_tsv_write(data, a, b, g, size_limit, fp, outdir=None):
+	
+	exinlen_yscores, exinlen_yvalues = ml.memoize_fdist(data, a, b, g, size_limit, pre=6)
+
+	path = fp.split('/')
+	root, ext = path[-1].split('.')
+	if outdir:
+		filename = outdir + root + '_len' + '.tsv'
+	else:
+		filename = root + '_len' + '.tsv'
+
+	with open(filename, 'w', newline='') as tsvfile:
+		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
+		writer.writerow(['% EVD params: '+'a: '+str(a)+' b: '+str(b)+' g '+str(g)])
 		writer.writerow(['% len '+root+' P', root+' log2(P/expect)'])
 		for i in range(len(exinlen_yscores)):
 			writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
@@ -71,15 +93,24 @@ def mm_tsv_write(exins, fp, outdir=None):
 				exinmm_scores[key][3]])
 	tsvfile.close()
 
+if args.len_limit:
+	len_limit = args.len_limit
+else:
+	len_limit = None
+
 if args.extxt and args.mm:
 	exons = ml.read_txt_seqs(args.extxt)
 	mm_tsv_write(exons, args.extxt, args.outdir)
 elif args.extxt and args.len:
 	exons = ml.read_txt_seqs(args.extxt)
-	len_tsv_write(exons, args.extxt, args.outdir)	
+	data, a, b, g, limit = ml.fdist_params(exons, size_limit=len_limit) #***
+	len_tsv_write(data, a, b, g, limit, args.extxt, args.outdir) #***
+	#len_tsv_write(exons, args.extxt, args.outdir)	
 elif args.extxt:
 	exons = ml.read_txt_seqs(args.extxt)
-	len_tsv_write(exons, args.extxt, args.outdir)
+	data, a, b, g, limit = ml.fdist_params(exons, size_limit=len_limit) #***
+	len_tsv_write(data, a, b, g, limit, args.extxt, args.outdir) #***
+	#len_tsv_write(exons, args.extxt, args.outdir)
 	mm_tsv_write(exons, args.extxt, args.outdir)
 							
 if args.intxt and args.mm:
@@ -87,10 +118,14 @@ if args.intxt and args.mm:
 	mm_tsv_write(introns, args.intxt, args.outdir)
 elif args.intxt and args.len:
 	introns = ml.read_txt_seqs(args.intxt)
-	len_tsv_write(introns, args.intxt, args.outdir)
+	data, a, b, g, limit = ml.fdist_params(introns, size_limit=len_limit) #***
+	len_tsv_write(introns, a, b, g, limit, args.intxt, args.outdir) #***
+	#len_tsv_write(introns, args.intxt, args.outdir)
 elif args.intxt:
 	introns = ml.read_txt_seqs(args.intxt)
-	len_tsv_write(introns, args.intxt, args.outdir)
+	data, a, b, g, limit = ml.fdist_params(introns, size_limit=len_limit) #***
+	len_tsv_write(data, a, b, g, limit, args.intxt, args.outdir) #***
+	#len_tsv_write(introns, args.intxt, args.outdir)
 	mm_tsv_write(introns, args.intxt, args.outdir)
 
 ####################################################

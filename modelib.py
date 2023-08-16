@@ -192,9 +192,62 @@ def frechet_pdf(x, a, b, g):
 	term3 = math.exp(-z**-a)
 	return term1 * term2 * term3
 
+def fdist_params(exinseqs, nbins=None, pre=None, size_limit=None):
+
+	data = get_exinbins(exinseqs, nbins=None, pre=None)[2]
+
+	if size_limit:
+		sample = ot.Sample([[x] for x in data if x < size_limit])
+	else:
+		size_limit = max(data)
+		sample = ot.Sample([[x] for x in data if x < size_limit])	
+
+	distFrechet = ot.FrechetFactory().buildAsFrechet(sample)
+
+	a = distFrechet.getAlpha()
+	b = distFrechet.getBeta()
+	g = distFrechet.getGamma()
+	
+	return data, a, b, g, size_limit
+
+def memoize_fdist(data, a, b, g, size_limit, pre=None):
+		
+	x_values = []
+	y_values = []
+	y_scores = []
+	# is this necessary for extreme value distribution?
+	expect = 1/size_limit
+	for i in range(min(len(data), size_limit)):
+		x_values.append(i)
+		y = frechet_pdf(i, a, b, g)
+		if pre:
+			y2 = f"{y:.{pre}f}"
+			y_values.append(y2)
+			if y == 0: y_scores.append(-100)
+			else:
+				#ys = math.log2(y) 
+				ys = math.log2(y/expect)
+				ys2 =  f"{ys:.{pre}f}"
+				y_scores.append(ys2)
+		else: 
+			y_values.append(y)
+			if y == 0: y_scores.append(-100)
+			#else: y_scores.append(math.log2(y/expect))
+			else: y_scores.append(math.log2(y/expect))			
+	
+	data = {
+		'x': x_values,
+		'y': y_values
+	}
+	
+	# only scores are useful?
+	# y beore log transforming
+	return y_scores, y_values
+
 # at size_limit 500-1000 exon/intron fit frechet dist
 # max intron size is 5862
 # max exon size is 2921
+'''
 def memoize_fdist(exinseqs, nbins=None, 
 				pre1=None, pre2=None, size_limit=500):
 
@@ -243,7 +296,7 @@ def memoize_fdist(exinseqs, nbins=None,
 	# only scores are useful?
 	# y beore log transforming
 	return y_scores, y_values
-
+'''
 #print(memoize_fdist(fp))
 
 ##### len model scoring #####
