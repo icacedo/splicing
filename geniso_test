@@ -68,30 +68,29 @@ txs, info = isoform.all_possible(seq, arg.min_intron, arg.min_exon,
 for tx in txs:
 	score = 0
 	if apwm: score += isoform.score_apwm(apwm, tx) * arg.wapwm
-	print('apwm', isoform.score_apwm(apwm, tx) * arg.wapwm)
+	#print('apwm', isoform.score_apwm(apwm, tx) * arg.wapwm)
 
 	if dpwm: score += isoform.score_dpwm(dpwm, tx) * arg.wdpwm
-	print('dpwm', isoform.score_dpwm(dpwm, tx) * arg.wdpwm)
+	#print('dpwm', isoform.score_dpwm(dpwm, tx) * arg.wdpwm)
 
 	if elen: score += isoform.score_elen(elen, tx) * arg.welen
-	print('elen', isoform.score_elen(elen, tx) * arg.welen)
+	#print('elen', isoform.score_elen(elen, tx) * arg.welen)
 
 	if ilen: score += isoform.score_ilen(ilen, tx) * arg.wilen
-	print('ilen', isoform.score_ilen(ilen, tx) * arg.wilen)
+	#print('ilen', isoform.score_ilen(ilen, tx) * arg.wilen)
 
 	if emm:  score += isoform.score_emm(emm, tx) * arg.wemm
-	print('emm', isoform.score_emm(emm, tx) * arg.wemm)
+	#print('emm', isoform.score_emm(emm, tx) * arg.wemm)
 
 	# test with donor/acceptor pwm length of 2
 	if imm:  score += isoform.score_imm(imm, tx, 'GT', 'AG') * arg.wimm
-	print('imm', isoform.score_imm(imm, tx, 'GT', 'AG') * arg.wimm)
+	#print('imm', isoform.score_imm(imm, tx, 'GT', 'AG') * arg.wimm)
 	
 	score -= len(tx['introns']) * arg.icost
 	tx['score'] = score
 	# print scores to compare
-	print(tx)
+	#print(tx)
 	
-print('##########')
 # summary output
 
 print('# name:', name)
@@ -101,7 +100,6 @@ print('# acceptors:', info['acceptors'])
 print('# trials:', info['trials'])
 print('# isoforms:', len(txs))
 print(f'# complexity: {isoform.complexity(txs):.4f}')
-
 
 if arg.limit:
 	limit = arg.limit

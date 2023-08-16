@@ -135,24 +135,26 @@ print('# trials: ' + str(trials))
 print('# isoforms: ' + str(len(apc_isoforms)))
 print('# complexity: ' + 'later')
 
+name = seqid.split(' ')[0]
+
 # is everything on the + strand? and not worried about frame?
 gff_writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
-gff_writer.writerow([seqid, 'apc_isogen', 'gene', iso['beg']+1, iso['end']+1,
-	 '.', '+', '.', 'ID=Gene-' + seqid])
+gff_writer.writerow([name, 'apc_isogen', 'gene', iso['beg']+1, iso['end']+1,
+	 '.', '+', '.', 'ID=Gene-' + name])
 gff_writer.writerow([])
 count = 0
 for iso in apc_isoforms:
 	if count <= args.limit - 1:
 		probs_f = '{:.5e}'.format(probs[count])
-		gff_writer.writerow([seqid, 'apc', 'mRNA', iso['beg']+1, 
-			iso['end']+1, probs_f, '+', '.', 'ID=iso-'+seqid+'-'+str(count+1)+
-				';Parent=Gene-'+seqid])
+		gff_writer.writerow([name, 'apc', 'mRNA', iso['beg']+1, 
+			iso['end']+1, probs_f, '+', '.', 'ID=iso-'+name+'-'+str(count+1)+
+				';Parent=Gene-'+name])
 		for exon in iso['exons']:
-			gff_writer.writerow([seqid, 'apc', 'exon', exon[0]+1, exon[1]+1, 
-				probs_f, '+', '.', 'Parent='+'iso-'+seqid+'-'+str(count+1)])
+			gff_writer.writerow([name, 'apc', 'exon', exon[0]+1, exon[1]+1, 
+				probs_f, '+', '.', 'Parent='+'iso-'+name+'-'+str(count+1)])
 		for intron in iso['introns']:
-			gff_writer.writerow([seqid, 'apc', 'intron', intron[0]+1, intron[1]+1,
-				probs_f, '+', '.', 'Parent='+'iso-'+seqid+'-'+str(count+1)])
+			gff_writer.writerow([name, 'apc', 'intron', intron[0]+1, intron[1]+1,
+				probs_f, '+', '.', 'Parent='+'iso-'+name+'-'+str(count+1)])
 		gff_writer.writerow([])
 		count += 1
 

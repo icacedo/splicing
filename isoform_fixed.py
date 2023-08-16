@@ -187,7 +187,7 @@ def read_len(file):
 			if line.startswith('%'): continue
 			line = line.rstrip()
 			model.append(float(line))
-	print(model[-1])
+	#print(model[-1])
 	size = len(model)
 	tail = find_tail(model[-1], size)
 	expect = 1 / size;
@@ -299,7 +299,7 @@ def score_emm(mm, tx):
 def score_imm(mm, tx, dpwm, apwm):
 	score = 0
 	for intron in tx['introns']:
-		print(len(dpwm), len(apwm), 'HERE')
+		#print(len(dpwm), len(apwm), 'HERE')
 		beg = intron[0] + len(dpwm)
 		end = intron[1] - len(apwm)
 		score += score_markov(mm, tx['seq'], beg, end)

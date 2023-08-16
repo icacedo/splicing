@@ -1,0 +1,187 @@
+# seqid: ch.9940 IV:4806597-4807419 Gene:WBGene00044483
+# length: 823
+# donors: 28
+# acceptors: 44
+# trials: 43746164
+# isoforms: 80856
+# complexity: later
+ch.9940	apc_isogen	gene	101	723	.	+	.	ID=Gene-ch.9940
+
+ch.9940	apc	mRNA	101	723	5.33705e-01	+	.	ID=iso-ch.9940-1;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	exon	265	440	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	exon	482	511	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	exon	554	723	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	intron	212	264	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	intron	441	481	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	intron	512	553	5.33705e-01	+	.	Parent=iso-ch.9940-1
+
+ch.9940	apc	mRNA	101	723	2.16787e-01	+	.	ID=iso-ch.9940-2;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	exon	265	406	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	exon	471	511	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	exon	554	723	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	intron	212	264	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	intron	407	470	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	intron	512	553	2.16787e-01	+	.	Parent=iso-ch.9940-2
+
+ch.9940	apc	mRNA	101	723	8.64245e-02	+	.	ID=iso-ch.9940-3;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	8.64245e-02	+	.	Parent=iso-ch.9940-3
+ch.9940	apc	exon	265	321	8.64245e-02	+	.	Parent=iso-ch.9940-3
+ch.9940	apc	exon	390	511	8.64245e-02	+	.	Parent=iso-ch.9940-3
+ch.9940	apc	exon	554	723	8.64245e-02	+	.	Parent=iso-ch.9940-3
+ch.9940	apc	intron	212	264	8.64245e-02	+	.	Parent=iso-ch.9940-3
+ch.9940	apc	intron	322	389	8.64245e-02	+	.	Parent=iso-ch.9940-3
+ch.9940	apc	intron	512	553	8.64245e-02	+	.	Parent=iso-ch.9940-3
+
+ch.9940	apc	mRNA	101	723	5.99230e-02	+	.	ID=iso-ch.9940-4;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	5.99230e-02	+	.	Parent=iso-ch.9940-4
+ch.9940	apc	exon	265	321	5.99230e-02	+	.	Parent=iso-ch.9940-4
+ch.9940	apc	exon	364	511	5.99230e-02	+	.	Parent=iso-ch.9940-4
+ch.9940	apc	exon	554	723	5.99230e-02	+	.	Parent=iso-ch.9940-4
+ch.9940	apc	intron	212	264	5.99230e-02	+	.	Parent=iso-ch.9940-4
+ch.9940	apc	intron	322	363	5.99230e-02	+	.	Parent=iso-ch.9940-4
+ch.9940	apc	intron	512	553	5.99230e-02	+	.	Parent=iso-ch.9940-4
+
+ch.9940	apc	mRNA	101	723	4.71783e-02	+	.	ID=iso-ch.9940-5;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	4.71783e-02	+	.	Parent=iso-ch.9940-5
+ch.9940	apc	exon	265	412	4.71783e-02	+	.	Parent=iso-ch.9940-5
+ch.9940	apc	exon	471	511	4.71783e-02	+	.	Parent=iso-ch.9940-5
+ch.9940	apc	exon	554	723	4.71783e-02	+	.	Parent=iso-ch.9940-5
+ch.9940	apc	intron	212	264	4.71783e-02	+	.	Parent=iso-ch.9940-5
+ch.9940	apc	intron	413	470	4.71783e-02	+	.	Parent=iso-ch.9940-5
+ch.9940	apc	intron	512	553	4.71783e-02	+	.	Parent=iso-ch.9940-5
+
+ch.9940	apc	mRNA	101	723	1.16791e-02	+	.	ID=iso-ch.9940-6;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	1.16791e-02	+	.	Parent=iso-ch.9940-6
+ch.9940	apc	exon	265	406	1.16791e-02	+	.	Parent=iso-ch.9940-6
+ch.9940	apc	exon	452	511	1.16791e-02	+	.	Parent=iso-ch.9940-6
+ch.9940	apc	exon	554	723	1.16791e-02	+	.	Parent=iso-ch.9940-6
+ch.9940	apc	intron	212	264	1.16791e-02	+	.	Parent=iso-ch.9940-6
+ch.9940	apc	intron	407	451	1.16791e-02	+	.	Parent=iso-ch.9940-6
+ch.9940	apc	intron	512	553	1.16791e-02	+	.	Parent=iso-ch.9940-6
+
+ch.9940	apc	mRNA	101	723	7.89889e-03	+	.	ID=iso-ch.9940-7;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	185	7.89889e-03	+	.	Parent=iso-ch.9940-7
+ch.9940	apc	exon	265	440	7.89889e-03	+	.	Parent=iso-ch.9940-7
+ch.9940	apc	exon	482	511	7.89889e-03	+	.	Parent=iso-ch.9940-7
+ch.9940	apc	exon	554	723	7.89889e-03	+	.	Parent=iso-ch.9940-7
+ch.9940	apc	intron	186	264	7.89889e-03	+	.	Parent=iso-ch.9940-7
+ch.9940	apc	intron	441	481	7.89889e-03	+	.	Parent=iso-ch.9940-7
+ch.9940	apc	intron	512	553	7.89889e-03	+	.	Parent=iso-ch.9940-7
+
+ch.9940	apc	mRNA	101	723	6.17624e-03	+	.	ID=iso-ch.9940-8;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	6.17624e-03	+	.	Parent=iso-ch.9940-8
+ch.9940	apc	exon	265	321	6.17624e-03	+	.	Parent=iso-ch.9940-8
+ch.9940	apc	exon	364	440	6.17624e-03	+	.	Parent=iso-ch.9940-8
+ch.9940	apc	exon	482	723	6.17624e-03	+	.	Parent=iso-ch.9940-8
+ch.9940	apc	intron	212	264	6.17624e-03	+	.	Parent=iso-ch.9940-8
+ch.9940	apc	intron	322	363	6.17624e-03	+	.	Parent=iso-ch.9940-8
+ch.9940	apc	intron	441	481	6.17624e-03	+	.	Parent=iso-ch.9940-8
+
+ch.9940	apc	mRNA	101	723	5.55648e-03	+	.	ID=iso-ch.9940-9;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	5.55648e-03	+	.	Parent=iso-ch.9940-9
+ch.9940	apc	exon	265	406	5.55648e-03	+	.	Parent=iso-ch.9940-9
+ch.9940	apc	exon	482	511	5.55648e-03	+	.	Parent=iso-ch.9940-9
+ch.9940	apc	exon	554	723	5.55648e-03	+	.	Parent=iso-ch.9940-9
+ch.9940	apc	intron	212	264	5.55648e-03	+	.	Parent=iso-ch.9940-9
+ch.9940	apc	intron	407	481	5.55648e-03	+	.	Parent=iso-ch.9940-9
+ch.9940	apc	intron	512	553	5.55648e-03	+	.	Parent=iso-ch.9940-9
+
+ch.9940	apc	mRNA	101	723	3.21263e-03	+	.	ID=iso-ch.9940-10;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	3.21263e-03	+	.	Parent=iso-ch.9940-10
+ch.9940	apc	exon	265	321	3.21263e-03	+	.	Parent=iso-ch.9940-10
+ch.9940	apc	exon	390	440	3.21263e-03	+	.	Parent=iso-ch.9940-10
+ch.9940	apc	exon	482	723	3.21263e-03	+	.	Parent=iso-ch.9940-10
+ch.9940	apc	intron	212	264	3.21263e-03	+	.	Parent=iso-ch.9940-10
+ch.9940	apc	intron	322	389	3.21263e-03	+	.	Parent=iso-ch.9940-10
+ch.9940	apc	intron	441	481	3.21263e-03	+	.	Parent=iso-ch.9940-10
+
+ch.9940	apc	mRNA	101	723	3.20847e-03	+	.	ID=iso-ch.9940-11;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	185	3.20847e-03	+	.	Parent=iso-ch.9940-11
+ch.9940	apc	exon	265	406	3.20847e-03	+	.	Parent=iso-ch.9940-11
+ch.9940	apc	exon	471	511	3.20847e-03	+	.	Parent=iso-ch.9940-11
+ch.9940	apc	exon	554	723	3.20847e-03	+	.	Parent=iso-ch.9940-11
+ch.9940	apc	intron	186	264	3.20847e-03	+	.	Parent=iso-ch.9940-11
+ch.9940	apc	intron	407	470	3.20847e-03	+	.	Parent=iso-ch.9940-11
+ch.9940	apc	intron	512	553	3.20847e-03	+	.	Parent=iso-ch.9940-11
+
+ch.9940	apc	mRNA	101	723	2.31853e-03	+	.	ID=iso-ch.9940-12;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	2.31853e-03	+	.	Parent=iso-ch.9940-12
+ch.9940	apc	exon	265	321	2.31853e-03	+	.	Parent=iso-ch.9940-12
+ch.9940	apc	exon	390	496	2.31853e-03	+	.	Parent=iso-ch.9940-12
+ch.9940	apc	exon	554	723	2.31853e-03	+	.	Parent=iso-ch.9940-12
+ch.9940	apc	intron	212	264	2.31853e-03	+	.	Parent=iso-ch.9940-12
+ch.9940	apc	intron	322	389	2.31853e-03	+	.	Parent=iso-ch.9940-12
+ch.9940	apc	intron	497	553	2.31853e-03	+	.	Parent=iso-ch.9940-12
+
+ch.9940	apc	mRNA	101	723	1.75769e-03	+	.	ID=iso-ch.9940-13;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	1.75769e-03	+	.	Parent=iso-ch.9940-13
+ch.9940	apc	exon	265	321	1.75769e-03	+	.	Parent=iso-ch.9940-13
+ch.9940	apc	exon	364	496	1.75769e-03	+	.	Parent=iso-ch.9940-13
+ch.9940	apc	exon	554	723	1.75769e-03	+	.	Parent=iso-ch.9940-13
+ch.9940	apc	intron	212	264	1.75769e-03	+	.	Parent=iso-ch.9940-13
+ch.9940	apc	intron	322	363	1.75769e-03	+	.	Parent=iso-ch.9940-13
+ch.9940	apc	intron	497	553	1.75769e-03	+	.	Parent=iso-ch.9940-13
+
+ch.9940	apc	mRNA	101	723	1.39052e-03	+	.	ID=iso-ch.9940-14;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	1.39052e-03	+	.	Parent=iso-ch.9940-14
+ch.9940	apc	exon	265	406	1.39052e-03	+	.	Parent=iso-ch.9940-14
+ch.9940	apc	exon	471	496	1.39052e-03	+	.	Parent=iso-ch.9940-14
+ch.9940	apc	exon	554	723	1.39052e-03	+	.	Parent=iso-ch.9940-14
+ch.9940	apc	intron	212	264	1.39052e-03	+	.	Parent=iso-ch.9940-14
+ch.9940	apc	intron	407	470	1.39052e-03	+	.	Parent=iso-ch.9940-14
+ch.9940	apc	intron	497	553	1.39052e-03	+	.	Parent=iso-ch.9940-14
+
+ch.9940	apc	mRNA	101	723	1.27909e-03	+	.	ID=iso-ch.9940-15;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	185	1.27909e-03	+	.	Parent=iso-ch.9940-15
+ch.9940	apc	exon	265	321	1.27909e-03	+	.	Parent=iso-ch.9940-15
+ch.9940	apc	exon	390	511	1.27909e-03	+	.	Parent=iso-ch.9940-15
+ch.9940	apc	exon	554	723	1.27909e-03	+	.	Parent=iso-ch.9940-15
+ch.9940	apc	intron	186	264	1.27909e-03	+	.	Parent=iso-ch.9940-15
+ch.9940	apc	intron	322	389	1.27909e-03	+	.	Parent=iso-ch.9940-15
+ch.9940	apc	intron	512	553	1.27909e-03	+	.	Parent=iso-ch.9940-15
+
+ch.9940	apc	mRNA	101	723	1.17847e-03	+	.	ID=iso-ch.9940-16;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	1.17847e-03	+	.	Parent=iso-ch.9940-16
+ch.9940	apc	exon	265	349	1.17847e-03	+	.	Parent=iso-ch.9940-16
+ch.9940	apc	exon	390	511	1.17847e-03	+	.	Parent=iso-ch.9940-16
+ch.9940	apc	exon	554	723	1.17847e-03	+	.	Parent=iso-ch.9940-16
+ch.9940	apc	intron	212	264	1.17847e-03	+	.	Parent=iso-ch.9940-16
+ch.9940	apc	intron	350	389	1.17847e-03	+	.	Parent=iso-ch.9940-16
+ch.9940	apc	intron	512	553	1.17847e-03	+	.	Parent=iso-ch.9940-16
+
+ch.9940	apc	mRNA	101	723	1.13570e-03	+	.	ID=iso-ch.9940-17;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	1.13570e-03	+	.	Parent=iso-ch.9940-17
+ch.9940	apc	exon	265	511	1.13570e-03	+	.	Parent=iso-ch.9940-17
+ch.9940	apc	exon	554	723	1.13570e-03	+	.	Parent=iso-ch.9940-17
+ch.9940	apc	intron	212	264	1.13570e-03	+	.	Parent=iso-ch.9940-17
+ch.9940	apc	intron	512	553	1.13570e-03	+	.	Parent=iso-ch.9940-17
+
+ch.9940	apc	mRNA	101	723	1.11476e-03	+	.	ID=iso-ch.9940-18;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	1.11476e-03	+	.	Parent=iso-ch.9940-18
+ch.9940	apc	exon	265	412	1.11476e-03	+	.	Parent=iso-ch.9940-18
+ch.9940	apc	exon	482	511	1.11476e-03	+	.	Parent=iso-ch.9940-18
+ch.9940	apc	exon	554	723	1.11476e-03	+	.	Parent=iso-ch.9940-18
+ch.9940	apc	intron	212	264	1.11476e-03	+	.	Parent=iso-ch.9940-18
+ch.9940	apc	intron	413	481	1.11476e-03	+	.	Parent=iso-ch.9940-18
+ch.9940	apc	intron	512	553	1.11476e-03	+	.	Parent=iso-ch.9940-18
+
+ch.9940	apc	mRNA	101	723	8.86867e-04	+	.	ID=iso-ch.9940-19;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	185	8.86867e-04	+	.	Parent=iso-ch.9940-19
+ch.9940	apc	exon	265	321	8.86867e-04	+	.	Parent=iso-ch.9940-19
+ch.9940	apc	exon	364	511	8.86867e-04	+	.	Parent=iso-ch.9940-19
+ch.9940	apc	exon	554	723	8.86867e-04	+	.	Parent=iso-ch.9940-19
+ch.9940	apc	intron	186	264	8.86867e-04	+	.	Parent=iso-ch.9940-19
+ch.9940	apc	intron	322	363	8.86867e-04	+	.	Parent=iso-ch.9940-19
+ch.9940	apc	intron	512	553	8.86867e-04	+	.	Parent=iso-ch.9940-19
+
+ch.9940	apc	mRNA	101	723	6.98243e-04	+	.	ID=iso-ch.9940-20;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	185	6.98243e-04	+	.	Parent=iso-ch.9940-20
+ch.9940	apc	exon	265	412	6.98243e-04	+	.	Parent=iso-ch.9940-20
+ch.9940	apc	exon	471	511	6.98243e-04	+	.	Parent=iso-ch.9940-20
+ch.9940	apc	exon	554	723	6.98243e-04	+	.	Parent=iso-ch.9940-20
+ch.9940	apc	intron	186	264	6.98243e-04	+	.	Parent=iso-ch.9940-20
+ch.9940	apc	intron	413	470	6.98243e-04	+	.	Parent=iso-ch.9940-20
+ch.9940	apc	intron	512	553	6.98243e-04	+	.	Parent=iso-ch.9940-20
+
