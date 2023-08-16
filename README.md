@@ -4,7 +4,7 @@
 + exon EVD scores exons <20 bp as a non-zero probability
 + there are no exons <20 bp in exon.txt
 + g parameter is negative, so x=0 (exon len) will be greater
-+ see memoize_fdist in modelib
++ see memoize_fdist in modelib, also x < size_limit or <=?
 + probability/score should be 0/-100?
 
 ## MANIFEST ##
