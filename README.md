@@ -1,5 +1,12 @@
 # Code for modeling the stochastic background of RNA splicing...
 
+## Questions for later ##
++ exon EVD scores exons <20 bp as a non-zero probability
++ there are no exons <20 bp in exon.txt
++ g parameter is negative, so x=0 (exon len) will be greater
++ see memoize_fdist in modelib
++ probability/score should be 0/-100?
+
 ## MANIFEST ##
 ### splicing/
 + modelib.py - apc function library
