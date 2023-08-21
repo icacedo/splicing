@@ -1,0 +1,27 @@
+# seqid: ch.9940 IV:4806597-4807419 Gene:WBGene00044483
+# length: 823
+# donors: 28
+# acceptors: 44
+# trials: 43746164
+# isoforms: 80856
+# complexity: later
+ch.9940	apc_isogen	gene	101	723	.	+	.	ID=Gene-ch.9940
+
+ch.9940	apc	mRNA	101	723	5.33705e-01	+	.	ID=iso-ch.9940-1;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	exon	265	440	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	exon	482	511	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	exon	554	723	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	intron	212	264	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	intron	441	481	5.33705e-01	+	.	Parent=iso-ch.9940-1
+ch.9940	apc	intron	512	553	5.33705e-01	+	.	Parent=iso-ch.9940-1
+
+ch.9940	apc	mRNA	101	723	2.16787e-01	+	.	ID=iso-ch.9940-2;Parent=Gene-ch.9940
+ch.9940	apc	exon	101	211	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	exon	265	406	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	exon	471	511	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	exon	554	723	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	intron	212	264	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	intron	407	470	2.16787e-01	+	.	Parent=iso-ch.9940-2
+ch.9940	apc	intron	512	553	2.16787e-01	+	.	Parent=iso-ch.9940-2
+
