@@ -85,12 +85,12 @@ def get_exin_len_score(exin, exin_len_model, a, b, g):
 	exin_len = get_exin_len(exin)
 
 	if exin_len < len(exin_len_model):
-		exin_score = exin_len_model[exin_len]
+		exin_len_score = exin_len_model[exin_len]
 	else:
 		exin_prob = ml.frechet_pdf(length, a, b, g)
 		expect = 1/exin_len
-		exin_score = math.log2(exin_prob/expect)
-	return exin_score
+		exin_len_score = math.log2(exin_prob/expect)
+	return float(exin_len_score)
 
 def get_exin_seq(exin, seq):
 
@@ -111,21 +111,32 @@ def get_exin_mm_score(exin, seq, exin_mm, dpwm=None, apwm=None):
 	if dpwm and apwm:
 		exin_seq = exin_seq[len(dpwm):-len(apwm)]
 	
-	exin_score = 0
+	exin_mm_score = 0
 	for i in range(len(exin_seq)):
 		if len(exin_seq[i:i+k]) == k:
 			kmer = exin_seq[i:i+k]
-			exin_score += float(exin_mm[kmer])
+			exin_mm_score += float(exin_mm[kmer])
 
-	return exin_score
+	return float(exin_mm_score)
 	
 
-exons = {}
+exons_sco = {}
+introns_sco = {}
 for iso in apc_isoforms:
 	for exon in iso['exons']:
-		len_score = get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
-		mm_score = get_exin_mm_score(exon, seq, re_emm_log2)
-		print(len_score, mm_score)
+		if exon in exons_sco: continue
+		elen_score = get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
+		emm_score = get_exin_mm_score(exon, seq, re_emm_log2)
+		exon_score = elen_score + emm_score
+		exons_sco[exon] = exon_score
+	for intron in iso['introns']:
+		if intron in introns_sco: continue
+		ilen_score = get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
+		imm_score = get_exin_mm_score(intron, seq, re_imm_log2)
+		
+print('#####')
+for e in exons:
+	print(e)
 		
 	
 
