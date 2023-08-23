@@ -85,25 +85,25 @@ for iso in apc_isoforms:
 	exon_lengths, intron_lengths = ml.get_exin_lengths(iso)
 	elen_score = ml.get_len_score(exon_lengths, re_elen_log2, ea, eb, eg)
 	ilen_score = ml.get_len_score(intron_lengths, re_ilen_log2, ia, ib, ig)
-	print('len ex in', elen_score, ilen_score)	
+	#print('len ex in', elen_score, ilen_score)	
 	exon_seqs, intron_seqs = ml.get_exin_seqs(iso, seq)
 	emm_score = ml.get_mm_score(exon_seqs, re_emm_log2)
 	imm_score = ml.get_mm_score(intron_seqs, re_imm_log2, 'GT', 'AG')
-	print('mm ex in', emm_score, imm_score)
+	#print('mm ex in', emm_score, imm_score)
 	donor_seqs, acceptor_seqs = ml.get_donacc_seqs(iso, seq)
 	dpwm_score = ml.get_pwm_score(donor_seqs, re_dpwm)
 	apwm_score = ml.get_pwm_score(acceptor_seqs, re_apwm)
-	print('pwm d a', dpwm_score, apwm_score)
+	#print('pwm d a', dpwm_score, apwm_score)
 	score = elen_score + ilen_score + emm_score + imm_score + \
 		dpwm_score + apwm_score
-	print(iso['introns'], len(iso['introns']))
+	#print(iso['introns'], len(iso['introns']))
 	score -= len(iso['introns']) * args.icost
 	iso['score'] = score
-	print(iso)
+	#print(iso)
 	
 # print as gff
 # https://useast.ensembl.org/info/website/upload/gff.html
-'''
+
 seqname = seqid
 source = 'apc_isogen'
 
@@ -163,7 +163,7 @@ for iso in apc_isoforms:
 
 
 
-'''
+
 # test geniso in arch
 # python3 geniso --min_intron 3 --min_exon 4 --flank 5 ../test_seq.fa
 # https://useast.ensembl.org/info/website/upload/gff.html

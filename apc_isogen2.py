@@ -171,6 +171,7 @@ for iso in apc_isoforms:
 	for intron in iso['introns']:
 		total_iso_score += intron_scores[intron]
 	total_iso_score -= len(iso['introns']) * args.icost
+	iso['score'] = total_iso_score
 
 apc_isoforms = sorted(apc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
@@ -183,7 +184,46 @@ for exon in exon_scores:
 intron_weights = {}
 for intron in intron_scores:
 	inweight = 2 ** intron_scores[intron]
-	intron_weights += inweight
+	intron_weights[intron] = inweight
 	total_weight += inweight
+
+exon_probs = {}
+for e in exon_weights:
+	exon_probs[e] = exon_weights[e] / total_weight
+
+intron_probs = {}
+for i in intron_weights:
+	intron_probs[i] = intron_weights[i] / total_weight
+
+iso_weights = []
+iso_total = 0
+for iso in apc_isoforms:
+	weight = 2 ** iso['score']
+	iso_weights.append(weight)
+	iso_total += weight
+
+iso_probs = []
+for w in iso_weights:
+	iso_probs.append(w / iso_total)
+
+print('# seqid: ' + seqid)
+
+name = seqid.split(' ')[0]
+
+gff_writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
+gff_writer.writerow([name, 'apc_isogen', 'gene', iso['beg']+1, iso['end']+1,
+	'.', '+', '.', 'ID=Gene-' + name])
+gff_writer.writerow([])
+count = 0
+for iso in apc_isoforms:
+	if count <= args.limit - 1:
+		iso_probs_f = '{:.5e}'.format(iso_probs[count])
+		gff_writer.writerow([name, 'apc_isogen', 'mRNA', iso['beg']+1, 
+			iso['end']+1, iso_probs_f, '+', '.', 'ID=iso-'+name+'-'+
+			str(count+1)+';Parent=Gene-'+name])
+		#for exon in iso['exons']
+		count += 1
+
+
 
 
