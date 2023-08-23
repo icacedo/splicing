@@ -100,7 +100,7 @@ for iso in apc_isoforms:
 	score -= len(iso['introns']) * args.icost
 	iso['score'] = score
 	print(iso)
-	break
+	
 # print as gff
 # https://useast.ensembl.org/info/website/upload/gff.html
 '''

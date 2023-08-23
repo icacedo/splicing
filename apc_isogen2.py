@@ -147,94 +147,43 @@ def get_donacc_pwm_score(donacc, pwm):
 
 	return da_score
 
+exon_scores = {}
+intron_scores = {}
 for iso in apc_isoforms:
-	print(iso)
-	elen_score_total = 0
-	ilen_score_total = 0
-	emm_score_total = 0
-	imm_score_total = 0
-	dpwm_score_total = 0
-	apwm_score_total = 0
+	total_iso_score = 0
 	for exon in iso['exons']:
+		if exon in exon_scores: continue
 		elen_score = get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
-		elen_score_total += elen_score
 		emm_score = get_exin_mm_score(exon, seq, re_emm_log2)
-		emm_score_total += emm_score
+		escore = elen_score + emm_score
+		exon_scores[exon] = escore
 	for intron in iso['introns']:
+		if intron in intron_scores: continue
 		ilen_score = get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
-		ilen_score_total += ilen_score
 		imm_score = get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
-		imm_score_total += imm_score
 		dseq, aseq = get_donacc_seq(intron, seq)
 		dpwm_score = get_donacc_pwm_score(dseq, re_dpwm)
 		apwm_score = get_donacc_pwm_score(aseq, re_apwm)
-		dpwm_score_total += dpwm_score
-		apwm_score_total += apwm_score
-	print(elen_score_total, ilen_score_total)
-	print(emm_score_total, imm_score_total)
-	print(dpwm_score_total, apwm_score_total)
-	break
+		iscore = ilen_score + imm_score + dpwm_score + apwm_score
+		intron_scores[intron] = iscore
+	for exon in iso['exons']:
+		total_iso_score += exon_scores[exon]
+	for intron in iso['introns']:
+		total_iso_score += intron_scores[intron]
+	total_iso_score -= len(iso['introns']) * args.icost
 
-'''
-exons_sco = {}
-introns_sco = {}
-for iso in apc_isoforms:
-	total_score = 0
-	for exon in iso['exons']:
-		if exon in exons_sco: continue
-		elen_score = get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
-		emm_score = get_exin_mm_score(exon, seq, re_emm_log2)
-		exon_score = elen_score + emm_score
-		exons_sco[exon] = exon_score
-	for intron in iso['introns']:
-		if intron in introns_sco: continue
-		ilen_score = get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
-		imm_score = get_exin_mm_score(intron, seq, re_imm_log2)
-		dseq, aseq = get_donacc_seq(intron, seq)
-		dpwm_score = get_donacc_pwm_score(dseq, re_dpwm)
-		apwm_score = get_donacc_pwm_score(aseq, re_apwm)
-		intron_score = ilen_score + imm_score + dpwm_score + apwm_score
-		introns_sco[intron] = intron_score
-	for exon in iso['exons']:
-		total_score += exons_sco[exon]
-	for intron in iso['introns']:
-		total_score += introns_sco[intron]
-	print(total_score)
-	total_score -= len(iso['introns']) * args.icost
-	iso['score'] = total_score
-	break
-'''
-'''
 apc_isoforms = sorted(apc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
-weights = []
-total = 0
-for iso in apc_isoforms:
-	weight = 2 ** iso['score']
-	weights.append(weight)
-	total += weight
-
-probs = []
-for w in weights:
-	probs.append(w / total)
-
-count = 0
-for p in probs:
-	if count <= 20:
-		print(p)
-	count += 1
-	
-print('#####')
-count = 0
-for iso in apc_isoforms:
-	if count <= args.limit -1:
-		print(iso['score'])
-	count += 1
-'''
-
-
-
-
-
+total_weight = 0
+exon_weights = {}
+for exon in exon_scores: 
+	exweight = 2 ** exon_scores[exon]
+	exon_weights[exon] = exweight
+	total_weight += exweight
+intron_weights = {}
+for intron in intron_scores:
+	inweight = 2 ** intron_scores[intron]
+	intron_weights += inweight
+	total_weight += inweight
 
 
