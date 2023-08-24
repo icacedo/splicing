@@ -189,7 +189,8 @@ for intron in intron_scores:
 
 exon_probs = {}
 for e in exon_weights:
-	exon_probs[e] = exon_weights[e] / total_weight
+	eprob = exon_weights[e] / total_weight
+	exon_probs[e] = eprob	
 
 intron_probs = {}
 for i in intron_weights:
@@ -221,7 +222,19 @@ for iso in apc_isoforms:
 		gff_writer.writerow([name, 'apc_isogen', 'mRNA', iso['beg']+1, 
 			iso['end']+1, iso_probs_f, '+', '.', 'ID=iso-'+name+'-'+
 			str(count+1)+';Parent=Gene-'+name])
-		#for exon in iso['exons']
+		totes = 0
+		for exon in iso['exons']:
+			eprobs_f = '{:.5e}'.format(exon_probs[exon])
+			totes += float(eprobs_f)
+			gff_writer.writerow([name, 'apc_isogen', 'exon', exon[0]+1, 
+				exon[1]+1, eprobs_f, '+', '.', 'Parent='+'iso-'+name+'-'+str(count+1)])
+		for intron in iso['introns']:
+			iprobs_f = '{:.5e}'.format(intron_probs[intron])
+			totes += float(iprobs_f)
+			gff_writer.writerow([name, 'apc_isogen', 'intron', intron[0]+1, 
+				intron[1]+1, iprobs_f, '+', '.', 'Parent='+'iso-'+name+'-'+str(count+1)])
+		gff_writer.writerow([totes])
+		gff_writer.writerow([])
 		count += 1
 
 
