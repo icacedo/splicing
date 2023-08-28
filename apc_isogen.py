@@ -2,6 +2,7 @@ import argparse
 import modelib as ml
 import csv
 import sys
+import math
 
 # params for test seq: maxs 100, minin 3, minex 4, flank 5
 parser = argparse.ArgumentParser(
@@ -59,13 +60,6 @@ flank = args.flank
 
 apc_isoforms, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
 
-exon_len_score = None
-intron_len_score = None
-exon_mm_score = None
-intron_mm_score = None
-donor_pwm = None
-acceptor_pwm = None
-
 if args.exon_len:
 	re_elen_pdf, re_elen_log2 = ml.read_exin_len(args.exon_len)
 	ea, eb, eg = ml.read_len_params(args.exon_len) 
@@ -81,117 +75,170 @@ if args.donor_pwm:
 if args.acceptor_pwm:
 	re_appm, re_apwm = ml.read_pwm(args.acceptor_pwm)
 
-for iso in apc_isoforms:
-	exon_lengths, intron_lengths = ml.get_exin_lengths(iso)
-	elen_score = ml.get_len_score(exon_lengths, re_elen_log2, ea, eb, eg)
-	ilen_score = ml.get_len_score(intron_lengths, re_ilen_log2, ia, ib, ig)
-	#print('len ex in', elen_score, ilen_score)	
-	exon_seqs, intron_seqs = ml.get_exin_seqs(iso, seq)
-	emm_score = ml.get_mm_score(exon_seqs, re_emm_log2)
-	imm_score = ml.get_mm_score(intron_seqs, re_imm_log2, 'GT', 'AG')
-	#print('mm ex in', emm_score, imm_score)
-	donor_seqs, acceptor_seqs = ml.get_donacc_seqs(iso, seq)
-	dpwm_score = ml.get_pwm_score(donor_seqs, re_dpwm)
-	apwm_score = ml.get_pwm_score(acceptor_seqs, re_apwm)
-	#print('pwm d a', dpwm_score, apwm_score)
-	score = elen_score + ilen_score + emm_score + imm_score + \
-		dpwm_score + apwm_score
-	#print(iso['introns'], len(iso['introns']))
-	score -= len(iso['introns']) * args.icost
-	iso['score'] = score
-	#print(iso)
-	
-# print as gff
-# https://useast.ensembl.org/info/website/upload/gff.html
+def get_exin_len(exin):
 
-seqname = seqid
-source = 'apc_isogen'
+	exin_len = exin[1] - exin[0] + 1
+	return exin_len	
+
+def get_exin_len_score(exin, exin_len_model, a, b, g):
+
+	exin_len = get_exin_len(exin)
+
+	if exin_len < len(exin_len_model):
+		exin_len_score = exin_len_model[exin_len]
+	else:
+		exin_prob = ml.frechet_pdf(exin_len, a, b, g)
+		expect = 1/exin_len
+		exin_len_score = math.log2(exin_prob/expect)
+	return float(exin_len_score)
+
+def get_exin_seq(exin, seq):
+
+	beg = exin[0]
+	end = exin[1] + 1
+	exin_seq = seq[beg:end]
+	return exin_seq
+
+def get_exin_mm_score(exin, seq, exin_mm, dpwm=None, apwm=None):
+
+	exin_seq = get_exin_seq(exin, seq)
+
+	k = 0
+	for key in exin_mm:
+		k = len(key)
+		break
+
+	if dpwm and apwm:
+		exin_seq = exin_seq[len(dpwm):-len(apwm)]
+	
+	exin_mm_score = 0
+	for i in range(len(exin_seq)):
+		if len(exin_seq[i:i+k]) == k:
+			kmer = exin_seq[i:i+k]
+			exin_mm_score += float(exin_mm[kmer])
+
+	return float(exin_mm_score)
+	
+def get_donacc_seq(intron, seq):
+
+	d_start = intron[0]
+	d_end = d_start + 5
+	a_end = intron[1] + 1
+	a_start = a_end -6
+	d_seq = seq[d_start:d_end]
+	a_seq = seq[a_start:a_end]
+	
+	return d_seq, a_seq
+
+def get_donacc_pwm_score(donacc, pwm):
+	
+	da_score = 0
+	count = 0
+	for i in range(len(donacc)):
+		if donacc[i] == 'A':
+			da_score += float(pwm[count][0])
+		if donacc[i] == 'C':
+			da_score += float(pwm[count][1])
+		if donacc[i] == 'G':
+			da_score += float(pwm[count][2])
+		if donacc[i] == 'T':
+			da_score += float(pwm[count][3])
+		count += 1
+
+	return da_score
+
+exon_scores = {}
+intron_scores = {}
+for iso in apc_isoforms:
+	total_iso_score = 0
+	for exon in iso['exons']:	
+		if exon in exon_scores: continue
+		elen_score = get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
+		emm_score = get_exin_mm_score(exon, seq, re_emm_log2)
+		escore = elen_score + emm_score
+		exon_scores[exon] = escore
+	for intron in iso['introns']:
+		if intron in intron_scores: continue
+		ilen_score = get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
+		imm_score = get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
+		dseq, aseq = get_donacc_seq(intron, seq)
+		dpwm_score = get_donacc_pwm_score(dseq, re_dpwm)
+		apwm_score = get_donacc_pwm_score(aseq, re_apwm)
+		iscore = ilen_score + imm_score + dpwm_score + apwm_score
+		intron_scores[intron] = iscore
+	for exon in iso['exons']:
+		total_iso_score += exon_scores[exon]
+	for intron in iso['introns']:
+		total_iso_score += intron_scores[intron]
+	total_iso_score -= len(iso['introns']) * args.icost
+	iso['score'] = total_iso_score
 
 apc_isoforms = sorted(apc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
-weights = []
-total = 0
+iso_weights = []
+iso_total = 0
 for iso in apc_isoforms:
-	weight = 2 ** iso['score']
-	weights.append(weight)
-	total += weight
-	
-probs = []
-for w in weights:
-	probs.append(w / total)
+	iso_weight = 2 ** iso['score']
+	iso_weights.append(iso_weight)
+	iso_total += iso_weight
 
-# still differences in geniso calculated probabilities
-# differences by a few decimals
+iso_probs = []
+for w in iso_weights:
+	iso_probs.append(w / iso_total)
 
-# to calc an icost:
-# when choosing an intron cost, just start from an arbitrary number like 0-100
-# and see how the cost affects the outcome
+exon_counts = {}
+intron_counts = {}
+exon_total = 0
+intron_total = 0
+for iso in apc_isoforms:
+	for exon in iso['exons']:
+		if exon not in exon_counts:
+			exon_counts[exon] = 1
+			exon_total += 1
+		else:
+			exon_counts[exon] += 1
+			exon_total += 1
+	for intron in iso['introns']:
+		if intron not in intron_counts:
+			intron_counts[intron] = 1
+			intron_total += 1
+		else:
+			intron_counts[intron] += 1
+			intron_total += 1
 
-print('# seqid: ' + seqid)
-print('# length: ' + str(len(seq)))
-print('# donors: ' + str(len(dons)))
-print('# acceptors: ' + str(len(accs)))
-print('# trials: ' + str(trials))
-print('# isoforms: ' + str(len(apc_isoforms)))
-print('# complexity: ' + 'later')
+exon_freqs = {}
+intron_freqs = {}
+for exon in exon_counts:
+	exon_freqs[exon] = exon_counts[exon] / exon_total
+for intron in intron_counts:
+	intron_freqs[intron] = intron_counts[intron] / exon_total
 
 name = seqid.split(' ')[0]
-
-# is everything on the + strand? and not worried about frame?
 gff_writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
 gff_writer.writerow([name, 'apc_isogen', 'gene', iso['beg']+1, iso['end']+1,
-	 '.', '+', '.', 'ID=Gene-' + name])
+	'.', '+', '.', 'ID=Gene-' + name])
 gff_writer.writerow([])
 count = 0
 for iso in apc_isoforms:
 	if count <= args.limit - 1:
-		probs_f = '{:.5e}'.format(probs[count])
-		gff_writer.writerow([name, 'apc', 'mRNA', iso['beg']+1, 
-			iso['end']+1, probs_f, '+', '.', 'ID=iso-'+name+'-'+str(count+1)+
-				';Parent=Gene-'+name])
+		iso_prob_f = '{:.5e}'.format(iso_probs[count])
+		gff_writer.writerow([name, 'apc_isogen', 'mRNA', iso['beg']+1, 
+			iso['end']+1, iso_prob_f, '+', '.', 'ID=iso-'+name+'-'+
+			str(count+1)+';Parent=Gene-'+name])
 		for exon in iso['exons']:
-			gff_writer.writerow([name, 'apc', 'exon', exon[0]+1, exon[1]+1, 
-				probs_f, '+', '.', 'Parent='+'iso-'+name+'-'+str(count+1)])
+			escore_f = '{:.5e}'.format(exon_scores[exon])
+			efreq_f = '{:.5e}'.format(exon_freqs[exon])
+			gff_writer.writerow([name, 'apc_isogen', 'exon', exon[0]+1,
+				exon[1]+1, iso_prob_f, '+', '.', 'Parent='+'iso-'+name+'-'
+				+str(count+1)+';score='+str(escore_f)+';exfreq='+str(efreq_f)])
 		for intron in iso['introns']:
-			gff_writer.writerow([name, 'apc', 'intron', intron[0]+1, intron[1]+1,
-				probs_f, '+', '.', 'Parent='+'iso-'+name+'-'+str(count+1)])
+			iscore_f = '{:.5e}'.format(intron_scores[intron])
+			ifreq_f = '{:.5e}'.format(intron_freqs[intron])
+			gff_writer.writerow([name, 'apc_isogen', 'intron', intron[0]+1,
+				intron[1]+1, iso_prob_f, '+', '.', 'Parent='+'iso-'+name+'-'
+				+str(count+1)+';score='+str(iscore_f)+';infreq='+str(ifreq_f)])
 		gff_writer.writerow([])
 		count += 1
 
-	
 
-
-
-
-
-# test geniso in arch
-# python3 geniso --min_intron 3 --min_exon 4 --flank 5 ../test_seq.fa
-# https://useast.ensembl.org/info/website/upload/gff.html
-
-'''
-For the test seq 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
-and first isoform
-parameters for testing: min_intron 3, min_exon 4, flank 5
-{'seq': 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA', 'beg': 5, 'end': 42, 
-'exons': [(5, 8), (17, 42)], 'introns': [(9, 16)], 'score': 0}
-individual scores should be (there are small decimal differences between this
-output and geniso) using reformatted length models from geniso:
-
-score_all:
-len ex in -102.85725982788392 -100.0
-mm ex in -2.9090535606612224 -0.7277110496653949
-pwm d a -0.8923380000000001 -7.053903999999999
-{'seq': 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA', 'beg': 5, 'end': 42, 
-'exons': [(5, 8), (17, 42)], 'introns': [(9, 16)], 'score': -214.44026643821053}
-
-geniso:
-apwm -7.053965734900418
-dpwm -0.8923498962049816
-elen -102.85725982788392
-ilen -100.0
-emm -2.9090604877439743
-imm -0.7014542894184398
-{'seq': 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA', 'beg': 5, 'end': 42, 
-'exons': [(5, 8), (17, 42)], 'introns': [(9, 16)], 'score': -214.41409023615174}
-'''
 
