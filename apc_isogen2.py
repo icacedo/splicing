@@ -151,7 +151,7 @@ exon_scores = {}
 intron_scores = {}
 for iso in apc_isoforms:
 	total_iso_score = 0
-	for exon in iso['exons']:
+	for exon in iso['exons']:	
 		if exon in exon_scores: continue
 		elen_score = get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
 		emm_score = get_exin_mm_score(exon, seq, re_emm_log2)
@@ -175,42 +175,45 @@ for iso in apc_isoforms:
 
 apc_isoforms = sorted(apc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
-total_weight = 0
-exon_weights = {}
-for exon in exon_scores: 
-	exweight = 2 ** exon_scores[exon]
-	exon_weights[exon] = exweight
-	total_weight += exweight
-intron_weights = {}
-for intron in intron_scores:
-	inweight = 2 ** intron_scores[intron]
-	intron_weights[intron] = inweight
-	total_weight += inweight
-
-exon_probs = {}
-for e in exon_weights:
-	eprob = exon_weights[e] / total_weight
-	exon_probs[e] = eprob	
-
-intron_probs = {}
-for i in intron_weights:
-	intron_probs[i] = intron_weights[i] / total_weight
-
 iso_weights = []
 iso_total = 0
 for iso in apc_isoforms:
-	weight = 2 ** iso['score']
-	iso_weights.append(weight)
-	iso_total += weight
+	iso_weight = 2 ** iso['score']
+	iso_weights.append(iso_weight)
+	iso_total += iso_weight
 
 iso_probs = []
 for w in iso_weights:
 	iso_probs.append(w / iso_total)
 
-print('# seqid: ' + seqid)
+exon_counts = {}
+intron_counts = {}
+exon_total = 0
+intron_total = 0
+for iso in apc_isoforms:
+	for exon in iso['exons']:
+		if exon not in exon_counts:
+			exon_counts[exon] = 1
+			exon_total += 1
+		else:
+			exon_counts[exon] += 1
+			exon_total += 1
+	for intron in iso['introns']:
+		if intron not in intron_counts:
+			intron_counts[intron] = 1
+			intron_total += 1
+		else:
+			intron_counts[intron] += 1
+			intron_total += 1
+
+exon_freqs = {}
+intron_freqs = {}
+for exon in exon_counts:
+	exon_freqs[exon] = exon_counts[exon] / exon_total
+for intron in intron_counts:
+	intron_freqs[intron] = intron_counts[intron] / exon_total
 
 name = seqid.split(' ')[0]
-
 gff_writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
 gff_writer.writerow([name, 'apc_isogen', 'gene', iso['beg']+1, iso['end']+1,
 	'.', '+', '.', 'ID=Gene-' + name])
@@ -218,25 +221,24 @@ gff_writer.writerow([])
 count = 0
 for iso in apc_isoforms:
 	if count <= args.limit - 1:
-		iso_probs_f = '{:.5e}'.format(iso_probs[count])
+		iso_prob_f = '{:.5e}'.format(iso_probs[count])
 		gff_writer.writerow([name, 'apc_isogen', 'mRNA', iso['beg']+1, 
-			iso['end']+1, iso_probs_f, '+', '.', 'ID=iso-'+name+'-'+
+			iso['end']+1, iso_prob_f, '+', '.', 'ID=iso-'+name+'-'+
 			str(count+1)+';Parent=Gene-'+name])
-		totes = 0
 		for exon in iso['exons']:
-			eprobs_f = '{:.5e}'.format(exon_probs[exon])
-			totes += float(eprobs_f)
-			gff_writer.writerow([name, 'apc_isogen', 'exon', exon[0]+1, 
-				exon[1]+1, eprobs_f, '+', '.', 'Parent='+'iso-'+name+'-'+str(count+1)])
+			escore_f = '{:.5e}'.format(exon_scores[exon])
+			efreq_f = '{:.5e}'.format(exon_freqs[exon])
+			gff_writer.writerow([name, 'apc_isogen', 'exon', exon[0]+1,
+				exon[1]+1, iso_prob_f, '+', '.', 'Parent='+'iso-'+name+'-'
+				+str(count+1)+';score='+str(escore_f)+';exfreq='+str(efreq_f)])
 		for intron in iso['introns']:
-			iprobs_f = '{:.5e}'.format(intron_probs[intron])
-			totes += float(iprobs_f)
-			gff_writer.writerow([name, 'apc_isogen', 'intron', intron[0]+1, 
-				intron[1]+1, iprobs_f, '+', '.', 'Parent='+'iso-'+name+'-'+str(count+1)])
-		gff_writer.writerow([totes])
+			iscore_f = '{:.5e}'.format(intron_scores[intron])
+			ifreq_f = '{:.5e}'.format(intron_freqs[intron])
+			gff_writer.writerow([name, 'apc_isogen', 'intron', intron[0]+1,
+				intron[1]+1, iso_prob_f, '+', '.', 'Parent='+'iso-'+name+'-'
+				+str(count+1)+';score='+str(iscore_f)+';infreq='+str(ifreq_f)])
 		gff_writer.writerow([])
 		count += 1
-
 
 
 
