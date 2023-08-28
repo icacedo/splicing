@@ -10,7 +10,7 @@ seq_alt = 'AACATGACCGTTGCGAGCTACCGTCACATTAGCTCGGAGCCCTATATA'
 
 gff = sys.argv[1]
 fasta = sys.argv[2]
-apc_dir = sys.argv[3]
+#apc_dir = sys.argv[3]
 
 def total_iseqs(gff, fasta):
 
@@ -33,7 +33,7 @@ def total_iseqs(gff, fasta):
 seq_len, iseqs_len = total_iseqs(gff, fasta)
 
 print(seq_len, iseqs_len)
-
+'''
 print(apc_dir)
 
 gffs = []
@@ -75,4 +75,4 @@ with open(gff, 'r') as fp:
 			else:
 				saved_scores.append(float(line[5]))
 print(max(saved_scores))
-
+'''
