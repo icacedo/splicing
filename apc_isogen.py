@@ -211,9 +211,17 @@ intron_freqs = {}
 for exon in exon_counts:
 	exon_freqs[exon] = exon_counts[exon] / exon_total
 for intron in intron_counts:
-	intron_freqs[intron] = intron_counts[intron] / exon_total
+	intron_freqs[intron] = intron_counts[intron] / intron_total
 
 name = seqid.split(' ')[0]
+
+print('# name:', name)
+print('# length:', len(seq))
+print('# donors:', len(dons))
+print('# acceptors:', len(accs))
+
+print(apc_isoforms)
+
 gff_writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
 gff_writer.writerow([name, 'apc_isogen', 'gene', iso['beg']+1, iso['end']+1,
 	'.', '+', '.', 'ID=Gene-' + name])
