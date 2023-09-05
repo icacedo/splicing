@@ -3,6 +3,7 @@ import modelib as ml
 import csv
 import sys
 import math
+import isoform_fixed as isof
 
 # params for test seq: maxs 100, minin 3, minex 4, flank 5
 parser = argparse.ArgumentParser(
@@ -215,12 +216,20 @@ for intron in intron_counts:
 
 name = seqid.split(' ')[0]
 
+def get_entropy(probs):
+
+	h = 0
+	for p in probs:
+		h -= p * math.log2(p)
+	return h
+
 print('# name:', name)
 print('# length:', len(seq))
 print('# donors:', len(dons))
 print('# acceptors:', len(accs))
-
-print(apc_isoforms)
+print('# trials:', trials)
+print('# isoforms:', len(apc_isoforms))
+print('# complexity:', f'{get_entropy(iso_probs):.4f}')
 
 gff_writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
 gff_writer.writerow([name, 'apc_isogen', 'gene', iso['beg']+1, iso['end']+1,

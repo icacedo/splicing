@@ -108,7 +108,7 @@ else:
 	limit = len(txs)
 
 txs = sorted(txs, key=lambda item: item['score'], reverse=True)
-
+print(txs)
 # calculate probability of each isoform
 
 weight = []
