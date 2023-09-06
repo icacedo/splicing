@@ -76,95 +76,23 @@ if args.donor_pwm:
 if args.acceptor_pwm:
 	re_appm, re_apwm = ml.read_pwm(args.acceptor_pwm)
 
-def get_exin_len(exin):
-
-	exin_len = exin[1] - exin[0] + 1
-	return exin_len	
-
-def get_exin_len_score(exin, exin_len_model, a, b, g):
-
-	exin_len = get_exin_len(exin)
-
-	if exin_len < len(exin_len_model):
-		exin_len_score = exin_len_model[exin_len]
-	else:
-		exin_prob = ml.frechet_pdf(exin_len, a, b, g)
-		expect = 1/exin_len
-		exin_len_score = math.log2(exin_prob/expect)
-	return float(exin_len_score)
-
-def get_exin_seq(exin, seq):
-
-	beg = exin[0]
-	end = exin[1] + 1
-	exin_seq = seq[beg:end]
-	return exin_seq
-
-def get_exin_mm_score(exin, seq, exin_mm, dpwm=None, apwm=None):
-
-	exin_seq = get_exin_seq(exin, seq)
-
-	k = 0
-	for key in exin_mm:
-		k = len(key)
-		break
-
-	if dpwm and apwm:
-		exin_seq = exin_seq[len(dpwm):-len(apwm)]
-	
-	exin_mm_score = 0
-	for i in range(len(exin_seq)):
-		if len(exin_seq[i:i+k]) == k:
-			kmer = exin_seq[i:i+k]
-			exin_mm_score += float(exin_mm[kmer])
-
-	return float(exin_mm_score)
-	
-def get_donacc_seq(intron, seq):
-
-	d_start = intron[0]
-	d_end = d_start + 5
-	a_end = intron[1] + 1
-	a_start = a_end -6
-	d_seq = seq[d_start:d_end]
-	a_seq = seq[a_start:a_end]
-	
-	return d_seq, a_seq
-
-def get_donacc_pwm_score(donacc, pwm):
-	
-	da_score = 0
-	count = 0
-	for i in range(len(donacc)):
-		if donacc[i] == 'A':
-			da_score += float(pwm[count][0])
-		if donacc[i] == 'C':
-			da_score += float(pwm[count][1])
-		if donacc[i] == 'G':
-			da_score += float(pwm[count][2])
-		if donacc[i] == 'T':
-			da_score += float(pwm[count][3])
-		count += 1
-
-	return da_score
-
 exon_scores = {}
 intron_scores = {}
 for iso in apc_isoforms:
 	total_iso_score = 0
 	for exon in iso['exons']:	
 		if exon in exon_scores: continue
-		elen_score = get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
-		emm_score = get_exin_mm_score(exon, seq, re_emm_log2)
+		elen_score = ml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
+		emm_score = ml.get_exin_mm_score(exon, seq, re_emm_log2)
 		escore = elen_score + emm_score
 		exon_scores[exon] = escore
 	for intron in iso['introns']:
 		if intron in intron_scores: continue
-		ilen_score = get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
-		imm_score = get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
-		dseq, aseq = get_donacc_seq(intron, seq)
-		dpwm_score = get_donacc_pwm_score(dseq, re_dpwm)
-		apwm_score = get_donacc_pwm_score(aseq, re_apwm)
+		ilen_score = ml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
+		imm_score = ml.get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
+		dseq, aseq = ml.get_donacc_seq(intron, seq)
+		dpwm_score = ml.get_donacc_pwm_score(dseq, re_dpwm)
+		apwm_score = ml.get_donacc_pwm_score(aseq, re_apwm)
 		iscore = ilen_score + imm_score + dpwm_score + apwm_score
 		intron_scores[intron] = iscore
 	for exon in iso['exons']:
@@ -216,20 +144,13 @@ for intron in intron_counts:
 
 name = seqid.split(' ')[0]
 
-def get_entropy(probs):
-
-	h = 0
-	for p in probs:
-		h -= p * math.log2(p)
-	return h
-
 print('# name:', name)
 print('# length:', len(seq))
 print('# donors:', len(dons))
 print('# acceptors:', len(accs))
 print('# trials:', trials)
 print('# isoforms:', len(apc_isoforms))
-print('# complexity:', f'{get_entropy(iso_probs):.4f}')
+print('# complexity:', f'{ml.get_entropy(iso_probs):.4f}')
 
 gff_writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
 gff_writer.writerow([name, 'apc_isogen', 'gene', iso['beg']+1, iso['end']+1,

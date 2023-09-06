@@ -279,6 +279,20 @@ def read_len_params(exin_len_tsv):
 			else: break
 		return a, b, g
 
+def get_exin_len_score(exin, exin_len_model, a, b, g):
+
+	exin_len = exin[1] - exin[0] + 1
+
+	if exin_len < len(exin_len_model):
+		exin_len_score = exin_len_model[exin_len]
+	else:
+		exin_prob = ml.frechet_pdf(exin_len, a, b, g)
+		expect = 1/exin_len
+		exin_len_score = math.log2(exin_prob/expect)
+	return float(exin_len_score)
+
+# old method below
+'''
 def get_exin_lengths(isoform):
 	
 	ex_lens = []
@@ -306,7 +320,7 @@ def get_len_score(exin_lens, exin_len_model, a, b, g):
 			exin_score_total += float(exin_score)
 			
 	return exin_score_total
-
+'''
 ################################
 ##### Markov Model Section #####
 ################################
@@ -364,6 +378,30 @@ def read_exin_mm(exin_mm_tsv):
 			re_mm_sc[line[0]] = line[2]
 		return re_mm_pb, re_mm_sc
 
+def get_exin_mm_score(exin, seq, exin_mm, dpwm=None, apwm=None):
+
+	beg = exin[0]
+	end = exin[1] + 1
+	exin_seq = seq[beg:end]
+
+	k = 0
+	for key in exin_mm:
+		k = len(key)
+		break
+
+	if dpwm and apwm:
+		exin_seq = exin_seq[len(dpwm):-len(apwm)]
+	
+	exin_mm_score = 0
+	for i in range(len(exin_seq)):
+		if len(exin_seq[i:i+k]) == k:
+			kmer = exin_seq[i:i+k]
+			exin_mm_score += float(exin_mm[kmer])
+
+	return float(exin_mm_score)
+	
+# old method below
+'''
 def get_exin_seqs(isoform, seq):
 
 	ex_seqs = []
@@ -397,7 +435,6 @@ def get_mm_score(exin_seqs, exin_mm, dpwm=None, apwm=None):
 	else:
 		exin_seqs2 = exin_seqs
 
-
 	exin_score_total = 0
 	for exin_seq in exin_seqs2:
 		exin_score = 0
@@ -408,7 +445,7 @@ def get_mm_score(exin_seqs, exin_mm, dpwm=None, apwm=None):
 				exin_score += float(score)
 		exin_score_total += exin_score
 	return exin_score_total
-
+'''
 #######################
 ##### PWM section #####
 #######################
@@ -456,6 +493,36 @@ def read_pwm(pwm_tsv):
 				re_ppm.append(line.split('\t'))
 	return re_ppm, re_pwm
 
+def get_donacc_seq(intron, seq):
+
+	d_start = intron[0]
+	d_end = d_start + 5
+	a_end = intron[1] + 1
+	a_start = a_end -6
+	d_seq = seq[d_start:d_end]
+	a_seq = seq[a_start:a_end]
+	
+	return d_seq, a_seq
+
+def get_donacc_pwm_score(donacc, pwm):
+	
+	da_score = 0
+	count = 0
+	for i in range(len(donacc)):
+		if donacc[i] == 'A':
+			da_score += float(pwm[count][0])
+		if donacc[i] == 'C':
+			da_score += float(pwm[count][1])
+		if donacc[i] == 'G':
+			da_score += float(pwm[count][2])
+		if donacc[i] == 'T':
+			da_score += float(pwm[count][3])
+		count += 1
+
+	return da_score
+
+# old method
+'''
 def get_donacc_seqs(isoform, seq):
 	
 	d_seqs = []
@@ -486,6 +553,15 @@ def get_pwm_score(da_seqs, da_pwm):
 		da_score_total += da_score
 		#print(da_seqs[i], da_score)
 	return da_score_total
+'''
+##### other #####
+
+def get_entropy(probs):
+
+	h = 0
+	for p in probs:
+		h -= p * math.log2(p)
+	return h
 
 #######################
 ##### APC Section #####
