@@ -23,6 +23,7 @@ def get_gff_introns(gff):
 
 introns1 = get_gff_introns(args.gff_1)
 introns2 = get_gff_introns(args.gff_2)
-print(ilines)
+print(introns1)
+print(introns2)
 
 

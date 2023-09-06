@@ -286,7 +286,7 @@ def get_exin_len_score(exin, exin_len_model, a, b, g):
 	if exin_len < len(exin_len_model):
 		exin_len_score = exin_len_model[exin_len]
 	else:
-		exin_prob = ml.frechet_pdf(exin_len, a, b, g)
+		exin_prob = frechet_pdf(exin_len, a, b, g)
 		expect = 1/exin_len
 		exin_len_score = math.log2(exin_prob/expect)
 	return float(exin_len_score)
