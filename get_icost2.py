@@ -1,6 +1,8 @@
 # get all apc isoforms once, re-run the scoring part many times to get icost
 
 import modelib as ml
+import argparse
+import pickle
 
 parser = argparse.ArgumentParser()
 parser.add_argument('fasta', type=str, metavar='<file>',
@@ -39,6 +41,14 @@ minex = args.min_exon
 flank = args.flank
 
 apc_isoforms, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
+
+with open ('apc_isoforms.pkl', 'wb') as pick:
+	pickle.dump(apc_isoforms, pick)
+
+with open ('apc_isoforms.pkl', 'rb') as pick:
+	pickell = pickle.load(pick)
+
+assert apc_isoforms == pickell, 'pickled incorrectly'
 
 # first i need to compare isoforms...
 
