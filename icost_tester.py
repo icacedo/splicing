@@ -1,0 +1,94 @@
+import argparse
+import pickle
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--apc_isos', type=str, metavar='<file>',
+	help='input apc pickle file')
+parser.add_argument('fasta', type=str, metavar='<file>',
+	help='input single sequence fasta file')
+parser.add_argument('--gff', type=str, metavar='<file>', required=False,
+	help='input .gff3 for a single gene')
+
+# probabilistic models
+parser.add_argument('--exon_len', required=False, type=str, metavar='<file>', 
+	help='exon length model .tsv')
+parser.add_argument('--intron_len', required=False, type=str, metavar='<file>',
+	help='intron length model .tsv')
+parser.add_argument('--exon_mm', required=False, type=str, metavar='<file>',
+	help='exon markov model .tsv')
+parser.add_argument('--intron_mm', required=False, type=str, metavar='<file>',
+	help='intron markov model .tsv')
+parser.add_argument('--donor_pwm', required=False, type=str, metavar='<file>',
+	help='donor pwm .tsv')
+parser.add_argument('--acceptor_pwm', required=False, type=str, metavar='<file>',
+	help='acceptor pwm .tsv')
+parser.add_argument('--icost', required=False, type=float, default=0.0,
+	metavar='<float>', help='intron cost %(default).2d')
+
+args = parser.parse_args()
+
+seqid = None
+seq = None
+for seqid, seq in ml.read_fastas(args.fasta):
+	seqid = seqid
+	seq = seq
+
+if args.gff:
+	dons, accs = ml.read_gff_sites(seq, args.gff) 
+else:
+	dons, accs = ml.get_gtag(seq)
+
+maxs = args.max_splice
+minin = args.min_intron
+minex = args.min_exon
+flank = args.flank
+
+with open(args.apc_isos, 'rb') as pick:
+	apc_isoforms = pickle.load(pick)
+
+if args.exon_len:
+	re_elen_pdf, re_elen_log2 = ml.read_exin_len(args.exon_len)
+	ea, eb, eg = ml.read_len_params(args.exon_len) 
+if args.intron_len:
+	re_ilen_pdf, re_ilen_log2 = ml.read_exin_len(args.intron_len)
+	ia, ib, ig = ml.read_len_params(args.intron_len)
+if args.exon_mm:
+	re_emm_prob, re_emm_log2 = ml.read_exin_mm(args.exon_mm)
+if args.intron_mm:
+	re_imm_prob, re_imm_log2 = ml.read_exin_mm(args.intron_mm)
+if args.donor_pwm:
+	re_dppm, re_dpwm = ml.read_pwm(args.donor_pwm)
+if args.acceptor_pwm:
+	re_appm, re_apwm = ml.read_pwm(args.acceptor_pwm)
+
+exon_scores = {}
+intron_scores = {}
+for iso in apc_isoforms:
+	total_iso_score = 0
+	for exon in iso['exons']:	
+		if exon in exon_scores: continue
+		elen_score = ml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
+		emm_score = ml.get_exin_mm_score(exon, seq, re_emm_log2)
+		escore = elen_score + emm_score
+		exon_scores[exon] = escore
+	for intron in iso['introns']:
+		if intron in intron_scores: continue
+		ilen_score = ml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
+		imm_score = ml.get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
+		dseq, aseq = ml.get_donacc_seq(intron, seq)
+		dpwm_score = ml.get_donacc_pwm_score(dseq, re_dpwm)
+		apwm_score = ml.get_donacc_pwm_score(aseq, re_apwm)
+		iscore = ilen_score + imm_score + dpwm_score + apwm_score
+		intron_scores[intron] = iscore
+	for exon in iso['exons']:
+		total_iso_score += exon_scores[exon]
+	for intron in iso['introns']:
+		total_iso_score += intron_scores[intron]
+	total_iso_score -= len(iso['introns']) * args.icost
+	iso['score'] = total_iso_score
+
+
+
+
+
+
