@@ -32,9 +32,9 @@ for i in i2:
 
 
 dist, details = isof.expdiff(introns1, introns2)
-print(dist)
 
 print(details)
+print(dist)
 
 for exon, p1, p2 in details:
 	print(f'{exon[0]}\t{exon[1]}\t{p1:.6f}\t{p2:.6f}')

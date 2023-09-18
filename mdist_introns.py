@@ -26,16 +26,15 @@ def get_gff_intron_probs(gff):
 					if intron not in introns: introns[intron] = 0
 					introns[intron] += float(score)
 					total_score += float(score)
-		print(total_score)	
+		
 		for i in introns:
 			introns[i] = introns[i]/total_score
+
 		return introns
 			
 introns1 = get_gff_intron_probs(args.gff_1)
-#introns2 = get_gff_intron_probs(args.gff_2)
+introns2 = get_gff_intron_probs(args.gff_2)
 
-print(introns1)
-'''
 for i in introns1:
 	if i not in introns2:
 		introns2[i] = 0
@@ -43,6 +42,14 @@ for i in introns2:
 	if i not in introns1:
 		introns1[i] = 0
 
-i1 = sorted(introns1.items(), key=lambda item: item[1], reverse=True)
-i2 = sorted(introns2.items())
-'''
+introns1 = dict(sorted(introns1.items(), 
+				key=lambda item: item[1], reverse=True))
+
+dd = 0
+for i in introns1:
+	print(i, introns1[i], introns2[i])
+	d = introns1[i] - introns2[i]
+	print(abs(d))
+	dd += abs(d)
+
+print(dd)
