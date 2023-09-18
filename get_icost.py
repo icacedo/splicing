@@ -7,6 +7,9 @@
 
 # solution? limit counted intron seqs to only WormBase introns
 
+# this program gets an icost of -2.45...
+# done for now
+
 import sys
 import modelib as ml
 import os
