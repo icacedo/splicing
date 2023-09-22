@@ -1,7 +1,8 @@
 import argparse
 import pickle
 import modelib as ml
-import subprocess
+import csv
+import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_pkl', type=str, metavar='<file>',
@@ -135,12 +136,6 @@ for intron in intron_counts:
 name = seqid.split(' ')[0]
 
 print('# name:', name)
-print('# length:', len(seq))
-print('# donors:', len(dons))
-print('# acceptors:', len(accs))
-print('# trials:', trials)
-print('# isoforms:', len(apc_isoforms))
-print('# complexity:', f'{ml.get_entropy(iso_probs):.4f}')
 
 gff_writer = csv.writer(sys.stdout, delimiter='\t', lineterminator='\n')
 gff_writer.writerow([name, 'apc_isogen', 'gene', iso['beg']+1, iso['end']+1,
@@ -148,22 +143,21 @@ gff_writer.writerow([name, 'apc_isogen', 'gene', iso['beg']+1, iso['end']+1,
 gff_writer.writerow([])
 count = 0
 for iso in apc_isoforms:
-	if count <= args.limit - 1:
-		iso_prob_f = '{:.5e}'.format(iso_probs[count])
-		gff_writer.writerow([name, 'apc_isogen', 'mRNA', iso['beg']+1, 
-			iso['end']+1, iso_prob_f, '+', '.', 'ID=iso-'+name+'-'+
-			str(count+1)+';Parent=Gene-'+name])
-		for exon in iso['exons']:
-			escore_f = '{:.5e}'.format(exon_scores[exon])
-			efreq_f = '{:.5e}'.format(exon_freqs[exon])
-			gff_writer.writerow([name, 'apc_isogen', 'exon', exon[0]+1,
-				exon[1]+1, iso_prob_f, '+', '.', 'Parent='+'iso-'+name+'-'
-				+str(count+1)+';score='+str(escore_f)+';exfreq='+str(efreq_f)])
-		for intron in iso['introns']:
-			iscore_f = '{:.5e}'.format(intron_scores[intron])
-			ifreq_f = '{:.5e}'.format(intron_freqs[intron])
-			gff_writer.writerow([name, 'apc_isogen', 'intron', intron[0]+1,
-				intron[1]+1, iso_prob_f, '+', '.', 'Parent='+'iso-'+name+'-'
-				+str(count+1)+';score='+str(iscore_f)+';infreq='+str(ifreq_f)])
-		gff_writer.writerow([])
-		count += 1
+	iso_prob_f = '{:.5e}'.format(iso_probs[count])
+	gff_writer.writerow([name, 'apc_isogen', 'mRNA', iso['beg']+1, 
+		iso['end']+1, iso_prob_f, '+', '.', 'ID=iso-'+name+'-'+
+		str(count+1)+';Parent=Gene-'+name])
+	for exon in iso['exons']:
+		escore_f = '{:.5e}'.format(exon_scores[exon])
+		efreq_f = '{:.5e}'.format(exon_freqs[exon])
+		gff_writer.writerow([name, 'apc_isogen', 'exon', exon[0]+1,
+			exon[1]+1, iso_prob_f, '+', '.', 'Parent='+'iso-'+name+'-'
+			+str(count+1)+';score='+str(escore_f)+';exfreq='+str(efreq_f)])
+	for intron in iso['introns']:
+		iscore_f = '{:.5e}'.format(intron_scores[intron])
+		ifreq_f = '{:.5e}'.format(intron_freqs[intron])
+		gff_writer.writerow([name, 'apc_isogen', 'intron', intron[0]+1,
+			intron[1]+1, iso_prob_f, '+', '.', 'Parent='+'iso-'+name+'-'
+			+str(count+1)+';score='+str(iscore_f)+';infreq='+str(ifreq_f)])
+	gff_writer.writerow([])
+	count += 1
