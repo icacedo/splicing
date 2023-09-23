@@ -8,6 +8,21 @@
 + probability/score should be 0/-100?
 + calculation score/expecation for outliers?
 
+## Directions for icost testing ##
++ apc_pickler.py
+  	+ single apc gene fasta file as input
+	+generates apc isoform .pkl files
+  	+ places .pkl file in apc_pickles/
++ apc_score.py
+  	+ scores isoforms in apc .pkl files
+  	+ input single .pkl file
+  	+ output single .gff file
++ icost_testing.py
+  	+ input directory with apc pickle files
+  	+ input directory with apc fasta files
+  	+ input scoring model .tsv files
+  	+ imports apc_score.py
+     
 ## MANIFEST ##
 ### splicing/
 + modelib.py - apc function library
