@@ -3,6 +3,7 @@
 import modelib as ml
 import argparse
 import pickle
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('fasta', type=str, metavar='<file>',
@@ -42,10 +43,16 @@ flank = args.flank
 
 apc_isoforms, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
 
-with open ('apc_isoforms.pkl', 'wb') as pick:
+fasta = args.fasta
+ID = fasta.split('.')[1]
+outdir = 'apc_pickles/'
+os.makedirs(os.path.dirname(outdir), exist_ok=True)
+name = outdir+'ch.'+ID+'.apc_isoforms.pkl'
+
+with open (name, 'wb') as pick:
 	pickle.dump(apc_isoforms, pick)
 
-with open ('apc_isoforms.pkl', 'rb') as pick:
+with open (name, 'rb') as pick:
 	pickell = pickle.load(pick)
 
 assert apc_isoforms == pickell, 'pickled incorrectly'
