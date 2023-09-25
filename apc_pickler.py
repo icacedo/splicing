@@ -20,8 +20,6 @@ parser.add_argument('--min_exon', required=False, type=int, default=25,
 	metavar='<int>', help='minimum length of exon %(default)d')
 parser.add_argument('--flank', required=False, type=int, default=100,
 	metavar='<int>', help='length of genomic flank on each side %(default)d')
-parser.add_argument('--limit', required=False, type=int, default=20, 
-	metavar='<int>', help='limit number of saved apc isoforms %(default)d')
 
 args = parser.parse_args()
 
