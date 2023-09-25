@@ -4,6 +4,8 @@ import modelib as ml
 import csv
 import sys
 
+sys.path.instert(0, '/home/izzy/Code/splicing/')
+
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_pkl', type=str, metavar='<file>',
 	help='input apc pickle file')

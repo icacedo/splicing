@@ -1,7 +1,6 @@
 import subprocess
 import os
 import argparse
-import apc_score.py as apcsc
 
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_pkls', type=str, metavar='<directory>', 
@@ -27,10 +26,9 @@ parser.add_argument('--icost_range', required=False, type=float, default=100.00,
 
 args = parser.parse_args()
 
-'''
-apc_score = 'apc_score.py'
-fa_file = 'data/build/apc/ch.9940.fa'
-pkl_file = 'apc_isoforms.pkl'
+program = 'apc_score.py'
+apc_dir = args.apc_fastas
+pkl_dir = args.apc_pkls
 outdir = 'icost_testing_out/'
 os.makedirs(os.path.dirname(outdir), exist_ok=True)
 

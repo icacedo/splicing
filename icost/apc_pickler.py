@@ -1,9 +1,12 @@
 # get all apc isoforms once, re-run the scoring part many times to get icost
-
-import modelib as ml
 import argparse
 import pickle
 import os
+import sys
+
+sys.path.insert(0, '/home/izzy/Code/splicing')
+
+import modelib as ml
 
 parser = argparse.ArgumentParser()
 parser.add_argument('fasta', type=str, metavar='<file>',
@@ -41,12 +44,17 @@ flank = args.flank
 
 apc_isoforms, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
 
-fasta = args.fasta
-ID = fasta.split('.')[1]
+fpath = args.fasta
+fname = fpath.split('/')[-1]
+ID = fname.split('.')[1]
 outdir = 'apc_pickles/'
 os.makedirs(os.path.dirname(outdir), exist_ok=True)
-name = outdir+'ch.'+ID+'.apc_isoforms.pkl'
 
+if args.gff:
+	name = outdir+'ch.'+ID+'.apc_isoforms.bli.pkl'
+else:
+	name = outdir+'ch.'+ID+'.apc_isoforms.pkl'
+print(name)
 with open (name, 'wb') as pick:
 	pickle.dump(apc_isoforms, pick)
 

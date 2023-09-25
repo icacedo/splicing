@@ -16,8 +16,6 @@ parser.add_argument('--min_exon', required=False, type=int, default=25,
 	metavar='<int>', help='minimum length of exon %(default)d')
 parser.add_argument('--flank', required=False, type=int, default=100,
 	metavar='<int>', help='length of genomic flank on each side %(default)d')
-parser.add_argument('--limit', required=False, type=int, default=20, 
-	metavar='<int>', help='limit number of saved apc isoforms %(default)d')
 
 args = parser.parse_args()
 
@@ -40,23 +38,24 @@ min_exon = args.min_exon
 flank = args.flank
 
 if args.read_gff:
-	print('wowo')
+	count = 0
 	for fID in fastas:
 		fpath = apc_dir + fastas[fID]
 		gpath = apc_dir + gffs[fID]
-		print(fpath)
-		print(gpath)
 		subprocess.run(f'python3 {program} {fpath} --gff {gpath}'
 			f' --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
-		break
+		if count == 4: break
+		count += 1
 else:
+	count = 0
 	for fID in fastas:
 		fpath = apc_dir + fastas[fID]	
 		subprocess.run(f'python3 {program} {fpath}'
 			f' --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
-		break
+		if count == 4: break
+		count += 1
 
 
 
