@@ -46,7 +46,7 @@ if args.read_gff:
 		fpath = apc_dir + fastas[fID]
 		gpath = apc_dir + gffs[fID]
 		subprocess.run(f'python3 {program} {fpath} --path2ml {path2ml}'
-			f'--gff {gpath} --max_splice {max_splice} --min_intron {min_intron}'
+			f' --gff {gpath} --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
 		if count == 4: break
 		count += 1
