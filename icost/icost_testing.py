@@ -32,20 +32,37 @@ pkl_dir = args.apc_pkls
 outdir = 'icost_testing_out/'
 os.makedirs(os.path.dirname(outdir), exist_ok=True)
 
-exon_mm = '--exon_mm mkmdls_out/exon_mm.tsv'
-intron_mm = '--intron_mm mkmdls_out/intron_mm.tsv'
-exon_len = '--exon_len mkmdls_out/exon_len.tsv'
-intron_len = '--intron_len mkmdls_out/intron_len.tsv'
-donor_pwm = '--donor_pwm mkmdls_out/donor_pwm.tsv'
-acceptor_pwm = '--acceptor_pwm mkmdls_out/acceptor_pwm.tsv'
+exon_mm = args.exon_mm
+intron_mm = args.intron_mm
+exon_len = args.exon_len
+intron_len = args.intron_len
+donor_pwm = args.donor_pwm
+acceptor_pwm = args.acceptor_pwm
 
+fasta_paths = {}
+for fname in os.listdir(apc_dir):
+	if fname.endswith('fa'):
+		ID1 = fname.split('.')[1]
+		fpath = apc_dir + fname
+		fasta_paths[ID1] = fpath
+
+print(fasta_paths)
+
+pkl_paths = {}
+for fname in os.listdir(pkl_dir):
+	ID2 = fname.split('.')[1]
+	ppath = pkl_dir + fname
+	pkl_paths[ID2] = ppath
+
+print(pkl_paths)
+
+'''
 subprocess.run(f'python3 {apc_score} {pkl_file} {fa_file} {exon_mm}'
 	f' {intron_mm} {exon_len} {intron_len} {donor_pwm} {acceptor_pwm}'
-	f' > {outdir}test', shell=True
-)
+	f' > {outdir}', shell=True)
 
 gff1 = 'outdir/test'
 gff2 = 'data/build/apc/
-
+'''
 
 
