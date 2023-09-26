@@ -46,6 +46,6 @@ subprocess.run(f'python3 {apc_score} {pkl_file} {fa_file} {exon_mm}'
 
 gff1 = 'outdir/test'
 gff2 = 'data/build/apc/
-'''
+
 
 
