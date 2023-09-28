@@ -61,8 +61,9 @@ for fname in os.listdir(pkl_dir):
 irange = int(args.icost_range)
 irange_step = args.icost_step
 
-for i in np.arange(0, irange+0.1, 0.1):
+for i in np.arange(0, irange+0.1, irange_step):
 	icost = round(i, 1)
+	#print(icost)
 	for ID in pkl_paths:
 		pkl_file = pkl_paths[ID]
 		fa_file = fasta_paths[ID]
