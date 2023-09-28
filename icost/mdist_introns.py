@@ -47,9 +47,13 @@ introns1 = dict(sorted(introns1.items(),
 
 dd = 0
 for i in introns1:
-	print(i, introns1[i], introns2[i])
+	beg = i[0]
+	end = i[1]
+	iprob1 = '{0:.6f}'.format(introns1[i])
+	iprob2 = '{0:.6f}'.format(introns2[i])
+	print(f'{beg}\t{end}\t{iprob1}\t{iprob2}')
 	d = introns1[i] - introns2[i]
-	print(abs(d))
+	#print(abs(d))
 	dd += abs(d)
-
-print(dd)
+	
+print('mdist =', '{0:.6f}'.format(dd))

@@ -70,8 +70,10 @@ for i in np.arange(0, irange+0.1, 0.1):
 			gff_name = 'ch.'+ID+'.icost_'+str(icost)+'_'+'bli.gff'
 		else:
 			gff_name = 'ch.'+ID+'.icost_'+str(icost)+'_'+'apc.gff'
+		print(gff_name)
 		subprocess.run(f'python3 {program} {pkl_file} {fa_file}'
 			f' --exon_len {exon_len} --intron_len {intron_len}'
 			f' --exon_mm {exon_mm} --intron_mm {intron_mm}'
 			f' --donor_pwm {donor_pwm} --acceptor_pwm {acceptor_pwm}'
-			f' --path2ml {mlpath}', shell=True )
+			f' --path2ml {mlpath} --icost {icost}> {outdir}{gff_name}', 
+				shell=True )
