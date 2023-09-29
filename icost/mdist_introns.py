@@ -53,7 +53,7 @@ for i in introns1:
 	iprob2 = '{0:.6f}'.format(introns2[i])
 	print(f'{beg}\t{end}\t{iprob1}\t{iprob2}')
 	d = introns1[i] - introns2[i]
-	#print(abs(d))
 	dd += abs(d)
 	
-print('mdist =', '{0:.6f}'.format(dd))
+print('mdist='+'{0:.6f}'.format(dd))
+

@@ -1,5 +1,6 @@
 import argparse
 import os
+import subprocess
 
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_gffs', type=str, metavar='<directory>',
@@ -28,11 +29,28 @@ for wgff in os.listdir(wb_gff_dir):
 	wID = wgff.split('.')[1]
 	wb_path = wb_gff_dir + wgff
 	if wID not in icost_gffs: continue
-	if wID not in wb_gffs:
-		wb_gffs[wID] = [wb_path]
-	else:
-		wb_gffs[wID] += [wb_path]
+	wb_gffs[wID] = wb_path
 
-print(icost_gffs)
-print(wb_gffs)
+def find_mdist(cap):
+		
+	dcap = cap.stdout.decode('UTF-8')
+	for line in dcap.split('\n'):
+		if line.startswith('mdist'):
+			mdist = line.split('=')[1]
+			return mdist
 
+mdist_groups = {}
+for ID in icost_gffs:
+	for path in icost_gffs[ID]:
+		gff1_apc = path 
+		gff2_wb = wb_gffs[ID]
+		icost = gff1_apc.split('_')[2]
+		print(ID)
+		print(icost)
+		print(gff1_apc)
+		print(gff2_wb)
+		cap = subprocess.run(f'python3 {program} {gff1_apc} {gff2_wb}', 
+			shell=True, capture_output=True)
+		print(find_mdist(cap))
+		break
+	break
