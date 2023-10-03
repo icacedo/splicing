@@ -1,12 +1,16 @@
 import argparse
 import os
 import subprocess
+import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_gffs', type=str, metavar='<directory>',
 	help='input directory with apc generated gff files')
 parser.add_argument('wb_gffs', type=str, metavar='<directory>',
 	help='input directory with wb annotation gff files')
+parser.add_argument('--outfile_name', type=str, metavar='<file name>', 
+	required=True, help='name of .json file, example: 0_50_10' 
+		' (icost testing range 0-50, in steps of 10)')
 
 args = parser.parse_args()
 
@@ -52,5 +56,25 @@ for ID in icost_gffs:
 		cap = subprocess.run(f'python3 {program} {gff1_apc} {gff2_wb}', 
 			shell=True, capture_output=True)
 		print(find_mdist(cap))
-		break
-	break
+		print('#####')
+		info = [
+			{
+				'ID': ID, 
+				'mdist': find_mdist(cap), 
+				'apc_file': gff1_apc.split('/')[-1], 
+				'wb_file': gff2_wb.split('/')[-1]
+			}
+		]
+		if icost not in mdist_groups:
+			mdist_groups[icost] = info
+		else:
+			mdist_groups[icost] += info
+		#break
+	#break
+
+jsonString = json.dumps(sorted(mdist_groups.items()), indent=4)
+jsonFile = open(args.outfile_name+'.json', 'w')
+jsonFile.write(jsonString)
+jsonFile.close()
+
+
