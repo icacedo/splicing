@@ -49,13 +49,13 @@ for ID in icost_gffs:
 		gff1_apc = path 
 		gff2_wb = wb_gffs[ID]
 		icost = gff1_apc.split('_')[2]
-		print(ID)
-		print(icost)
-		print(gff1_apc)
-		print(gff2_wb)
+		print('gene ID:', ID)
+		print('tested icost:', icost)
+		print('apc file path:', gff1_apc)
+		print('wb file path:', gff2_wb)
 		cap = subprocess.run(f'python3 {program} {gff1_apc} {gff2_wb}', 
 			shell=True, capture_output=True)
-		print(find_mdist(cap))
+		print('mdist:', find_mdist(cap))
 		print('#####')
 		info = [
 			{
