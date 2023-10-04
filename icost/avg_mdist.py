@@ -12,4 +12,5 @@ f = open(args.json_file)
 mdists = json.load(f)
 
 for icost in mdists:
-	print(icost)
+	print(icost[0])
+	
