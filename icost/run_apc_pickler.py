@@ -48,7 +48,7 @@ if args.read_gff:
 		subprocess.run(f'python3 {program} {fpath} --path2ml {path2ml}'
 			f' --gff {gpath} --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
-		if count == 1: break
+		if count == 10: break
 		count += 1
 else:
 	count = 0
@@ -57,7 +57,7 @@ else:
 		subprocess.run(f'python3 {program} {fpath} --path2ml {path2ml}'
 			f' --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
-		if count == 1: break
+		if count == 10: break
 		count += 1
 
 
