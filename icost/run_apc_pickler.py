@@ -9,6 +9,8 @@ parser.add_argument('--read_gff', action='store_true',
 	help='get donor/acceptor sites from gff')
 parser.add_argument('--path2ml', type=str, metavar='<directory path>',
 	required=True, help='path to directory with modelib')
+parser.add_argument('--outdir', type=str, metavar='<outdir path>',
+	required=True, help='/path/ to outdir')
 
 parser.add_argument('--max_splice', required=False, type=int, default=3,
 	metavar='<int>', help='maximum number of splicing events %(default)d')
@@ -33,7 +35,7 @@ for gfile in os.listdir(args.apc_dir):
 program = 'apc_pickler.py'
 apc_dir = args.apc_dir
 path2ml = args.path2ml
-outdir = 'apc_pickles/'
+outdir = args.outdir
 os.makedirs(os.path.dirname(outdir), exist_ok=True)
 max_splice = args.max_splice
 min_intron = args.min_intron
@@ -41,24 +43,26 @@ min_exon = args.min_exon
 flank = args.flank
 
 if args.read_gff:
-	count = 0
+	#count = 0
 	for fID in fastas:
 		fpath = apc_dir + fastas[fID]
 		gpath = apc_dir + gffs[fID]
 		subprocess.run(f'python3 {program} {fpath} --path2ml {path2ml}'
+			f' --outdir {outdir}'
 			f' --gff {gpath} --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
-		if count == 10: break
-		count += 1
+		#if count == 1: break
+		#count += 1
 else:
-	count = 0
+	#count = 0
 	for fID in fastas:
 		fpath = apc_dir + fastas[fID]	
 		subprocess.run(f'python3 {program} {fpath} --path2ml {path2ml}'
+			f' --outdir {outdir}'
 			f' --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
-		if count == 10: break
-		count += 1
+		#if count == 1: break
+		#count += 1
 
 
 

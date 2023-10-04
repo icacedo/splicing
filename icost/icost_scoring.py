@@ -10,6 +10,8 @@ parser.add_argument('apc_fastas', type=str, metavar='<directory>',
 	help='input directory with apc fasta files')
 parser.add_argument('--path2ml', type=str, metavar='<directory path>', 
 	help='absolute path to directory with modelib')
+parser.add_argument('--outdir', type=str, metavar='<outdir path>',
+	required=True, help='/path/ to outdir')
 
 parser.add_argument('--exon_len', type=str, metavar='<file>', 
 	help='exon length model .tsv')
@@ -34,7 +36,7 @@ args = parser.parse_args()
 program = 'apc_score.py'
 apc_dir = args.apc_fastas
 pkl_dir = args.apc_pkls
-outdir = 'icost_out/'
+outdir = args.outdir+'icost_out/'
 os.makedirs(os.path.dirname(outdir), exist_ok=True)
 
 exon_mm = args.exon_mm
@@ -76,5 +78,5 @@ for i in np.arange(0, irange+0.1, irange_step):
 			f' --exon_len {exon_len} --intron_len {intron_len}'
 			f' --exon_mm {exon_mm} --intron_mm {intron_mm}'
 			f' --donor_pwm {donor_pwm} --acceptor_pwm {acceptor_pwm}'
-			f' --path2ml {mlpath} --icost {icost}> {outdir}{gff_name}', 
+			f' --path2ml {mlpath} --icost {icost} > {outdir}{gff_name}', 
 				shell=True )

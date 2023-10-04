@@ -11,6 +11,8 @@ parser.add_argument('wb_gffs', type=str, metavar='<directory>',
 parser.add_argument('--outfile_name', type=str, metavar='<file name>', 
 	required=True, help='name of .json file, example: 0_50_10' 
 		' (icost testing range 0-50, in steps of 10)')
+parser.add_argument('--outdir', type=str, metavar='<file name>',
+	required=True, help='/path/ to outdir')
 
 args = parser.parse_args()
 
@@ -73,7 +75,7 @@ for ID in icost_gffs:
 	#break
 
 jsonString = json.dumps(sorted(mdist_groups.items()), indent=4)
-jsonFile = open(args.outfile_name+'.json', 'w')
+jsonFile = open(args.outdir+args.outfile_name+'.json', 'w')
 jsonFile.write(jsonString)
 jsonFile.close()
 

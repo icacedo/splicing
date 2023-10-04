@@ -7,10 +7,12 @@ import sys
 parser = argparse.ArgumentParser()
 parser.add_argument('fasta', type=str, metavar='<file>',
 	help='input single sequence fasta file')
-parser.add_argument('--path2ml', type=str, metavar='<directory path>',
-	required=True, help='path to directory with modelib')
 parser.add_argument('--gff', type=str, metavar='<file>', required=False,
 	help='input .gff3 for single gene')
+parser.add_argument('--path2ml', type=str, metavar='<directory path>',
+	required=True, help='path to directory with modelib')
+parser.add_argument('--outdir', type=str, metavar='<outdir path>',
+	required=True, help='/path/ to outdir')
 
 # apc parameters
 parser.add_argument('--max_splice', required=False, type=int, default=3,
@@ -49,7 +51,7 @@ apc_isoforms, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
 fpath = args.fasta
 fname = fpath.split('/')[-1]
 ID = fname.split('.')[1]
-outdir = 'apc_pickles/'
+outdir = args.outdir+'apc_pickles/'
 os.makedirs(os.path.dirname(outdir), exist_ok=True)
 
 if args.gff:
