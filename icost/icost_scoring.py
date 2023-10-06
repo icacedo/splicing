@@ -15,7 +15,7 @@ parser.add_argument('--path2ml', type=str, metavar='<directory path>',
 parser.add_argument('--tmp_outdir', type=str, metavar='<outdir path>',
 	required=True, help='/path/ to tmp_outdir with tmp gffs')
 parser.add_argument('--outdir', type=str, metavar='<outdir path>',
-	required=False, help='/pat/ to .json file with results')
+	required=False, help='/path/ to .json file with results')
 
 parser.add_argument('--exon_len', type=str, metavar='<file>', 
 	help='exon length model .tsv')
