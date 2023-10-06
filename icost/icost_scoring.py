@@ -3,6 +3,7 @@ import os
 import argparse
 import numpy as np
 import mdist_lib as mdl
+import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_pkls', type=str, metavar='<directory>', 
@@ -11,8 +12,10 @@ parser.add_argument('apc_dir', type=str, metavar='<directory>',
 	help='input directory with apc fasta gff files')
 parser.add_argument('--path2ml', type=str, metavar='<directory path>', 
 	help='absolute path to directory with modelib')
+parser.add_argument('--tmp_outdir', type=str, metavar='<outdir path>',
+	required=True, help='/path/ to tmp_outdir with tmp gffs')
 parser.add_argument('--outdir', type=str, metavar='<outdir path>',
-	required=True, help='/path/ to outdir')
+	required=False, help='/pat/ to .json file with results')
 
 parser.add_argument('--exon_len', type=str, metavar='<file>', 
 	help='exon length model .tsv')
@@ -37,8 +40,8 @@ args = parser.parse_args()
 program = 'apc_score.py'
 apc_dir = args.apc_dir
 pkl_dir = args.apc_pkls
-outdir = args.outdir+'icost_out/'
-os.makedirs(os.path.dirname(outdir), exist_ok=True)
+tmp_outdir = args.tmp_outdir+'icost_out/'
+os.makedirs(os.path.dirname(tmp_outdir), exist_ok=True)
 
 exon_mm = args.exon_mm
 intron_mm = args.intron_mm
@@ -71,6 +74,7 @@ for wbfile in os.listdir(apc_dir):
 	wb_path = apc_dir + wbfile
 	wb_gffs[wID] = wb_path
 
+icost_groups = {}
 for i in np.arange(0, irange+0.1, irange_step):
 	icost = round(i, 1)
 	for ID in pkl_paths:
@@ -80,17 +84,40 @@ for i in np.arange(0, irange+0.1, irange_step):
 			gff_name = 'ch.'+ID+'.icost_'+str(icost)+'_'+'bli.gff'
 		else:
 			gff_name = 'ch.'+ID+'.icost_'+str(icost)+'_'+'apc.gff'
-		print(gff_name)
-		print(wb_gffs[ID])
+		agff_path = tmp_outdir+gff_name
 		subprocess.run(f'python3 {program} {pkl_file} {fa_file}'
 			f' --exon_len {exon_len} --intron_len {intron_len}'
 			f' --exon_mm {exon_mm} --intron_mm {intron_mm}'
 			f' --donor_pwm {donor_pwm} --acceptor_pwm {acceptor_pwm}'
-			f' --path2ml {mlpath} --icost {icost} > {outdir}{gff_name}', 
+			f' --path2ml {mlpath} --icost {icost} > {agff_path}', 
 				shell=True )
-		print(outdir+gff_name)
-		introns1 = mdl.get_gff_intron_probs(outdir+gff_name)
+		print('#')
+		print('gene ID:', ID)
+		print('tested icost:', icost)
+		#print(agff_path)
+		#print(wb_gffs[ID])
+		introns1 = mdl.get_gff_intron_probs(agff_path)
 		introns2 = mdl.get_gff_intron_probs(wb_gffs[ID])
 		mdist = mdl.get_mdist(introns1, introns2)
-		print(mdist)
-		print('#####')
+		os.remove(agff_path)
+		print('mdist:', mdist)
+		info = [
+			{
+				'ID': ID,
+				'mdist': mdist
+			}
+		]
+		if icost not in icost_groups:
+			icost_groups[icost] = info
+		else:
+			icost_groups[icost] += info
+
+os.rmdir(tmp_outdir)
+
+jsonString = json.dumps(sorted(icost_groups.items()), indent=4)
+if args.outdir:
+	jsonFile = open(args.outdir+'results_icost.json', 'w')
+else:
+	jsonFile = open('results_icost.json', 'w')
+jsonFile.write(jsonString)
+jsonFile.close()
