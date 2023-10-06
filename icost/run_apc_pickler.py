@@ -11,6 +11,8 @@ parser.add_argument('--path2ml', type=str, metavar='<directory path>',
 	required=True, help='path to directory with modelib')
 parser.add_argument('--outdir', type=str, metavar='<outdir path>',
 	required=True, help='/path/ to outdir')
+parser.add_argument('--limit', type=int, metavar='<int>',
+	required=False, help='limit number of files to pkl, for testing')
 
 parser.add_argument('--max_splice', required=False, type=int, default=3,
 	metavar='<int>', help='maximum number of splicing events %(default)d')
@@ -51,7 +53,8 @@ if args.read_gff:
 			f' --outdir {outdir}'
 			f' --gff {gpath} --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
-		if count == 1: break
+		if args.limit:
+			if count == args.limit - 1: break
 		count += 1
 else:
 	count = 0
@@ -61,6 +64,8 @@ else:
 			f' --outdir {outdir}'
 			f' --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
+		if args.limit:
+			if count == args.limit - 1: break
 		if count == 1: break
 		count += 1
 
