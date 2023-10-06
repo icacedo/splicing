@@ -43,7 +43,7 @@ min_exon = args.min_exon
 flank = args.flank
 
 if args.read_gff:
-	#count = 0
+	count = 0
 	for fID in fastas:
 		fpath = apc_dir + fastas[fID]
 		gpath = apc_dir + gffs[fID]
@@ -51,18 +51,18 @@ if args.read_gff:
 			f' --outdir {outdir}'
 			f' --gff {gpath} --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
-		#if count == 1: break
-		#count += 1
+		if count == 1: break
+		count += 1
 else:
-	#count = 0
+	count = 0
 	for fID in fastas:
 		fpath = apc_dir + fastas[fID]	
 		subprocess.run(f'python3 {program} {fpath} --path2ml {path2ml}'
 			f' --outdir {outdir}'
 			f' --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
-		#if count == 1: break
-		#count += 1
+		if count == 1: break
+		count += 1
 
 
 

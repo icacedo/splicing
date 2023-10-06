@@ -31,7 +31,7 @@ def get_gff_intron_probs(gff):
 			introns[i] = introns[i]/total_score
 
 		return introns
-			
+	
 introns1 = get_gff_intron_probs(args.gff_1)
 introns2 = get_gff_intron_probs(args.gff_2)
 
@@ -56,4 +56,3 @@ for i in introns1:
 	dd += abs(d)
 	
 print('mdist='+'{0:.6f}'.format(dd))
-

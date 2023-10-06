@@ -2,12 +2,13 @@ import subprocess
 import os
 import argparse
 import numpy as np
+import mdist_lib as mdl
 
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_pkls', type=str, metavar='<directory>', 
 	help='input directory with apc pickle files')
-parser.add_argument('apc_fastas', type=str, metavar='<directory>',
-	help='input directory with apc fasta files')
+parser.add_argument('apc_dir', type=str, metavar='<directory>',
+	help='input directory with apc fasta gff files')
 parser.add_argument('--path2ml', type=str, metavar='<directory path>', 
 	help='absolute path to directory with modelib')
 parser.add_argument('--outdir', type=str, metavar='<outdir path>',
@@ -34,7 +35,7 @@ parser.add_argument('--icost_step', required=False, type=float, default=0.1,
 args = parser.parse_args()
 
 program = 'apc_score.py'
-apc_dir = args.apc_fastas
+apc_dir = args.apc_dir
 pkl_dir = args.apc_pkls
 outdir = args.outdir+'icost_out/'
 os.makedirs(os.path.dirname(outdir), exist_ok=True)
@@ -63,9 +64,15 @@ for fname in os.listdir(pkl_dir):
 irange = int(args.icost_range)
 irange_step = args.icost_step
 
+wb_gffs = {}
+for wbfile in os.listdir(apc_dir):
+	if wbfile.endswith('.fa'): continue
+	wID = wbfile.split('.')[1]
+	wb_path = apc_dir + wbfile
+	wb_gffs[wID] = wb_path
+
 for i in np.arange(0, irange+0.1, irange_step):
 	icost = round(i, 1)
-	#print(icost)
 	for ID in pkl_paths:
 		pkl_file = pkl_paths[ID]
 		fa_file = fasta_paths[ID]
@@ -74,9 +81,16 @@ for i in np.arange(0, irange+0.1, irange_step):
 		else:
 			gff_name = 'ch.'+ID+'.icost_'+str(icost)+'_'+'apc.gff'
 		print(gff_name)
+		print(wb_gffs[ID])
 		subprocess.run(f'python3 {program} {pkl_file} {fa_file}'
 			f' --exon_len {exon_len} --intron_len {intron_len}'
 			f' --exon_mm {exon_mm} --intron_mm {intron_mm}'
 			f' --donor_pwm {donor_pwm} --acceptor_pwm {acceptor_pwm}'
 			f' --path2ml {mlpath} --icost {icost} > {outdir}{gff_name}', 
 				shell=True )
+		print(outdir+gff_name)
+		introns1 = mdl.get_gff_intron_probs(outdir+gff_name)
+		introns2 = mdl.get_gff_intron_probs(wb_gffs[ID])
+		mdist = mdl.get_mdist(introns1, introns2)
+		print(mdist)
+		print('#####')
