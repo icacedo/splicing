@@ -30,8 +30,10 @@ parser.add_argument('--donor_pwm', type=str, metavar='<file>',
 parser.add_argument('--acceptor_pwm', type=str, metavar='<file>',
 	help='acceptor pwm .tsv')
 
-parser.add_argument('--icost_range', required=False, type=float, default=100,
-	metavar='<int>', help='intron cost %(default)i')
+parser.add_argument('--icost_range_up', required=False, type=float, default=100,
+	metavar='<int>', help='intron cost upper range %(default)i')
+parser.add_argument('--icost_range_lo', required=False, type=float, default=0, 
+	metavar='<int>', help='intron cost lower range %(default)i')
 parser.add_argument('--icost_step', required=False, type=float, default=0.1,
 	metavar='<float>', help='intron cost step %(default).1f')
 
@@ -64,7 +66,8 @@ for fname in os.listdir(pkl_dir):
 	ppath = pkl_dir + fname
 	pkl_paths[ID2] = ppath
 
-irange = int(args.icost_range)
+irange_up = int(args.icost_range_up)
+irange_lo = int(args.icost_range_lo)
 irange_step = args.icost_step
 
 wb_gffs = {}
@@ -75,8 +78,8 @@ for wbfile in os.listdir(apc_dir):
 	wb_gffs[wID] = wb_path
 
 icost_groups = {}
-for i in np.arange(0, irange+0.1, irange_step):
-	icost = round(i, 1)
+for i in np.arange(irange_lo, irange_up+0.1, irange_step):
+	icost = round(i, 2)
 	for ID in pkl_paths:
 		pkl_file = pkl_paths[ID]
 		fa_file = fasta_paths[ID]
