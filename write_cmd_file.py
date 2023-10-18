@@ -38,35 +38,36 @@ parser.add_argument('--icost', required=False, type=float, default=0.0,
 	
 args = parser.parse_args()
 
-fa_gff_pairs = {}
+apc_list = []
 for fname in os.listdir(args.apc_dir):
-	ID = fname.split('.')[1]
+	apc_list.append(args.apc_dir + fname)
+
+fa_gff_pairs = {}
+for fpath in sorted(apc_list):
+	ID = fpath.split('.')[-2]
 	if ID not in fa_gff_pairs:
-		fa_gff_pairs[ID] = [args.apc_dir + fname]
+		fa_gff_pairs[ID] = [fpath]
 	else:
-		fa_gff_pairs[ID] += [args.apc_dir + fname]
+		fa_gff_pairs[ID] += [fpath]
 
-
-	
-
-print(fa_gff_pairs)	
-gene_path = 'wow'
 f = open('apc_cmds.txt', 'w')
-flag = ''
-if args.read_gff:
-	flag = ' --read_gff'
-f.write(
-	f'python3 apc_isogen.py {gene_path}'
-	f'{flag}'
-	f' --min_intron {args.min_intron} --min_exon {args.min_exon}'
-	f' --flank {args.flank} --limit {args.limit}'
-	f' --exon_len {args.exon_len} --intron_len {args.intron_len}'
-	f' --exon_mm {args.exon_mm} --intron_mm {args.intron_mm}'
-	f' --donor_pwm {args.donor_pwm} --acceptor_pwm {args.acceptor_pwm}
-)
-#f.write(f'new line with stuff')
+for gID in fa_gff_pairs:
+	fa_path = fa_gff_pairs[gID][0]
+	gff_path = fa_gff_pairs[gID][1]
+	gff_in = ''
+	if args.read_gff:
+		gff_in = ' --gff ' + gff_path
+	f.write(
+		f'python3 apc_isogen.py {fa_path}'
+		f'{gff_in}'
+		f' --min_intron {args.min_intron} --min_exon {args.min_exon}'
+		f' --flank {args.flank} --limit {args.limit}'
+		f' --exon_len {args.exon_len} --intron_len {args.intron_len}'
+		f' --exon_mm {args.exon_mm} --intron_mm {args.intron_mm}'
+		f' --donor_pwm {args.donor_pwm} --acceptor_pwm {args.acceptor_pwm}'
+		f'\n'
+	)
 f.close()
-
 
 
 
