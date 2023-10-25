@@ -7,6 +7,8 @@ parser.add_argument('apc_dir', type=str, metavar='<str>',
 	help='directory with apc fasta and gff files')
 parser.add_argument('--read_gff', action='store_true', 
 	help='get don/acc sites from gff files in apc dir')
+parser.add_argument('--outfile', required=True, type=str, metavar='<str>', 
+	help='name and directory of apc cmd file')
 
 # apc parameters
 parser.add_argument('--max_splice', required=False, type=int, default=3,
@@ -33,7 +35,7 @@ parser.add_argument('--donor_pwm', required=False, type=str, metavar='<file>',
 	help='donor pwm .tsv')
 parser.add_argument('--acceptor_pwm', required=False, type=str, metavar='<file>',
 	help='acceptor pwm .tsv')
-parser.add_argument('--icost', required=False, type=float, default=0.0,
+parser.add_argument('--icost', required=False, type=float, default=21,
 	metavar='<float>', help='intron cost %(default).2d')
 	
 args = parser.parse_args()
@@ -50,7 +52,7 @@ for fpath in sorted(apc_list):
 	else:
 		fa_gff_pairs[ID] += [fpath]
 
-f = open('apc_cmds.txt', 'w')
+f = open(args.outfile, 'w')
 for gID in fa_gff_pairs:
 	fa_path = fa_gff_pairs[gID][0]
 	gff_path = fa_gff_pairs[gID][1]
@@ -65,6 +67,7 @@ for gID in fa_gff_pairs:
 		f' --exon_len {args.exon_len} --intron_len {args.intron_len}'
 		f' --exon_mm {args.exon_mm} --intron_mm {args.intron_mm}'
 		f' --donor_pwm {args.donor_pwm} --acceptor_pwm {args.acceptor_pwm}'
+		f' --icost {args.icost}'
 		f'\n'
 	)
 f.close()
