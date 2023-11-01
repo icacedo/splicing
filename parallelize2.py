@@ -14,6 +14,7 @@ parser.add_argument('--cpus', required=False, type=int, default=1,
 args = parser.parse_args()
 
 def worker(cmd):
+	print('*')
 	return subprocess.run(cmd, shell=True, capture_output=True).stdout.decode()
 
 jobs = []
@@ -22,13 +23,16 @@ with open(args.file, 'r') as fp:
 	for cmd in fp:
 		path = cmd.split('>')[1]
 		path = path.split('/')[1:-1]
-		dpath = '/' + '/'.join(path) + '/'
-		break
-	for cmd in fp:
+		dpath = '/' + '/'.join(path) + '/'	
 		jobs.append(cmd.rstrip())
 
 os.makedirs(dpath, exist_ok=True)
-	
+
+pool = mp.Pool(args.cpus)
+pool.map(worker, jobs)
+
+# testing time
+'''	
 starttime = time.time()
 pool = mp.Pool(args.cpus)
 for result in pool.map(worker, jobs):
@@ -41,7 +45,7 @@ for i in jobs:
 	worker(i)
 endtime = time.time()
 print(endtime-starttime)
-
+'''
 
 
 
