@@ -14,7 +14,9 @@ parser.add_argument('--cpus', required=False, type=int, default=1,
 args = parser.parse_args()
 
 def worker(cmd):
-	print('*')
+	fpath = cmd.split(' ')[2]
+	gID = fpath.split('.')[1]
+	print(f'working on {gID}')
 	return subprocess.run(cmd, shell=True, capture_output=True).stdout.decode()
 
 jobs = []
