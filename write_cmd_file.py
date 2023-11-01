@@ -9,6 +9,10 @@ parser.add_argument('--read_gff', action='store_true',
 	help='get don/acc sites from gff files in apc dir')
 parser.add_argument('--outfile', required=True, type=str, metavar='<str>', 
 	help='name and directory of apc cmd file')
+parser.add_argument('--gff_out', required=True, type=str, metavar='<str>',
+	help='output directory for gff files')
+parser.add_argument('--gff_name', required=True, type=str, metavar='<str>',
+	help='name for gff files, e.g., gID.{name}.gff')
 
 # apc parameters
 parser.add_argument('--max_splice', required=False, type=int, default=3,
@@ -52,6 +56,8 @@ for fpath in sorted(apc_list):
 	else:
 		fa_gff_pairs[ID] += [fpath]
 
+os.makedirs(args.gff_out, exist_ok=True)
+
 f = open(args.outfile, 'w')
 for gID in fa_gff_pairs:
 	fa_path = fa_gff_pairs[gID][0]
@@ -68,6 +74,7 @@ for gID in fa_gff_pairs:
 		f' --exon_mm {args.exon_mm} --intron_mm {args.intron_mm}'
 		f' --donor_pwm {args.donor_pwm} --acceptor_pwm {args.acceptor_pwm}'
 		f' --icost {args.icost}'
+		f' > {args.gff_out}{gID}.{args.gff_name}.gff'
 		f'\n'
 	)
 f.close()
