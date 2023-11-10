@@ -24,16 +24,18 @@ for f in os.listdir(args.wb_dir):
 	wID = f.split('.')[1]
 	wb_files[wID] = wpath
 
-cmds = {}
+IDcmds = {}
 for ID in apc_files:
-	cmd = args.program
+	prog = args.program
 	agff = apc_files[ID]
 	wgff = wb_files[ID]
-	print(f'python3 {cmd} {agff} {wgff}')
-	
+	IDcmds[ID] = f'python3 {prog} {agff} {wgff}'.split(' ')
 
-
-
-
-
+for ID in IDcmds:
+	scmd = IDcmds[ID]
+	proc = subprocess.Popen(scmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+		stdin=subprocess.PIPE, text=True)
+	stdout, stderr = proc.communicate()
+	print('Gene ID:', ID)
+	print(stdout)
 
