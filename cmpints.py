@@ -38,4 +38,3 @@ for ID in IDcmds:
 	stdout, stderr = proc.communicate()
 	print('Gene ID:', ID)
 	print(stdout)
-
