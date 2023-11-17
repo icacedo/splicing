@@ -22,14 +22,18 @@ with open(gff, 'r') as fp:
 		sline = line.split('\t')
 		#print(sline)
 		if sline[2] == 'five_prime_UTR':
-			print(sline)
+			#print(sline)
 			start = int(sline[4])
-			print(seq[start:start+10], start) 
+			#print(seq[start:start+10], start)
+		if sline[2] == 'gene':
+			print(sline)
+			starto = int(sline[3])	
+			print(seq[starto-1:starto+10], starto, '***') 
 
-'''
+
 for i in range(0, len(seq)):
 	if seq[i:i+3] == 'ATG': 
 		print(seq[i:i+3], i)
 
-print(seq[126:136])
-'''
+
+
