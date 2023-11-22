@@ -43,7 +43,7 @@ print(seq[104-1:104+2])
 # organize different isoforms into dictionaries?
 print('#####')
 
-a_isos = {}
+aisos = {}
 with open(apc_gff, 'r') as fp:
 	count = 0
 	for line in fp.readlines():
@@ -53,12 +53,22 @@ with open(apc_gff, 'r') as fp:
 		if sline[2] == 'gene': continue
 		if sline[2] == 'mRNA':
 			count += 1
-			a_isos[count] = [sline]
+			aisos[count] = [sline]
 		else:
-			a_isos[count] += [sline]
+			aisos[count] += [sline]
 
-for i in a_isos:
-	print(i)
-	for j in a_isos[i]:
-		print(j)
-		
+isosinfos = {}
+for aiso in aisos:
+	print(aiso)
+	isoinfo = {}
+	for info in aisos[aiso]:
+		if info[2] == 'mRNA':
+			name = info[0] + '-' + str(aiso)
+			isoinfo['mRNA'] = (int(info[3]), int(info[4]))
+			isoinfo['prob'] = float(info[5])
+		print(info)
+	isosinfos[name] = isoinfo
+	break
+print(isoinfo)
+print(seq[101:106])
+print(isosinfos)
