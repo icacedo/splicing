@@ -1,0 +1,131 @@
+ch.11000	RNASeq_F_asymmetry	transcript_region	101	111	125.0	.	.	
+ch.11000	WormBase	five_prime_UTR	101	192	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	WormBase	exon	101	192	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	WormBase	gene	101	1905	.	+	.	ID=Gene:WBGene00010486
+ch.11000	WormBase	mRNA	101	1905	.	+	.	ID=Transcript:K01H12.4.1;Parent=Gene:WBGene00010486
+ch.11000	RNASeq_F_asymmetry	transcript_region	112	114	193.0	.	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	115	118	347.0	.	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	119	122	582.0	.	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	123	128	877.0	.	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	129	135	1346.0	.	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	136	138	2075.0	.	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	139	144	4437.0	.	.	
+ch.11000	RNASeq_reads	transcript_region	139	145	1.0	.	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	145	155	7459.0	.	.	
+ch.11000	RNASeq_reads	transcript_region	146	167	2.0	.	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	156	167	11238.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	161	192	1.0	+	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	168	192	17460.0	.	.	
+ch.11000	RNASeq_reads	transcript_region	168	192	4.0	.	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	193	233	94.0	.	.	
+ch.11000	WormBase	intron	193	234	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_splice	intron	193	234	29265.0	+	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	234	234	149.0	.	.	
+ch.11000	WormBase	five_prime_UTR	235	238	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_stranded	transcript_region	235	261	1.0	+	.	
+ch.11000	RNASeq_F_asymmetry	transcript_region	235	273	24696.0	.	.	
+ch.11000	RNASeq_reads	transcript_region	235	283	5.0	.	.	
+ch.11000	WormBase	exon	235	374	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	WormBase	CDS	239	374	.	+	.	ID=CDS:K01H12.4;Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_stranded	transcript_region	263	278	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	279	328	2.0	+	.	
+ch.11000	RNASeq_reads	transcript_region	284	374	8.0	.	.	
+ch.11000	RNASeq_splice	intron	301	1313	3.0	+	.	
+ch.11000	RNASeq_splice	intron	325	671	17.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	329	350	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	351	374	2.0	+	.	
+ch.11000	RNASeq_reads	transcript_region	375	375	1.0	.	.	
+ch.11000	WormBase	intron	375	671	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_splice	intron	375	671	54646.0	+	.	
+ch.11000	RNASeq_splice	intron	375	680	774.0	+	.	
+ch.11000	RNASeq_reads	transcript_region	670	671	1.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	670	671	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	672	726	2.0	+	.	
+ch.11000	WormBase	CDS	672	801	.	+	.	ID=CDS:K01H12.4;Parent=Transcript:K01H12.4.1
+ch.11000	WormBase	exon	672	801	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_reads	transcript_region	672	801	10.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	727	742	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	743	749	2.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	750	752	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	753	801	2.0	+	.	
+ch.11000	WormBase	intron	802	845	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_splice	intron	802	845	63867.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	846	866	2.0	+	.	
+ch.11000	WormBase	CDS	846	950	.	+	.	ID=CDS:K01H12.4;Parent=Transcript:K01H12.4.1
+ch.11000	WormBase	exon	846	950	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_reads	transcript_region	846	950	12.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	867	943	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	944	950	3.0	+	.	
+ch.11000	RNASeq_reads	transcript_region	951	953	1.0	.	.	
+ch.11000	WormBase	intron	951	994	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_splice	intron	951	994	71704.0	+	.	
+ch.11000	RNASeq_splice	intron	955	994	4.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	995	1038	2.0	+	.	
+ch.11000	WormBase	CDS	995	1046	.	+	.	ID=CDS:K01H12.4;Parent=Transcript:K01H12.4.1
+ch.11000	WormBase	exon	995	1046	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_reads	transcript_region	995	1046	14.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	1039	1046	1.0	+	.	
+ch.11000	RNASeq_reads	transcript_region	1047	1048	1.0	.	.	
+ch.11000	WormBase	intron	1047	1096	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_splice	intron	1047	1096	69475.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1097	1125	1.0	+	.	
+ch.11000	WormBase	CDS	1097	1200	.	+	.	ID=CDS:K01H12.4;Parent=Transcript:K01H12.4.1
+ch.11000	WormBase	exon	1097	1200	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_reads	transcript_region	1097	1200	13.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	1127	1170	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1171	1200	2.0	+	.	
+ch.11000	RNASeq_reads	transcript_region	1201	1201	1.0	.	.	
+ch.11000	WormBase	intron	1201	1268	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_splice	intron	1201	1268	77138.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1269	1293	2.0	+	.	
+ch.11000	WormBase	CDS	1269	1356	.	+	.	ID=CDS:K01H12.4;Parent=Transcript:K01H12.4.1
+ch.11000	WormBase	exon	1269	1356	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_reads	transcript_region	1269	1356	14.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	1294	1356	1.0	+	.	
+ch.11000	WormBase	intron	1357	1402	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_splice	intron	1357	1402	68966.0	+	.	
+ch.11000	RNASeq_reads	transcript_region	1402	1402	2.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	1403	1415	1.0	+	.	
+ch.11000	WormBase	CDS	1403	1528	.	+	.	ID=CDS:K01H12.4;Parent=Transcript:K01H12.4.1
+ch.11000	WormBase	exon	1403	1528	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_reads	transcript_region	1403	1528	13.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	1416	1420	2.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1421	1470	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1471	1475	2.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1476	1501	4.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1502	1526	7.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1527	1528	4.0	+	.	
+ch.11000	WormBase	intron	1529	1570	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_splice	intron	1529	1570	57410.0	+	.	
+ch.11000	RNASeq_reads	transcript_region	1566	1566	1.0	.	.	
+ch.11000	RNASeq_reads	transcript_region	1567	1570	2.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	1568	1570	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1571	1594	4.0	+	.	
+ch.11000	WormBase	CDS	1571	1819	.	+	.	ID=CDS:K01H12.4;Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_reads	transcript_region	1571	1850	13.0	.	.	
+ch.11000	WormBase	exon	1571	1905	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_stranded	transcript_region	1595	1630	2.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1631	1658	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1659	1665	2.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1666	1690	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1691	1708	2.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1709	1715	1.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1716	1760	2.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1761	1802	4.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1803	1810	2.0	+	.	
+ch.11000	RNASeq_stranded	transcript_region	1811	1818	1.0	+	.	
+ch.11000	RNASeq_R_asymmetry	transcript_region	1812	1855	53056.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	1819	1872	2.0	+	.	
+ch.11000	WormBase	three_prime_UTR	1820	1905	.	+	.	Parent=Transcript:K01H12.4.1
+ch.11000	RNASeq_reads	transcript_region	1851	1872	8.0	.	.	
+ch.11000	RNASeq_R_asymmetry	transcript_region	1856	1876	34569.0	.	.	
+ch.11000	RNASeq_reads	transcript_region	1873	1887	5.0	.	.	
+ch.11000	RNASeq_stranded	transcript_region	1873	1892	1.0	+	.	
+ch.11000	RNASeq_R_asymmetry	transcript_region	1877	1892	22633.0	.	.	
+ch.11000	RNASeq_reads	transcript_region	1888	1902	3.0	.	.	
+ch.11000	RNASeq_R_asymmetry	transcript_region	1893	1901	13268.0	.	.	
+ch.11000	RNASeq_R_asymmetry	transcript_region	1902	1904	7245.0	.	.	
+ch.11000	RNASeq_reads	transcript_region	1903	1905	1.0	.	.	
+ch.11000	RNASeq_R_asymmetry	transcript_region	1905	1905	3168.0	.	.	
+ch.11000	RNASeq_R_asymmetry	transcript_region	1906	1907	624.0	.	.	
+ch.11000	RNASeq_R_asymmetry	transcript_region	1908	1908	364.0	.	.	
