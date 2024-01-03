@@ -3,7 +3,6 @@ import modelib as ml
 import csv
 import sys
 import math
-import isoform_fixed as isof
 import json
 
 # params for test seq: maxs 100, minin 3, minex 4, flank 5
