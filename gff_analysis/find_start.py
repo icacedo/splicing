@@ -1,8 +1,8 @@
 import sys
 
-# ch.7157 ATG lines up with wormbase
-# ch.9018 ATG lines up with wormbase
 # five_prime_UTR in gff is where the start codon is 
+# ch.5202 does not have a five_prime_UTR feature
+# use ch.216 to test
 
 gff = sys.argv[1]
 fasta = sys.argv[2]
@@ -20,20 +20,24 @@ with open(gff, 'r') as fp:
 	for line in fp.readlines():
 		line = line.rstrip()
 		sline = line.split('\t')
-		#print(sline)
+		# need to handle an exeption when there is no 5' utr
 		if sline[2] == 'five_prime_UTR':
-			#print(sline)
-			start = int(sline[4])
-			#print(seq[start:start+10], start)
-		if sline[2] == 'gene':
 			print(sline)
-			starto = int(sline[3])	
-			print(seq[starto-1:starto+10], starto, '***') 
+			# for 216, 5' utr ends at 111, gene starts at 112
+			start = int(sline[4])
+			print(seq[start:start+3], seq[start], start, '***')
+		if sline[2] == 'three_prime_UTR':
+			print(sline)
+			end = int(sline[3]) - 2
+			print(seq[end-2:end+1], seq[end], end, '@@@')
+			print(start, end)
+			print((end-start-1+2)/3)
 
 
-for i in range(0, len(seq)):
-	if seq[i:i+3] == 'ATG': 
-		print(seq[i:i+3], i)
+s = 'ATGCGGATAG'
+print(s[0], s[9])
 
-
-
+# everything is in frame
+for i in range(start, end, 3):
+	print(seq[i:i+3])
+	
