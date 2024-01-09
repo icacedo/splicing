@@ -13,33 +13,62 @@ with open(fasta, 'r') as fp:
 		else:
 			seq += line
 
-# CDS is ATG to STOP
-# ch.749 has a large 5' utr, gene starts at 100
-# ch.10010 has a large 5' utr, gene starts at 102
-# ch.9018 has 3 bp 5' utr, gene starts at 100
+# find wormbase start/stop and orf
+# ch.11934 has 3 CDS
+# CDS appear both earlier to later and later to earlier
+# how can i reorder the CDS?
+
 wbg = {}
 with open(wb_gff, 'r') as fp:
 	wbginfo = {}
-	ccount = 0
+	count = 0
 	for line in fp.readlines():
 		line = line.rstrip()
-		sline = line.split('\t')
-		if sline[2] == 'gene':
-			print(sline)	
-			name = sline[0]+'-wb'
+		sline = line.split('\t')	
 		if sline[2] == 'mRNA':
-			#print(sline)
+			print(sline)
+			name = sline[0]+'-wb'
 			wbginfo['mRNA'] = (int(sline[3]), int(sline[4]))
 		if sline[2] == 'CDS':
-			#print(sline)
-			ccount += 1
-			wbginfo['CDS'+f'-{ccount}'] = (int(sline[3]), int(sline[4]))
+			print(sline)
+			count += 1
+			wbginfo['CDS'+f'-{count}'] = (int(sline[3]), int(sline[4]))
 	wbg[name] = wbginfo
 
 print(wbg)
+for k1 in wbg:
+	cdsnames = []
+	name = k1
+	for k2 in wbg[k1]:
+		if k2 == 'mRNA':
+			mRNA = wbg[k1][k2]
+		if 'CDS' in k2:
+			cdsnames.append(k2)
+	cdscrs = []
+	for cn in cdsnames:
+		cdscrs.append(wbg[k1][cn])
+	print('name: ', name)
+	print('mRNA: ', mRNA)
+	count = 0
+	for csc in sorted(cdscrs):
+		count += 1
+		print('CDS'+f'-{count}: ', csc)
+
+
 		
+		#print(j, wbg[i][j])
+		#beg = wbg[i][j][0] - 1
+		#end = wbg[i][j][1] - 1
+		#print(seq[beg:beg+3], seq[end-2:end+1])
+		
+
+
+
 print('##########')
 
+
+
+'''
 # goal: print ATG, # of bases, STOP	
 # stop codons: TAG, TAA, TGA
 
@@ -101,4 +130,4 @@ print((len(seek)-6)/3)
 print(seek[3:12])
 
 # need to test an example that has only one CDS
-
+'''
