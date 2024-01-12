@@ -36,7 +36,6 @@ with open(wb_gff, 'r') as fp:
 	wbg[name] = wbginfo
 print('#####')
 
-print('*WBG*', wbg)
 wbgS = {}
 for k1 in wbg:
 	cdsnames = []
@@ -48,18 +47,23 @@ for k1 in wbg:
 	cdscrs = []
 	for cn in cdsnames:
 		cdscrs.append(wbg[k1][cn])
-	# rewrite dict w sorted CDS
 	stCDS = {}
-	print(wbgS, '******')
-	#print('name: ', k1)
-	#print('mRNA: ', mRNA)
 	stCDS['mRNA'] = mRNA
 	count = 0
+	ntsum = 0
+	print(k1, mRNA)
 	for csc in sorted(cdscrs):
 		count += 1 
 		stCDS['CDS'+f'-{count}'] = csc
-		#print('CDS'+f'-{count}: ', csc)
+		bcds = seq[csc[0]-1:csc[0]+2]
+		ecds = seq[csc[1]-3:csc[1]]
+		cdsnt = csc[1] - csc[0] + 1
+		ntsum += cdsnt
+		print(f'CDS-{count} {csc} {bcds} {cdsnt} {ecds}')
+	if ntsum%3 == 0: print('in frame')
+	else: ('not in frame')
 	wbgS[k1] = stCDS
+print('#####')
 print('*WBG SORTED*', wbgS)
 
 for gn in wbg:
