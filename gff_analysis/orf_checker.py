@@ -71,10 +71,10 @@ for gn in wbg:
 	for ft in wbg[gn]:
 		if 'CDS' in ft:
 			clist.append(ft)
-	start = wbg[gn][clist[0]][0]
-	end = wbg[gn][clist[-1]][1]
-	print('wb start and stop codons', start, end)
-
+	wbstart = wbg[gn][clist[0]][0]
+	wbstop = wbg[gn][clist[-1]][1]
+	print('wb start and stop codons', wbstart, wbstop)
+print(wbstart, wbstop)
 
 # goal: print ATG, # of bases, STOP	
 # stop codons: TAG, TAA, TGA
@@ -95,6 +95,7 @@ with open(apcgen_gff, 'r') as fp:
 			aisos[count] += [sline]
 
 isosinfos = {}
+count = 0
 for aiso in aisos:
 	isoinfo = {}
 	ecount = 0
@@ -111,17 +112,38 @@ for aiso in aisos:
 			icount += 1
 			isoinfo['intron'+f'-{icount}'] = (int(info[3]), int(info[4]))
 	isosinfos[name] = isoinfo
-	# testing with only the top isoform
-	break
+	# limit isoforms
+	if count == 1: break
+	count += 1
 print(isosinfos)
 
 print('##########')
 
+# ch.241 has 3 CDS
 # now compare sequences
+print(wbgS)
 
 # apc isoforms need to use wb ATG
 for inm in isosinfos:
-	print(inm)
+	exons = []
+	for ft in isosinfos[inm]:
+		if ft == 'mRNA':
+			mRNA = isosinfos[inm][ft]
+		if 'exon' in ft:
+			exons.append(ft)
+	print(inm, mRNA, (wbstart, wbstop))
+	first = isosinfos[inm][exons[0]]	
+	print(exons[0], seq[wbstart-1:wbstart+2], seq[first[1]-3:first[1]])
+	for ex in exons:
+		if ex == exons[0] or ex == exons[-1]: continue
+		beg = isosinfos[inm][ex][0]
+		end = isosinfos[inm][ex][1]
+		print(ex, seq[beg-1:beg+2], seq[end-3:end], beg, end)
+	last = isosinfos[inm][exons[-1]]
+	print(exons[-1], seq[last[0]-1:last[0]+2], seq[wbstop-3:wbstop])
+	break
+
+
 
 '''
 			print(gn, ft, wbg[gn][ft])
