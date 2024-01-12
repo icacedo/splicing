@@ -120,12 +120,16 @@ print(isosinfos)
 print('##########')
 
 # ch.241 has 3 CDS
+# second isoform has the correct first and last exons, but the middle exon is cut out as an intron
+# goes out of frame when middle exon is removed
 # now compare sequences
 print(wbgS)
 
 # apc isoforms need to use wb ATG
+print(isosinfos)
 for inm in isosinfos:
 	exons = []
+	ntsum = 0
 	for ft in isosinfos[inm]:
 		if ft == 'mRNA':
 			mRNA = isosinfos[inm][ft]
@@ -133,32 +137,26 @@ for inm in isosinfos:
 			exons.append(ft)
 	print(inm, mRNA, (wbstart, wbstop))
 	first = isosinfos[inm][exons[0]]	
-	print(exons[0], seq[wbstart-1:wbstart+2], seq[first[1]-3:first[1]])
+	print(exons[0], seq[wbstart-1:wbstart+2], seq[first[1]-3:first[1]], wbstart, first[1])
+	ntsum += first[1] - wbstart + 1
 	for ex in exons:
 		if ex == exons[0] or ex == exons[-1]: continue
 		beg = isosinfos[inm][ex][0]
 		end = isosinfos[inm][ex][1]
 		print(ex, seq[beg-1:beg+2], seq[end-3:end], beg, end)
+		ntsum += end - beg + 1
 	last = isosinfos[inm][exons[-1]]
-	print(exons[-1], seq[last[0]-1:last[0]+2], seq[wbstop-3:wbstop])
-	break
-
-
-
-'''
-			print(gn, ft, wbg[gn][ft])
-			start = wbg[gn][ft][0] - 1
-			print(start, seq[start:start+3])
-			stop = wbg[gn][ft][1]
-			print(stop, seq[stop-3:stop])
-
-print('***')
-seek = 'ATGNGCGCGCGNTAG'
-print(len(seek))
-print(seek[0:3])
-print(seek[12:15])
-print((len(seek)-6)/3)
-print(seek[3:12])
-'''
+	print(exons[-1], seq[last[0]-1:last[0]+2], seq[wbstop-3:wbstop], last[0], wbstop)
+	ntsum += wbstop - last[0] + 1
+	print(ntsum/3, 'is in frame?')
+	print('### NEXT ISO ###')
+	
 # need to test an example that has only one CDS
+
+
+# NEXT: scan for PTCs
+# if something is not in the same frame as wormbase
+# then look for new frame PTCs
+# for ch.241, 2nd isoform is out of frame
+
 
