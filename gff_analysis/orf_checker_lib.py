@@ -91,25 +91,88 @@ def get_apciso_info(apcgen_gff):
 			else:
 				apc_isos[count] += [sline]
 
-	aisosinfos = {}
+	agen_isos = {}
 	for apc_iso in apc_isos:
-		aisoinfo = {}
+		agen_iso = {}
 		ecount = 0
 		icount = 0
 		for info in apc_isos[apc_iso]:
 			if info[2] == 'mRNA':
 				name = info[0] + '-' + str(apc_iso)
-				aisoinfo['mRNA'] = (int(info[3]), int(info[4]))
-				aisoinfo['prob'] = float(info[5])
+				agen_iso['mRNA'] = (int(info[3]), int(info[4]))
+				agen_iso['prob'] = float(info[5])
 			if info[2] == 'exon':
 				ecount += 1
-				aisoinfo['exon'+f'-{ecount}'] = (int(info[3]), int(info[4]))
+				agen_iso[f'exon-{ecount}'] = (int(info[3]), int(info[4]))
 			if info[2] == 'intron':
 				icount += 1
-				aisoinfo['intron'+f'-{icount}'] = (int(info[3]), int(info[4]))
-		aisosinfos[name] = aisoinfo
+				agen_iso[f'intron-{icount}'] = (int(info[3]), int(info[4]))
+		agen_isos[name] = agen_iso
+		
+	return agen_isos
 
-	return aisosinfos
+def get_apciso_info_test(apcgen_gff, wbstart, wbstop):
+	
+	apc_isos = {}
+	with open(apcgen_gff, 'r') as fp:
+		count = 0
+		for line in fp.readlines():
+			line = line.rstrip()
+			sline = line.split('\t')
+			if len(sline) < 9: continue
+			if sline[2] == 'gene': 
+				continue
+			if sline[2] == 'mRNA':
+				count += 1
+				apc_isos[count] = [sline]
+			else:
+				apc_isos[count] += [sline]
+
+	agen_isos = {}
+	for apc_iso in apc_isos:
+		agen_iso = {}
+		ecount = 0
+		icount = 0
+		exons = []
+		ntsum = 0
+		for info in apc_isos[apc_iso]:
+			if info[2] == 'mRNA':
+				name = info[0] + '-' + str(apc_iso)
+				agen_iso['mRNA'] = (int(info[3]), int(info[4]))
+				agen_iso['prob'] = float(info[5])
+			if info[2] == 'exon':
+				ecount += 1
+				agen_iso[f'exon-{ecount}'] = (int(info[3]), int(info[4]))
+				exons.append((int(info[3]), int(info[4])))
+			if info[2] == 'intron':
+				icount += 1
+				agen_iso[f'intron-{icount}'] = (int(info[3]), int(info[4]))
+		ecount2 = 1
+		first = exons[0]
+		last = exons[-1]
+		c0 = seq[wbstart-1:wbstart+2]
+		c1 = seq[first[1]-3:first[1]]
+		agen_iso[f'codons-{ecount2}'] = (c0, c1)
+		ntsum += first[1] - wbstart + 1
+		for ex in exons:
+			if ex == exons[0] or ex == exons[-1]: continue	
+			ecount2 += 1
+			c1 = seq[ex[0]-1:ex[0]+2]
+			c2 = seq[ex[1]-3:ex[1]]
+			agen_iso[f'codons-{ecount2}'] = (c1, c2)
+			ntsum += ex[1] - ex[0] + 1
+		last = exons[-1]
+		ecount2 += 1
+		c3 = seq[last[0]-1:last[0]+2]
+		c4 = seq[wbstop-3:wbstop]
+		agen_iso[f'codons-{ecount2}'] = (c3, c4) 
+		ntsum += wbstop - last[0] + 1
+		agen_isos[name] = agen_iso
+		print(ntsum)	
+		break	
+	return agen_isos
+
+
 
 seq = get_seq(args.fasta)
 
@@ -126,11 +189,24 @@ for gn in wbg_infos:
 	wbstop = wbg_infos[gn][clist[-1]][1]
 print(wbstart, wbstop)
 
+print('##########')
+
+testing = get_apciso_info_test(args.apcgen_gff, wbstart, wbstop)
+
+print('@@@')
+for t in testing:
+	print(t, testing[t])
+
+
 print(wbg_infos)
+
+count = 0
 for iso in apcgen_isos:
 	print(iso, apcgen_isos[iso])
-	break
+	if count == 1: break
+	count += 1
 
+count = 0
 for isoid in apcgen_isos:
 	exons = []
 	ntsum = 0
@@ -141,7 +217,10 @@ for isoid in apcgen_isos:
 			exons.append(ft)
 	print(isoid, mRNA, (wbstart, wbstop))
 	first = apcgen_isos[isoid][exons[0]]	
-	print(exons[0], seq[wbstart-1:wbstart+2], seq[first[1]-3:first[1]], wbstart, first[1])
+	print(exons[0], seq[wbstart-1:wbstart+2], seq[first[1]-3:first[1]], wbstart, 
+		first[1])
+	count += 1
+	apcgen_isos[f'codons-{count}'] = (seq[first[1]-3:first[1]]) 
 	ntsum += first[1] - wbstart + 1
 	for ex in exons:
 		if ex == exons[0] or ex == exons[-1]: continue
@@ -152,11 +231,25 @@ for isoid in apcgen_isos:
 	last = apcgen_isos[isoid][exons[-1]]
 	print(exons[-1], seq[last[0]-1:last[0]+2], seq[wbstop-3:wbstop], last[0], wbstop)
 	ntsum += wbstop - last[0] + 1
-	print(ntsum/3, 'is in frame?', wbstop, last[0])
-	print('### NEXT ISO ###')
+	if ntsum%3 == 0:
+		print('in frame? yes', ntsum, ntsum/3)
+	if ntsum%3 != 0:
+		print('in frame? no')
+	if count == 1: break
+	count += 1
+
+for i in apcgen_isos:
+	print(i, apcgen_isos[i])
+	break
+
 
 # need to test an example that has only one CDS
-
+# will always have at least 2 CDS, bc need at least one intron
+# but will APC generate isos with no introns?
+# ch.11934 has 3 CDS
+# ch.216 has 2 CDS
+# ch.4738 has 4 CDS 
+# ch.4741, 2nd isoform is given an extra exon/intron
 
 
 
