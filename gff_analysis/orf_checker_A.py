@@ -66,13 +66,13 @@ for k1 in wbg:
 print('#####')
 print('*WBG SORTED*', wbgS)
 
-for gn in wbg:
+for gn in wbgS:
 	clist = []
-	for ft in wbg[gn]:
+	for ft in wbgS[gn]:
 		if 'CDS' in ft:
 			clist.append(ft)
-	wbstart = wbg[gn][clist[0]][0]
-	wbstop = wbg[gn][clist[-1]][1]
+	wbstart = wbgS[gn][clist[0]][0]
+	wbstop = wbgS[gn][clist[-1]][1]
 	print('wb start and stop codons', wbstart, wbstop)
 print(wbstart, wbstop)
 
@@ -148,7 +148,7 @@ for inm in isosinfos:
 	last = isosinfos[inm][exons[-1]]
 	print(exons[-1], seq[last[0]-1:last[0]+2], seq[wbstop-3:wbstop], last[0], wbstop)
 	ntsum += wbstop - last[0] + 1
-	print(ntsum/3, 'is in frame?')
+	print(ntsum/3, 'is in frame?', wbstop, last[0])
 	print('### NEXT ISO ###')
 	
 # need to test an example that has only one CDS
