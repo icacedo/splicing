@@ -65,7 +65,7 @@ def get_wbgene_info(wb_gff, seq):
 				# first and last codons in the CDS
 				stCDS[f'codons-{count}'] = (bcds, ecds)
 				# number of nucleotides in the CDS
-				stCDS[f'nts-{count}'] = cdsnt
+				#stCDS[f'nts-{count}'] = cdsnt
 			# check if all CDS together is in frame	
 			# should always be in frame for wormbase			
 			if ntsum%3 == 0: stCDS['in frame?'] = 'yes'
@@ -74,44 +74,8 @@ def get_wbgene_info(wb_gff, seq):
 		
 			return wbgS
 
-def get_apciso_info(apcgen_gff):
-	
-	apc_isos = {}
-	with open(apcgen_gff, 'r') as fp:
-		count = 0
-		for line in fp.readlines():
-			line = line.rstrip()
-			sline = line.split('\t')
-			if len(sline) < 9: continue
-			if sline[2] == 'gene': 
-				continue
-			if sline[2] == 'mRNA':
-				count += 1
-				apc_isos[count] = [sline]
-			else:
-				apc_isos[count] += [sline]
-
-	agen_isos = {}
-	for apc_iso in apc_isos:
-		agen_iso = {}
-		ecount = 0
-		icount = 0
-		for info in apc_isos[apc_iso]:
-			if info[2] == 'mRNA':
-				name = info[0] + '-' + str(apc_iso)
-				agen_iso['mRNA'] = (int(info[3]), int(info[4]))
-				agen_iso['prob'] = float(info[5])
-			if info[2] == 'exon':
-				ecount += 1
-				agen_iso[f'exon-{ecount}'] = (int(info[3]), int(info[4]))
-			if info[2] == 'intron':
-				icount += 1
-				agen_iso[f'intron-{icount}'] = (int(info[3]), int(info[4]))
-		agen_isos[name] = agen_iso
-		
-	return agen_isos
-
-def get_apciso_info_test(apcgen_gff, wbstart, wbstop):
+# creates dictionary for each isoform in the gff
+def get_apcgen_iso_info(apcgen_gff, wbstart, wbstop):
 	
 	apc_isos = {}
 	with open(apcgen_gff, 'r') as fp:
@@ -140,6 +104,7 @@ def get_apciso_info_test(apcgen_gff, wbstart, wbstop):
 				name = info[0] + '-' + str(apc_iso)
 				agen_iso['mRNA'] = (int(info[3]), int(info[4]))
 				agen_iso['prob'] = float(info[5])
+				agen_iso['wbstartstop'] = (wbstart, wbstop)
 			if info[2] == 'exon':
 				ecount += 1
 				agen_iso[f'exon-{ecount}'] = (int(info[3]), int(info[4]))
@@ -168,79 +133,74 @@ def get_apciso_info_test(apcgen_gff, wbstart, wbstop):
 		agen_iso[f'codons-{ecount2}'] = (c3, c4) 
 		ntsum += wbstop - last[0] + 1
 		agen_isos[name] = agen_iso
-		print(ntsum)	
-		break	
+		if ntsum%3 == 0:
+			agen_iso['in frame?'] = 'yes'
+		if ntsum%3 != 0:
+			agen_iso['in frame?'] = 'no'
+	
 	return agen_isos
+
+# checks if the number of exons is the same as wormbase
+# adds info to apcgen_isos
+# exons for apcgen, CDS for wb
+def check_exon_count(apcgen_isos, wbg_info):
+
+	count = 0
+	for iso in apcgen_isos:
+		gid = iso.split('-')[0] + '-wb'
+		ccount = 1
+		cnum = 0
+		for wft in wbg_info[gid]:
+			if wft == f'CDS-{ccount}':
+				ccount += 1
+				cnum += 1
+		ecount = 1
+		enum = 0
+		for aft in apcgen_isos[iso]:	
+			if aft == f'exon-{ecount}':
+				ecount += 1
+				enum += 1
+		if enum != cnum:
+			apcgen_isos[iso]['dif_exons'] = 'yes'
+		if enum == cnum:
+			apcgen_isos[iso]['dif_exons'] = 'no'
+	
+	return apcgen_isos
+
+# get start and stop codon positions from wb
+def get_wb_start_stop(wbg_info):
+	for gn in wbg_info:
+		clist = []
+		for ft in wbg_info[gn]:
+			if 'CDS' in ft:
+				clist.append(ft)
+		wbstart = wbg_info[gn][clist[0]][0]
+		wbstop = wbg_info[gn][clist[-1]][1]
+	
+	return wbstart, wbstop
 
 
 
 seq = get_seq(args.fasta)
 
-wbg_infos = get_wbgene_info(args.wb_gff, seq)
+wbg_info = get_wbgene_info(args.wb_gff, seq)
 
-apcgen_isos = get_apciso_info(args.apcgen_gff)
+wbstart, wbstop = get_wb_start_stop(wbg_info)
 
-for gn in wbg_infos:
-	clist = []
-	for ft in wbg_infos[gn]:
-		if 'CDS' in ft:
-			clist.append(ft)
-	wbstart = wbg_infos[gn][clist[0]][0]
-	wbstop = wbg_infos[gn][clist[-1]][1]
-print(wbstart, wbstop)
+apcgen_isos = get_apcgen_iso_info(args.apcgen_gff, wbstart, wbstop)
 
-print('##########')
+print(wbg_info)
+print('#####')
 
-testing = get_apciso_info_test(args.apcgen_gff, wbstart, wbstop)
+print('#####')
+# check if same frame as wb
+apcgen_isos = check_exon_count(apcgen_isos, wbg_info)
 
-print('@@@')
-for t in testing:
-	print(t, testing[t])
-
-
-print(wbg_infos)
-
-count = 0
-for iso in apcgen_isos:
-	print(iso, apcgen_isos[iso])
-	if count == 1: break
-	count += 1
-
-count = 0
-for isoid in apcgen_isos:
-	exons = []
-	ntsum = 0
-	for ft in apcgen_isos[isoid]:
-		if ft == 'mRNA':
-			mRNA = apcgen_isos[isoid][ft]
-		if 'exon' in ft:
-			exons.append(ft)
-	print(isoid, mRNA, (wbstart, wbstop))
-	first = apcgen_isos[isoid][exons[0]]	
-	print(exons[0], seq[wbstart-1:wbstart+2], seq[first[1]-3:first[1]], wbstart, 
-		first[1])
-	count += 1
-	apcgen_isos[f'codons-{count}'] = (seq[first[1]-3:first[1]]) 
-	ntsum += first[1] - wbstart + 1
-	for ex in exons:
-		if ex == exons[0] or ex == exons[-1]: continue
-		beg = apcgen_isos[isoid][ex][0]
-		end = apcgen_isos[isoid][ex][1]
-		print(ex, seq[beg-1:beg+2], seq[end-3:end], beg, end)
-		ntsum += end - beg + 1
-	last = apcgen_isos[isoid][exons[-1]]
-	print(exons[-1], seq[last[0]-1:last[0]+2], seq[wbstop-3:wbstop], last[0], wbstop)
-	ntsum += wbstop - last[0] + 1
-	if ntsum%3 == 0:
-		print('in frame? yes', ntsum, ntsum/3)
-	if ntsum%3 != 0:
-		print('in frame? no')
-	if count == 1: break
-	count += 1
-
+see = 0
 for i in apcgen_isos:
-	print(i, apcgen_isos[i])
-	break
+	print(apcgen_isos[i])
+	if see == 2: break
+	see += 1
 
 
 # need to test an example that has only one CDS
