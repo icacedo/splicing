@@ -179,7 +179,36 @@ def get_wb_start_stop(wbg_info):
 	
 	return wbstart, wbstop
 
+# check if same frame as wb
+# adds info to apcgen_isos
+def wb_frame_check(apcgen_isos, wbg_info, wbstart, wbstop):
 
+	count = 0
+	for iso in apcgen_isos:
+		if apcgen_isos[iso]['dif_ex_num'] == 'yes':
+			apcgen_isos[iso]['wb_frame'] = 'no'
+		if apcgen_isos[iso]['dif_ex_num'] == 'no':
+			gid = iso.split('-')[0] + '-wb'
+			wb_exlist = []
+			ccount = 1
+			for wft in wbg_info[gid]:
+				if wft == f'CDS-{ccount}':
+					wb_exlist.append(wbg_info[gid][wft])
+					ccount += 1	
+			apc_exlist = []
+			for aft in apcgen_isos[iso]:
+				if 'exon' in aft:
+					apc_exlist.append(apcgen_isos[iso][aft])
+			apc_exlist[0] = (wbstart, apc_exlist[0][1])
+			apc_exlist[-1] = (apc_exlist[-1][0], wbstop)
+			if wb_exlist == apc_exlist: 
+				apcgen_isos[iso]['wb_frame'] = 'yes'
+			if wb_exlist != apc_exlist:
+				apcgen_isos[iso]['wb_frame'] = 'no'
+
+	return apcgen_isos
+					
+	
 
 seq = get_seq(args.fasta)
 
@@ -189,41 +218,53 @@ wbstart, wbstop = get_wb_start_stop(wbg_info)
 
 apcgen_isos = get_apcgen_iso_info(args.apcgen_gff, wbstart, wbstop)
 
-print(wbg_info)
-print('#####')
 apcgen_isos = check_exon_count(apcgen_isos, wbg_info)
 
-# check if same frame as wb
+apcgen_isos = wb_frame_check(apcgen_isos, wbg_info, wbstart, wbstop)
+
+print(wbg_info)
+print('#####')
+
+# return list of exons with wbstart/wbstop
+# takes only a single iso as input
+def get_exons(apcgen_iso, wbstart, wbstop):
+
+	ex_list = []
+	for ft in apcgen_iso:
+		if 'exon' in ft:
+			ex_list.append(apcgen_iso[ft])
+	ex_list[0] = (wbstart, ex_list[0][1])
+	ex_list[-1] = (ex_list[-1][0], wbstop)
+
+	return ex_list
+
+# scan for PTCs
+# stop codons: TAG, TAA, TGA
+# ch.4738 has a short first exon 
 count = 0
 for iso in apcgen_isos:
-	if apcgen_isos[iso]['dif_ex_num'] == 'yes':
-		apcgen_isos[iso]['wb_frame'] = 'no'
-		print(apcgen_isos[iso])
-	if apcgen_isos[iso]['dif_ex_num'] == 'no':
-		gid = iso.split('-')[0] + '-wb'
-		wb_exlist = []
-		ccount = 1
-		for wft in wbg_info[gid]:
-			if wft == f'CDS-{ccount}':
-				wb_exlist.append(wbg_info[gid][wft])
-				ccount += 1
-		#for aft in apcgen_isos[iso]:
-		#	if 'exon
-		print(wb_exlist)
+	if apcgen_isos[iso]['wb_frame'] == 'no':
+		print(iso, apcgen_isos[iso])
+		ex_list = get_exons(apcgen_isos[iso], wbstart, wbstop)
+		for ex in ex_list:
+			ex_seq = seq[ex[0]-1:ex[1]]
+			print(ex_seq)
+			shift = 0
+			for i in range(len(ex_seq)):
+				codon = ex_seq[i+shift:i+shift+3]
+				if len(codon) == 3: print(codon)
+				shift += 2
+			# need to look at entire CDS...
+			break
 				
-		print(gid)
-		
-			
-	if count == 2: break
 	count += 1
-
-
+	if count == 2: break
 
 print('#####')
 see = 0
 for i in apcgen_isos:
 	print(apcgen_isos[i])
-	if see == 2: break
+	if see == 1: break
 	see += 1
 
 
