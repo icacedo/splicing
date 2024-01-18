@@ -246,17 +246,29 @@ for iso in apcgen_isos:
 	if apcgen_isos[iso]['wb_frame'] == 'no':
 		print(iso, apcgen_isos[iso])
 		ex_list = get_exons(apcgen_isos[iso], wbstart, wbstop)
+		CDS_seq = ''
 		for ex in ex_list:
+			print(ex)
 			ex_seq = seq[ex[0]-1:ex[1]]
+			CDS_seq += ex_seq
 			print(ex_seq)
-			shift = 0
-			for i in range(len(ex_seq)):
-				codon = ex_seq[i+shift:i+shift+3]
-				if len(codon) == 3: print(codon)
-				shift += 2
-			# need to look at entire CDS...
-			break
-				
+		print(CDS_seq)	
+		shift = 0
+		stops = []
+		for i in range(len(CDS_seq)):
+			codon = CDS_seq[i+shift:i+shift+3]
+			if len(codon) == 3:
+				#print(codon, i+1+shift)
+				if codon in ['TAG', 'TAA', 'TAG']:
+					stops.append((codon, i+1+shift))
+					#print('STOP')
+			shift += 1
+		if len(stops) == 0: 
+			apcgen_isos[iso]['PTC'] = 'no stop'
+		if len(stops) > 0:
+			apcgen_isos[iso]['PTC'] = stops
+			
+		break	
 	count += 1
 	if count == 2: break
 
