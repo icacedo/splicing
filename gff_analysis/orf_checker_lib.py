@@ -134,9 +134,9 @@ def get_apcgen_iso_info(apcgen_gff, wbstart, wbstop):
 		ntsum += wbstop - last[0] + 1
 		agen_isos[name] = agen_iso
 		if ntsum%3 == 0:
-			agen_iso['in frame?'] = 'yes'
+			agen_iso['in_frame'] = 'yes'
 		if ntsum%3 != 0:
-			agen_iso['in frame?'] = 'no'
+			agen_iso['in_frame'] = 'no'
 	
 	return agen_isos
 
@@ -161,9 +161,9 @@ def check_exon_count(apcgen_isos, wbg_info):
 				ecount += 1
 				enum += 1
 		if enum != cnum:
-			apcgen_isos[iso]['dif_exons'] = 'yes'
+			apcgen_isos[iso]['dif_ex_num'] = 'yes'
 		if enum == cnum:
-			apcgen_isos[iso]['dif_exons'] = 'no'
+			apcgen_isos[iso]['dif_ex_num'] = 'no'
 	
 	return apcgen_isos
 
@@ -191,11 +191,35 @@ apcgen_isos = get_apcgen_iso_info(args.apcgen_gff, wbstart, wbstop)
 
 print(wbg_info)
 print('#####')
-
-print('#####')
-# check if same frame as wb
 apcgen_isos = check_exon_count(apcgen_isos, wbg_info)
 
+# check if same frame as wb
+count = 0
+for iso in apcgen_isos:
+	if apcgen_isos[iso]['dif_ex_num'] == 'yes':
+		apcgen_isos[iso]['wb_frame'] = 'no'
+		print(apcgen_isos[iso])
+	if apcgen_isos[iso]['dif_ex_num'] == 'no':
+		gid = iso.split('-')[0] + '-wb'
+		wb_exlist = []
+		ccount = 1
+		for wft in wbg_info[gid]:
+			if wft == f'CDS-{ccount}':
+				wb_exlist.append(wbg_info[gid][wft])
+				ccount += 1
+		#for aft in apcgen_isos[iso]:
+		#	if 'exon
+		print(wb_exlist)
+				
+		print(gid)
+		
+			
+	if count == 2: break
+	count += 1
+
+
+
+print('#####')
 see = 0
 for i in apcgen_isos:
 	print(apcgen_isos[i])
