@@ -1,5 +1,5 @@
 import argparse
-
+'''
 parser = argparse.ArgumentParser()
 parser.add_argument('fasta', type=str, metavar='<file>',
 	help='wormbase fasta file for one gene')
@@ -9,7 +9,7 @@ parser.add_argument('apcgen_gff', type=str, metavar='<file>',
 	help='apc generated gff file')
 
 args = parser.parse_args()
-
+'''
 def get_seq(fasta):
 
 	with open(fasta, 'r') as fp:
@@ -208,23 +208,6 @@ def wb_frame_check(apcgen_isos, wbg_info, wbstart, wbstop):
 
 	return apcgen_isos
 					
-	
-
-seq = get_seq(args.fasta)
-
-wbg_info = get_wbgene_info(args.wb_gff, seq)
-
-wbstart, wbstop = get_wb_start_stop(wbg_info)
-
-apcgen_isos = get_apcgen_iso_info(args.apcgen_gff, wbstart, wbstop)
-
-apcgen_isos = check_exon_count(apcgen_isos, wbg_info)
-
-apcgen_isos = wb_frame_check(apcgen_isos, wbg_info, wbstart, wbstop)
-
-print(wbg_info)
-print('#####')
-
 # return list of exons with wbstart/wbstop
 # takes only a single iso as input
 def get_exons(apcgen_iso, wbstart, wbstop):
@@ -239,38 +222,54 @@ def get_exons(apcgen_iso, wbstart, wbstop):
 	return ex_list
 
 # scan for PTCs
-# stop codons: TAG, TAA, TGA
-# ch.4738 has a short first exon 
-count = 0
-for iso in apcgen_isos:
-	if apcgen_isos[iso]['wb_frame'] == 'no':
-		print(iso, apcgen_isos[iso])
-		ex_list = get_exons(apcgen_isos[iso], wbstart, wbstop)
-		CDS_seq = ''
-		for ex in ex_list:
-			print(ex)
-			ex_seq = seq[ex[0]-1:ex[1]]
-			CDS_seq += ex_seq
-			print(ex_seq)
-		print(CDS_seq)	
-		shift = 0
-		stops = []
-		for i in range(len(CDS_seq)):
-			codon = CDS_seq[i+shift:i+shift+3]
-			if len(codon) == 3:
-				#print(codon, i+1+shift)
-				if codon in ['TAG', 'TAA', 'TAG']:
-					stops.append((codon, i+1+shift))
-					#print('STOP')
-			shift += 1
-		if len(stops) == 0: 
-			apcgen_isos[iso]['PTC'] = 'no stop'
-		if len(stops) > 0:
-			apcgen_isos[iso]['PTC'] = stops
-			
-		break	
-	count += 1
-	if count == 2: break
+# adds info to apcgen_iso
+def find_ptcs(apcgen_isos):
+
+	count = 0
+	for iso in apcgen_isos:
+		if apcgen_isos[iso]['wbstartstop']:
+			wbstarti = apcgen_isos[iso]['wbstartstop'][0]
+			wbstopi = apcgen_isos[iso]['wbstartstop'][1]	
+		if apcgen_isos[iso]['wb_frame'] == 'yes':
+			apcgen_isos[iso]['PTC'] = ['N/A']
+		if apcgen_isos[iso]['wb_frame'] == 'no':
+			ex_list = get_exons(apcgen_isos[iso], wbstart, wbstop)
+			CDS_seq = ''
+			for ex in ex_list:
+				ex_seq = seq[ex[0]-1:ex[1]]
+				CDS_seq += ex_seq	
+			shift = 0
+			stops = []
+			for i in range(len(CDS_seq)):
+				codon = CDS_seq[i+shift:i+shift+3]
+				if len(codon) == 3:
+					if codon in ['TAG', 'TAA', 'TAG']:
+						stops.append((codon, i+1+shift))
+				shift += 1
+			if len(stops) == 0: 
+				apcgen_isos[iso]['PTC'] = 'no stop'
+			if len(stops) > 0:
+				apcgen_isos[iso]['PTC'] = stops
+
+	return apcgen_isos	
+
+
+'''
+seq = get_seq(args.fasta)
+
+wbg_info = get_wbgene_info(args.wb_gff, seq)
+
+wbstart, wbstop = get_wb_start_stop(wbg_info)
+
+apcgen_isos = get_apcgen_iso_info(args.apcgen_gff, wbstart, wbstop)
+
+apcgen_isos = check_exon_count(apcgen_isos, wbg_info)
+
+apcgen_isos = wb_frame_check(apcgen_isos, wbg_info, wbstart, wbstop)
+
+apcgen_isos = find_ptcs(apcgen_isos) 
+
+print(wbg_info)
 
 print('#####')
 see = 0
@@ -279,7 +278,20 @@ for i in apcgen_isos:
 	if see == 1: break
 	see += 1
 
+print('#####')
+# get isoforms with 99% probability of correct isoform
 
+for i in apcgen_isos:
+	print(i)
+
+for i in apcgen_isos:
+	for j in apcgen_isos[i]:
+		if j == 'prob':
+			print(apcgen_isos[i][j])
+			if apcgen_isos[i][j] > 99:
+				print(i)
+'''	
+# ch.4738 has a short first exon 
 # need to test an example that has only one CDS
 # will always have at least 2 CDS, bc need at least one intron
 # but will APC generate isos with no introns?
