@@ -1,5 +1,5 @@
 import argparse
-'''
+
 parser = argparse.ArgumentParser()
 parser.add_argument('fasta', type=str, metavar='<file>',
 	help='wormbase fasta file for one gene')
@@ -9,7 +9,7 @@ parser.add_argument('apcgen_gff', type=str, metavar='<file>',
 	help='apc generated gff file')
 
 args = parser.parse_args()
-'''
+
 def get_seq(fasta):
 
 	with open(fasta, 'r') as fp:
@@ -254,7 +254,7 @@ def find_ptcs(apcgen_isos):
 	return apcgen_isos	
 
 
-'''
+
 seq = get_seq(args.fasta)
 
 wbg_info = get_wbgene_info(args.wb_gff, seq)
@@ -272,9 +272,10 @@ apcgen_isos = find_ptcs(apcgen_isos)
 print(wbg_info)
 
 print('#####')
+import json
 see = 0
 for i in apcgen_isos:
-	print(apcgen_isos[i])
+	print(json.dumps(apcgen_isos[i], indent=4))
 	if see == 1: break
 	see += 1
 
@@ -282,15 +283,18 @@ print('#####')
 # get isoforms with 99% probability of correct isoform
 
 for i in apcgen_isos:
-	print(i)
+	print(json.dumps(i, indent=4))
 
+
+
+'''
 for i in apcgen_isos:
 	for j in apcgen_isos[i]:
 		if j == 'prob':
 			print(apcgen_isos[i][j])
 			if apcgen_isos[i][j] > 99:
 				print(i)
-'''	
+'''
 # ch.4738 has a short first exon 
 # need to test an example that has only one CDS
 # will always have at least 2 CDS, bc need at least one intron
@@ -299,10 +303,6 @@ for i in apcgen_isos:
 # ch.216 has 2 CDS
 # ch.4738 has 4 CDS 
 # ch.4741, 2nd isoform is given an extra exon/intron
-
-
-
-
 
 
 
