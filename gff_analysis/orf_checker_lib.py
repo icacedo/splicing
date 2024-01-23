@@ -299,7 +299,7 @@ for i in apcgen_isos:
 # need to test an example that has only one CDS
 # will always have at least 2 CDS, bc need at least one intron
 # but will APC generate isos with no introns?
-# ch.11934 has 3 CDS
+# ch.11934 has 3 CDS, ordered last to first
 # ch.216 has 2 CDS
 # ch.4738 has 4 CDS 
 # ch.4741, 2nd isoform is given an extra exon/intron
