@@ -160,13 +160,43 @@ def check_wb_frame(apcgen_isos, wbg_info):
 				apcgen_isos[iso]['wb_frame'] = False
 	
 	return apcgen_isos
-'''
-def find_PTCs(apcgen_isos):
+
+def get_codons(apcgen_isos, seq):
 
 	for iso in apcgen_isos:
-		if apcgen_isos[
-'''
+		codons = []
+		for ex in apcgen_isos[iso]['exons']:
+			first = seq[ex[0]-1:ex[0]+2]
+			last = seq[ex[1]-3:ex[1]]
+			codons.append([first, last])
+		apcgen_isos[iso]['codons'] = codons
+	
+	return apcgen_isos
 
+def find_PTCs(apcgen_isos, seq):
+
+	for iso in apcgen_isos:
+		if apcgen_isos[iso]['wb_frame'] == False:
+			CDS = ''
+			for ex in apcgen_isos[iso]['exons']:
+				eseq = seq[ex[0]-1:ex[1]]
+				CDS += eseq
+			shift = 0
+			PTCs = []
+			for i in range(len(CDS)):
+				codon = CDS[i+shift:i+shift+3]
+				if len(codon) == 3: 
+					if codon in ['TAG', 'TAA', 'TGA']:
+						PTCs.append((i+shift+1, codon))	
+				shift += 2
+			if len(PTCs) > 0:
+				apcgen_isos[iso]['PTC'] = PTCs
+			else:
+				apcgen_isos[iso]['PTC'] = False
+		else:
+			apcgen_isos[iso]['PTC'] = False
+		
+	return apcgen_isos	
 
 seq = get_seq(args.fasta)
 
@@ -187,6 +217,10 @@ apcgen_isos = check_exon_count(apcgen_isos, wbg_info)
 
 apcgen_isos = check_wb_frame(apcgen_isos, wbg_info)
 
+apcgen_isos = get_codons(apcgen_isos, seq)
+
+apcgen_isos = find_PTCs(apcgen_isos, seq)
+
 count = 0
 for i in apcgen_isos:
 	print(i, apcgen_isos[i])
@@ -204,14 +238,5 @@ for i in apcgen_isos:
 # ch.241 has 3 CDS, 2nd isoform has correct firt and last exons
 # but middle exon is cut out as an intron, then goes out of frame
 
-
-
-
-
-
-
-
-
-
-
+print('#####')
 
