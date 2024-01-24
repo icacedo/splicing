@@ -1,18 +1,3 @@
-# second version of orf_checker_lib.py
-# reformatting output dictionary
-
-# ch.4738 has a short first exon 
-# all wb genes have at least 1 intron
-# but will APC generate isos with no introns?
-# ch.11934 has 3 CDS, ordered last to first
-# ch.216 has 2 CDS
-# ch.4738 has 4 CDS 
-# ch.4741, 2nd isoform is given an extra exon/intron
-
-
-
-
-
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -175,12 +160,12 @@ def check_wb_frame(apcgen_isos, wbg_info):
 				apcgen_isos[iso]['wb_frame'] = False
 	
 	return apcgen_isos
-
+'''
 def find_PTCs(apcgen_isos):
 
 	for iso in apcgen_isos:
 		if apcgen_isos[
-
+'''
 
 
 seq = get_seq(args.fasta)
@@ -209,6 +194,17 @@ for i in apcgen_isos:
 	count += 1
 	if count == 5: break
 		
+# ch.4738 has a short first exon 
+# all wb genes have at least 1 intron
+# but will APC generate isos with no introns?
+# ch.11934 has 3 CDS, ordered last to first
+# ch.216 has 2 CDS
+# ch.4738 has 4 CDS 
+# ch.4741, 2nd isoform is given an extra exon/intron
+# ch.241 has 3 CDS, 2nd isoform has correct firt and last exons
+# but middle exon is cut out as an intron, then goes out of frame
+
+
 
 
 
