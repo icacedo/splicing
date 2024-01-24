@@ -1,3 +1,18 @@
+# second version of orf_checker_lib.py
+# reformatting output dictionary
+
+# ch.4738 has a short first exon 
+# all wb genes have at least 1 intron
+# but will APC generate isos with no introns?
+# ch.11934 has 3 CDS, ordered last to first
+# ch.216 has 2 CDS
+# ch.4738 has 4 CDS 
+# ch.4741, 2nd isoform is given an extra exon/intron
+
+
+
+
+
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -28,230 +43,143 @@ def get_wbgene_info(wb_gff, seq):
 	wbginfo = {}
 	with open(wb_gff, 'r') as fp:
 		wbg = {}
-		count = 0
+		wbg['mRNA'] = []
+		wbg['exons'] = []
 		for line in fp.readlines():
 			line = line.rstrip()
 			sline = line.split('\t')
 			if sline[2] == 'mRNA':
 				name = sline[0]+'-wb'
-				wbg['mRNA'] = (int(sline[3]), int(sline[4]))
+				wbg['mRNA'] = [int(sline[3]), int(sline[4])]
 			if sline[2] == 'CDS':
-				count += 1
-				wbg['CDS'+f'-{count}'] = (int(sline[3]), int(sline[4]))
+				wbg['exons'].append((int(sline[3]), int(sline[4])))
 		wbginfo[name] = wbg
 		
-		wbgS = {}
-		for gID in wbginfo:
-			cdsnames = []
-			for ft in wbginfo[gID]:
-				if ft == 'mRNA':
-					mRNA = wbginfo[gID][ft]
-				if 'CDS' in ft:
-					cdsnames.append(ft)
-			cdscrs = []
-			for cn in cdsnames:
-				cdscrs.append(wbginfo[gID][cn])
-			stCDS = {}
-			stCDS['mRNA'] = mRNA
-			count = 0
-			ntsum = 0
-			for csc in sorted(cdscrs):
-				count += 1 
-				stCDS['CDS'+f'-{count}'] = csc
-				bcds = seq[csc[0]-1:csc[0]+2]
-				ecds = seq[csc[1]-3:csc[1]]
-				cdsnt = csc[1] - csc[0] + 1
-				ntsum += cdsnt
-				# first and last codons in the CDS
-				stCDS[f'codons-{count}'] = (bcds, ecds)
-				# number of nucleotides in the CDS
-				#stCDS[f'nts-{count}'] = cdsnt
-			# check if all CDS together is in frame	
-			# should always be in frame for wormbase			
-			if ntsum%3 == 0: stCDS['in frame?'] = 'yes'
-			if ntsum%3 != 0: stCDS['in frame?'] = 'no'
-			wbgS[gID] = stCDS
-		
-			return wbgS
+	for gID in wbginfo:
+		for ft in wbginfo[gID]:
+			if ft == 'exons':
+				wbginfo[gID][ft] = sorted(wbginfo[gID][ft]) 
 
-# creates dictionary for each isoform in the gff
-def get_apcgen_iso_info(apcgen_gff, wbstart, wbstop):
+	return wbginfo
+
+def check_CDS(info):
+
+	ntsum = 0
+	for gID in info:	
+		ntsum = 0
+		for ex in info[gID]['exons']:
+			ntsum += ex[1] - ex[0] + 1
+		if ntsum%3 == 0:
+			info[gID]['in_frame'] = True
+		else:
+			info[gID]['in_frame'] = False
 	
+	return info
+
+def get_start_stop(wbginfo):
+	
+	for gn in wbginfo:
+		clist = []
+		wbstart = wbginfo[gn]['exons'][0][0]	
+		wbstop = wbginfo[gn]['exons'][-1][1]
+
+	return wbstart, wbstop	
+	
+def get_apcgen_info(apcgen_gff, wbstart, wbstop):
+
 	apc_isos = {}
 	with open(apcgen_gff, 'r') as fp:
-		count = 0
+		icount = 0
+		gID = ''
 		for line in fp.readlines():
 			line = line.rstrip()
+			if 'name' in line:
+				gID = line.split(' ')[2]
 			sline = line.split('\t')
 			if len(sline) < 9: continue
-			if sline[2] == 'gene': 
-				continue
+			if sline[2] == 'gene': continue
 			if sline[2] == 'mRNA':
-				count += 1
-				apc_isos[count] = [sline]
-			else:
-				apc_isos[count] += [sline]
-
-	agen_isos = {}
-	for apc_iso in apc_isos:
-		agen_iso = {}
-		ecount = 0
-		icount = 0
-		exons = []
-		ntsum = 0
-		for info in apc_isos[apc_iso]:
-			if info[2] == 'mRNA':
-				name = info[0] + '-' + str(apc_iso)
-				agen_iso['mRNA'] = (int(info[3]), int(info[4]))
-				agen_iso['prob'] = float(info[5])
-				agen_iso['wbstartstop'] = (wbstart, wbstop)
-			if info[2] == 'exon':
-				ecount += 1
-				agen_iso[f'exon-{ecount}'] = (int(info[3]), int(info[4]))
-				exons.append((int(info[3]), int(info[4])))
-			if info[2] == 'intron':
 				icount += 1
-				agen_iso[f'intron-{icount}'] = (int(info[3]), int(info[4]))
-		ecount2 = 1
-		first = exons[0]
-		last = exons[-1]
-		c0 = seq[wbstart-1:wbstart+2]
-		c1 = seq[first[1]-3:first[1]]
-		agen_iso[f'codons-{ecount2}'] = (c0, c1)
-		ntsum += first[1] - wbstart + 1
-		for ex in exons:
-			if ex == exons[0] or ex == exons[-1]: continue	
-			ecount2 += 1
-			c1 = seq[ex[0]-1:ex[0]+2]
-			c2 = seq[ex[1]-3:ex[1]]
-			agen_iso[f'codons-{ecount2}'] = (c1, c2)
-			ntsum += ex[1] - ex[0] + 1
-		last = exons[-1]
-		ecount2 += 1
-		c3 = seq[last[0]-1:last[0]+2]
-		c4 = seq[wbstop-3:wbstop]
-		agen_iso[f'codons-{ecount2}'] = (c3, c4) 
-		ntsum += wbstop - last[0] + 1
-		agen_isos[name] = agen_iso
-		if ntsum%3 == 0:
-			agen_iso['in_frame'] = 'yes'
-		if ntsum%3 != 0:
-			agen_iso['in_frame'] = 'no'
+				apc_isos[f'{gID}-{icount}'] = [sline]
+			if sline[2] == 'exon':
+				apc_isos[f'{gID}-{icount}'] += [sline]
+			if sline[2] == 'intron':
+				apc_isos[f'{gID}-{icount}'] += [sline]
 	
-	return agen_isos
+	apcgen_isos = {}	
+	for iso in apc_isos:
+		apcgen_isos[iso] = {}
+		mRNA = []
+		prob = float
+		escores = []
+		iscores = []
+		efreqs = []
+		ifreqs = []
+		exons = []
+		introns = []
+		for ft in apc_isos[iso]:
+			if ft[2] == 'mRNA':
+				mRNA.append(ft[3])
+				mRNA.append(ft[4])
+				prob = float(ft[5])
+			if ft[2] == 'exon':
+				exons.append((int(ft[3]), int(ft[4])))
+				escore = ft[8].split(';')[1]
+				escore = float(escore.split('=')[1])
+				escores.append(escore)
+			if ft[2] == 'intron':
+				introns.append((int(ft[3]), int(ft[4])))
+				iscore = ft[8].split(';')[1]
+				iscore = float(iscore.split('=')[1])
+				iscores.append(iscore)
+		exons2 = []
+		first = (wbstart, exons[0][1])
+		exons2.append(first)
+		for ex in exons:
+			if ex == exons[0]: continue
+			if ex == exons[-1]: continue
+			exons2.append(ex)
+		last = (exons[-1][0], wbstop)
+		exons2.append(last)
+		apcgen_isos[iso]['mRNA'] = mRNA
+		apcgen_isos[iso]['prob'] = prob
+		apcgen_isos[iso]['exons'] = exons2
+		apcgen_isos[iso]['escores'] = escores
+		apcgen_isos[iso]['introns'] = introns
+		apcgen_isos[iso]['iscores'] = iscores
 
-# checks if the number of exons is the same as wormbase
-# adds info to apcgen_isos
-# exons for apcgen, CDS for wb
+	return apcgen_isos
+
 def check_exon_count(apcgen_isos, wbg_info):
 
-	count = 0
 	for iso in apcgen_isos:
-		gid = iso.split('-')[0] + '-wb'
-		ccount = 1
-		cnum = 0
-		for wft in wbg_info[gid]:
-			if wft == f'CDS-{ccount}':
-				ccount += 1
-				cnum += 1
-		ecount = 1
-		enum = 0
-		for aft in apcgen_isos[iso]:	
-			if aft == f'exon-{ecount}':
-				ecount += 1
-				enum += 1
-		if enum != cnum:
-			apcgen_isos[iso]['dif_ex_num'] = 'yes'
-		if enum == cnum:
-			apcgen_isos[iso]['dif_ex_num'] = 'no'
+		gID = iso.split('-')[0] + '-wb'
+		wb_enum = len(wbg_info[gID]['exons'])
+		apc_enum = len(apcgen_isos[iso]['exons'])
+		apcgen_isos[iso]['dif_exon'] = apc_enum - wb_enum 
+
+	return apcgen_isos
+
+def check_wb_frame(apcgen_isos, wbg_info):
+
+	for iso in apcgen_isos:
+		if apcgen_isos[iso]['dif_exon'] != 0:
+			apcgen_isos[iso]['wb_frame'] = False
+		if apcgen_isos[iso]['dif_exon'] == 0:
+			gID = iso.split('-')[0] + '-wb'
+			wb_ex = wbg_info[gID]['exons']
+			apc_ex = apcgen_isos[iso]['exons']
+			if wb_ex == apc_ex: 
+				apcgen_isos[iso]['wb_frame'] = True
+			else:
+				apcgen_isos[iso]['wb_frame'] = False
 	
 	return apcgen_isos
 
-# get start and stop codon positions from wb
-def get_wb_start_stop(wbg_info):
-	for gn in wbg_info:
-		clist = []
-		for ft in wbg_info[gn]:
-			if 'CDS' in ft:
-				clist.append(ft)
-		wbstart = wbg_info[gn][clist[0]][0]
-		wbstop = wbg_info[gn][clist[-1]][1]
-	
-	return wbstart, wbstop
+def find_PTCs(apcgen_isos):
 
-# check if same frame as wb
-# adds info to apcgen_isos
-def wb_frame_check(apcgen_isos, wbg_info, wbstart, wbstop):
-
-	count = 0
 	for iso in apcgen_isos:
-		if apcgen_isos[iso]['dif_ex_num'] == 'yes':
-			apcgen_isos[iso]['wb_frame'] = 'no'
-		if apcgen_isos[iso]['dif_ex_num'] == 'no':
-			gid = iso.split('-')[0] + '-wb'
-			wb_exlist = []
-			ccount = 1
-			for wft in wbg_info[gid]:
-				if wft == f'CDS-{ccount}':
-					wb_exlist.append(wbg_info[gid][wft])
-					ccount += 1	
-			apc_exlist = []
-			for aft in apcgen_isos[iso]:
-				if 'exon' in aft:
-					apc_exlist.append(apcgen_isos[iso][aft])
-			apc_exlist[0] = (wbstart, apc_exlist[0][1])
-			apc_exlist[-1] = (apc_exlist[-1][0], wbstop)
-			if wb_exlist == apc_exlist: 
-				apcgen_isos[iso]['wb_frame'] = 'yes'
-			if wb_exlist != apc_exlist:
-				apcgen_isos[iso]['wb_frame'] = 'no'
-
-	return apcgen_isos
-					
-# return list of exons with wbstart/wbstop
-# takes only a single iso as input
-def get_exons(apcgen_iso, wbstart, wbstop):
-
-	ex_list = []
-	for ft in apcgen_iso:
-		if 'exon' in ft:
-			ex_list.append(apcgen_iso[ft])
-	ex_list[0] = (wbstart, ex_list[0][1])
-	ex_list[-1] = (ex_list[-1][0], wbstop)
-
-	return ex_list
-
-# scan for PTCs
-# adds info to apcgen_iso
-def find_ptcs(apcgen_isos):
-
-	count = 0
-	for iso in apcgen_isos:
-		if apcgen_isos[iso]['wbstartstop']:
-			wbstarti = apcgen_isos[iso]['wbstartstop'][0]
-			wbstopi = apcgen_isos[iso]['wbstartstop'][1]	
-		if apcgen_isos[iso]['wb_frame'] == 'yes':
-			apcgen_isos[iso]['PTC'] = ['N/A']
-		if apcgen_isos[iso]['wb_frame'] == 'no':
-			ex_list = get_exons(apcgen_isos[iso], wbstart, wbstop)
-			CDS_seq = ''
-			for ex in ex_list:
-				ex_seq = seq[ex[0]-1:ex[1]]
-				CDS_seq += ex_seq	
-			shift = 0
-			stops = []
-			for i in range(len(CDS_seq)):
-				codon = CDS_seq[i+shift:i+shift+3]
-				if len(codon) == 3:
-					if codon in ['TAG', 'TAA', 'TAG']:
-						stops.append((codon, i+1+shift))
-				shift += 1
-			if len(stops) == 0: 
-				apcgen_isos[iso]['PTC'] = 'no stop'
-			if len(stops) > 0:
-				apcgen_isos[iso]['PTC'] = stops
-
-	return apcgen_isos	
+		if apcgen_isos[
 
 
 
@@ -259,56 +187,28 @@ seq = get_seq(args.fasta)
 
 wbg_info = get_wbgene_info(args.wb_gff, seq)
 
-wbstart, wbstop = get_wb_start_stop(wbg_info)
+wbg_info = check_CDS(wbg_info)
 
-apcgen_isos = get_apcgen_iso_info(args.apcgen_gff, wbstart, wbstop)
+wbstart, wbstop = get_start_stop(wbg_info)
+
+print(wbg_info)
+print('#####')
+
+apcgen_isos = get_apcgen_info(args.apcgen_gff, wbstart, wbstop)
+
+apcgen_isos = check_CDS(apcgen_isos)
 
 apcgen_isos = check_exon_count(apcgen_isos, wbg_info)
 
-apcgen_isos = wb_frame_check(apcgen_isos, wbg_info, wbstart, wbstop)
+apcgen_isos = check_wb_frame(apcgen_isos, wbg_info)
 
-apcgen_isos = find_ptcs(apcgen_isos) 
-
-print(wbg_info)
-
-print('#####')
-import json
-see = 0
+count = 0
 for i in apcgen_isos:
-	print(json.dumps(apcgen_isos[i], indent=4))
-	if see == 1: break
-	see += 1
-
-print('#####')
-# get isoforms with 99% probability of correct isoform
-
-for i in apcgen_isos:
-	print(json.dumps(i, indent=4))
-
-
-
-'''
-for i in apcgen_isos:
-	for j in apcgen_isos[i]:
-		if j == 'prob':
-			print(apcgen_isos[i][j])
-			if apcgen_isos[i][j] > 99:
-				print(i)
-'''
-# ch.4738 has a short first exon 
-# need to test an example that has only one CDS
-# will always have at least 2 CDS, bc need at least one intron
-# but will APC generate isos with no introns?
-# ch.11934 has 3 CDS, ordered last to first
-# ch.216 has 2 CDS
-# ch.4738 has 4 CDS 
-# ch.4741, 2nd isoform is given an extra exon/intron
-
-
-
-
-
-
+	print(i, apcgen_isos[i])
+	print('')
+	count += 1
+	if count == 5: break
+		
 
 
 
