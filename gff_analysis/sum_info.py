@@ -47,28 +47,18 @@ print(f'bin\tiso count')
 for bn in wbmatch_bins:
 	print(f'{bn}\t{len(wbmatch_bins[bn])}')
 print('#####')
-# next check if other isoforms matche wb
-
+# next check if other isoforms matches wb
 wbmatch2 = {}
-wbmatch3 = {}
 for fname in os.listdir(args.json_dir):
 	gID = fname.split('.')[0]
 	with open(args.json_dir+fname) as jfile:
 		info = json.load(jfile)
-		matches = []
 		for iso in info:
 			if iso == f'ch.{gID}-1' or iso == f'ch.{gID}-wb': continue
 			if info[iso]['wb_frame'] == True:
-				wbmatch = (iso, info[iso]['prob'])	
-				matches.append(wbmatch)
-			wbmatch3[gID] = wbmatch
-		wbmatch2[gID] = matches
+				wbmatch = (iso, info[iso]['prob'])
+				wbmatch2[gID] = wbmatch
 
-for gID in wbmatch2:
-	print(gID, wbmatch2[gID])
-
-print(len(wbmatch2))
-print(len(wbmatch3))
-
-for gID in wbmatch3:
-	print(gID, wbmatch3[gID])
+for gid in wbmatch2:
+	if wbmatch2[gid][0].split('-')[1] == str(2):
+		print(gid, wbmatch2[gid])
