@@ -48,7 +48,8 @@ for bn in wbmatch_bins:
 	print(f'{bn}\t{len(wbmatch_bins[bn])}')
 print('#####')
 # next check if other isoforms matches wb
-wbmatch2 = {}
+wbmatch2 = []
+no_match = []
 for fname in os.listdir(args.json_dir):
 	gID = fname.split('.')[0]
 	with open(args.json_dir+fname) as jfile:
@@ -57,8 +58,16 @@ for fname in os.listdir(args.json_dir):
 			if iso == f'ch.{gID}-1' or iso == f'ch.{gID}-wb': continue
 			if info[iso]['wb_frame'] == True:
 				wbmatch = (iso, info[iso]['prob'])
-				wbmatch2[gID] = wbmatch
+				wbmatch2.append(wbmatch)			
 
-for gid in wbmatch2:
-	if wbmatch2[gid][0].split('-')[1] == str(2):
-		print(gid, wbmatch2[gid])
+for w in wbmatch2:
+	print(w)
+
+for w in wbmatch2:
+	if w[0].split('-')[1] == str(2):
+		print(w)
+
+
+
+
+
