@@ -37,6 +37,8 @@ def get_wbgene_info(wb_gff, seq):
 			if sline[2] == 'mRNA':
 				name = sline[0]+'-wb'
 				wbg['mRNA'] = [int(sline[3]), int(sline[4])]
+				WBGene = sline[8].split(':')[2]
+				wbg['Parent=Gene'] = WBGene
 			if sline[2] == 'CDS':
 				wbg['exons'].append((int(sline[3]), int(sline[4])))
 		wbginfo[name] = wbg
