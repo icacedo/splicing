@@ -26,9 +26,17 @@ with open(args.json, 'r') as jfile:
 with open('test.html', 'w') as hfile:
 	hfile.write(f'<html><title>{gID}</title><body>\n')
 	hfile.write(f'<h1>ch.{gID} {wbgene}</h1>\n')
-	hfile.write('<svg viewBox="0 0 902 200" xmlns="http://www.w3.org/2000/svg">\n')
+	hfile.write('<svg viewBox="0 0 902 200" xmlns="http://www.w3.org/2000/svg">\n')	
 	hfile.write('<rect fill="#ddd" x="0" y="0" width="100%" height="100%"/>\n')
-	hfile.write('<line x1="223" y1="46" x2="271" y2="410" stroke-width="3" stroke="#00f"></line>\n')
+	hfile.write('<rect x="0" y="40" width="100" height="12" fill="#949494"></rect>\n')
+	hfile.write('<rect x="100" y="40" width="113" height="12" fill="#3368FF"></rect>\n')
+	hfile.write('<rect x="200" y="40" width="220" height="12" fill="#FFD433"></rect>\n')
+	hfile.write('<font>')
+	hfile.write('<font face\n')
+	hfile.write('font-family="Super Sans"
+	hfile.write('
+	hfile.write('</font>')
+	hfile.write('<text x="20" y="35" class="sans">ACGT</text>\n')
 	hfile.write('</svg>\n')
 	hfile.write('</body></html>\n')
 	
