@@ -51,4 +51,3 @@ with open('badisos2.csv', 'w', newline='') as csvfile:
 		print(apc)
 		print('#####')
 		print(wb)
-		break
