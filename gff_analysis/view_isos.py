@@ -8,16 +8,19 @@ fasta = sys.argv[1]
 jfile = sys.argv[2]
 
 seq = isl.get_seq(fasta)
+seq = seq.lower()
 
-seq_sites = re.sub('GT', 'gt', seq)
-seq_sites = re.sub('AG', 'ag', seq_sites, flags=re.IGNORECASE)
+seq_sites = re.sub('gt', 'GT', seq)
+seq_sites = re.sub('ag', 'AG', seq_sites, flags=re.IGNORECASE)
+seq_stops = re.sub('tag', 'TAG', seq_sites, flags=re.IGNORECASE)
+seq_stops = re.sub('taa', 'TAA', seq_stops, flags=re.IGNORECASE)
+seq_mod = re.sub('tga', 'TGA', seq_stops, flags=re.IGNORECASE)
 
-print(seq_sites)
+def make_wb_sym(jfile, seq):
 
-name = os.path.basename(jfile).split('.')[0]
-with open(jfile, 'r') as jf:
-	info = json.load(jf)	
-	print(info[f'ch.{name}-wb'])
+	name = os.path.basename(jfile).split('.')[0]
+	with open(jfile, 'r') as jf: info = json.load(jf)
+	
 	endf = info[f'ch.{name}-wb']['exons'][0][0]
 	fseq1 = seq[:endf-1]
 	fsym1 = ''
@@ -40,24 +43,20 @@ with open(jfile, 'r') as jf:
 		isym = ''
 		for i in range(len(iseq)): isym += '-'
 		isyms.append(isym)
-	
-sym_seq = ''
-sym_seq += fsym1
-for i in range(len(esyms)):
-	sym_seq += esyms[i]
-	if i > len(isyms)-1: continue
-	sym_seq += isyms[i]
-sym_seq += fsym2
+		
+	sym_seq_wb = ''
+	sym_seq_wb += fsym1
+	for i in range(len(esyms)):
+		sym_seq_wb += esyms[i]
+		if i > len(isyms)-1: continue
+		sym_seq_wb += isyms[i]
+	sym_seq_wb += fsym2
 
-print(sym_seq)
+	return sym_seq_wb
 
-print(len(seq_sites))
-print(len(sym_seq))
+sym_seq_wb = make_wb_sym(jfile, seq_mod)
 
-print(1080/80)
-print(round(1080/80))
-for i in range(round(len(seq_sites)/80)):
-	#print(len(seq_sites[i*80:i*80+80]))
-	print(seq_sites[i*80:i*80+80])
-	print(sym_seq[i*80:i*80+80])
+for i in range(round(len(seq_mod)/80)):
+	print(seq_mod[i*80:i*80+80])
+	print(sym_seq_wb[i*80:i*80+80])
 	print('')
