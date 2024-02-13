@@ -31,6 +31,7 @@ def get_wbgene_info(wb_gff, seq):
 		wbg = {}
 		wbg['mRNA'] = []
 		wbg['exons'] = []
+		wbg['introns'] = []
 		for line in fp.readlines():
 			line = line.rstrip()
 			sline = line.split('\t')
@@ -41,6 +42,8 @@ def get_wbgene_info(wb_gff, seq):
 				wbg['Parent=Gene'] = WBGene
 			if sline[2] == 'CDS':
 				wbg['exons'].append((int(sline[3]), int(sline[4])))
+			if sline[1] == 'WormBase' and sline[2] == 'intron':
+				wbg['introns'].append((int(sline[3]), int(sline[4])))
 		wbginfo[name] = wbg
 		
 	for gID in wbginfo:
@@ -206,6 +209,7 @@ def amass_info(fasta, wb_gff, apcgen_gff):
 	seq = get_seq(fasta)
 	wbg_info = get_wbgene_info(wb_gff, seq)
 	wbg_info = check_CDS(wbg_info)
+	wbg_info = get_codons(wbg_info, seq) #####
 	wbstart, wbstop = get_start_stop(wbg_info)
 	apcgen_isos = get_apcgen_info(apcgen_gff, wbstart, wbstop)
 	apcgen_isos = check_CDS(apcgen_isos)
