@@ -17,7 +17,7 @@ for fname in os.listdir(args.json_dir):
 		if info[f'ch.{gID}-1']['wb_frame'] == True:
 			prob = info[f'ch.{gID}-1']['prob']
 			wbmatch.append((fname, prob))
-
+print(wbmatch)
 wbmatch_bins = {
 	0.99: [],
 	0.90: [],
