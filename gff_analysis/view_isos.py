@@ -112,10 +112,36 @@ def make_apc_sym(jfile, seq):
 
 sym_seq_wb = make_wb_sym(jfile, seq_mod)
 sym_seq_apc = make_apc_sym(jfile, seq_mod)
-
+'''
 for i in range(round(len(seq_mod)/80)):
 	print(sym_seq_wb[i*80:i*80+80])
 	print(seq_mod[i*80:i*80+80])
 	print(sym_seq_apc[i*80:i*80+80])	
 	print('')
+'''
+
+c = 1
+frame = []
+for s in sym_seq_wb:
+	if s == '#':
+		frame.append('#')
+	if s == '*':
+		frame.append(c)
+		c += 1
+	if s == '-':
+		frame.append('-')
+
+frame2 = ''
+for s in frame:
+	if type(s) == int:
+		if s%3 == 1: frame2 += '1'
+		if s%3 == 2: frame2 += '2'
+		if s%3 == 0: frame2 += '3'
+	else:
+		frame2 += s
+	
+print(frame2)
+print(sym_seq_wb)
+print(seq_mod)
+print(sym_seq_apc)
 
