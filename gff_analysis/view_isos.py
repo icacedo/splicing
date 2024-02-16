@@ -43,8 +43,8 @@ for ID in paths:
 	sym_seq_apc = isl.make_apc_sym(jpath, seq_mod)
 	frame_sym = isl.make_frame_sym(sym_seq_wb)
 	with open(f'txt_views/{ID}.txt', 'w') as outfile:
-		outfile.write(frame_sym)
-		outfile.write(sym_seq_wb)
-		outfile.write(seq_mod)
-		outfile.write(sym_seq_apc)
+		outfile.write(f'{frame_sym}\n')
+		outfile.write(f'{sym_seq_wb}\n')
+		outfile.write(f'{seq_mod}\n')
+		outfile.write(f'{sym_seq_apc}\n')
 
