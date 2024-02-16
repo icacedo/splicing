@@ -64,6 +64,7 @@ for w in wbmatch2:
 	print(w)
 
 print('#####')
+print('# genes with incorrect top iso prediction, correct second iso prediction')
 for w in wbmatch2:
 	if w[0].split('-')[1] == str(2):
 		print(w[0].split('-')[0])

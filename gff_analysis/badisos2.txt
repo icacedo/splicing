@@ -1,3 +1,4 @@
+# genes with incorrect top iso prediction, correct second iso prediction
 ch.2047
 ch.1227
 ch.14503

@@ -11,6 +11,10 @@ parser.add_argument('apcgen_gff', type=str, metavar='<file>',
 
 args = parser.parse_args()
 '''
+import re
+import os
+import json
+
 def get_seq(fasta):
 
 	with open(fasta, 'r') as fp:
@@ -235,3 +239,138 @@ for i in apcgen_isos:
 # ch.4741, 2nd isoform is given an extra exon/intron
 # ch.241 has 3 CDS, 2nd isoform has correct firt and last exons
 # but middle exon is cut out as an intron, then goes out of frame
+
+# section to write txt iso view files
+
+def mod_seq(seq):
+	
+	seq = seq.lower()
+	seq_sites = re.sub('gt', 'GT', seq)
+	seq_sites = re.sub('ag', 'AG', seq_sites, flags=re.IGNORECASE)
+	seq_stops = re.sub('tag', 'TAG', seq_sites, flags=re.IGNORECASE)
+	seq_stops = re.sub('taa', 'TAA', seq_stops, flags=re.IGNORECASE)
+	seq_mod = re.sub('tga', 'TGA', seq_stops, flags=re.IGNORECASE)
+
+	return seq_mod	
+
+def make_wb_sym(jfile, seq):
+
+	name = os.path.basename(jfile).split('.')[0]
+	with open(jfile, 'r') as jf: info = json.load(jf)
+	
+	endf = info[f'ch.{name}-wb']['exons'][0][0]
+	fseq1 = seq[:endf-1]
+	fsym1 = ''
+	for i in range(len(fseq1)):
+		fsym1 += '#'
+	begf = info[f'ch.{name}-wb']['exons'][-1][1]
+	fseq2 = seq[begf:]
+	fsym2 = ''
+	for i in range(len(fseq2)):
+		fsym2 += '#'
+	esyms = []
+	for e in info[f'ch.{name}-wb']['exons']:
+		eseq = seq[e[0]-1:e[1]]
+		esym = ''
+		for i in range(len(eseq)): esym += '*'
+		esyms.append(esym)
+	isyms = []
+	for i in info[f'ch.{name}-wb']['introns']:
+		iseq = seq[i[0]-1:i[1]]
+		isym = ''
+		for i in range(len(iseq)): isym += '-'
+		isyms.append(isym)
+		
+	sym_seq_wb = ''
+	sym_seq_wb += fsym1
+	for i in range(len(esyms)):
+		sym_seq_wb += esyms[i]
+		if i > len(isyms)-1: continue
+		sym_seq_wb += isyms[i]
+	sym_seq_wb += fsym2
+
+	return sym_seq_wb
+
+def make_apc_sym(jfile, seq):
+
+	name = os.path.basename(jfile).split('.')[0]
+	with open(jfile, 'r') as jf: info = json.load(jf)
+
+	first = info[f'ch.{name}-1']['exons'][0]
+	if first[0] < first[1]:
+		endf = first[0]
+		fseq1 = seq[:endf-1]
+		fsym1 = ''
+		for i in range(len(fseq1)): fsym1 += '#'	
+	if first[0] > first[1]:
+		endf = max(first)
+		fseq1 = seq[:endf-1]
+		fsym1 = ''
+		for i in range(len(fseq1)): fsym1 += '!'
+
+	last = info[f'ch.{name}-1']['exons'][-1]
+	if last[0] < last[1]:
+		begf = last[1]
+		fseq2 = seq[begf:]
+		fsym2 = ''
+		for i in range(len(fseq2)): fsym2 += '#'
+	if last[0] > last[1]:
+		begf = max(last)
+		fseq2 = seq[begf-1:]
+		fsym2 = ''
+		for i in range(len(fseq2)): fsym2 += '!'
+			
+	esyms = []
+	for e in info[f'ch.{name}-1']['exons']:
+		if e[0] > e[1]:
+			esyms.append('')
+		if e[0] < e[1]:
+			eseq = seq[e[0]-1:e[1]]
+			esym = ''
+			for i in range(len(eseq)): esym += '*'
+			esyms.append(esym)
+
+	isyms = []
+	for i in info[f'ch.{name}-1']['introns']:
+		iseq = seq[i[0]-1:i[1]]
+		isym = ''
+		for i in range(len(iseq)): isym += '-'
+		isyms.append(isym)
+		
+	sym_seq_apc = ''
+	sym_seq_apc += fsym1
+	for i in range(len(esyms)):
+		sym_seq_apc += esyms[i]
+		if i > len(isyms)-1: continue
+		sym_seq_apc += isyms[i]
+	sym_seq_apc += fsym2
+
+	return sym_seq_apc
+
+def make_frame_sym(sym_seq_wb):
+
+	c = 1
+	frame = []
+	for s in sym_seq_wb:
+		if s == '#':
+			frame.append('#')
+		if s == '*':
+			frame.append(c)
+			c += 1
+		if s == '-':
+			frame.append('-')
+
+	frame2 = ''
+	for s in frame:
+		if type(s) == int:
+			if s%3 == 1: frame2 += '1'
+			if s%3 == 2: frame2 += '2'
+			if s%3 == 0: frame2 += '3'
+		else:
+			frame2 += s
+	
+	return frame2
+	
+
+
+
