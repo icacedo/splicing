@@ -370,7 +370,13 @@ def make_frame_sym(sym_seq_wb):
 			frame2 += s
 	
 	return frame2
-	
 
+'''
+def add_scores(sym_seq_apc, jfile):
+
+	sym_seq = ''
+	for s in sym_seq_apc
+		if s == '#' or s == '!':
+'''			
 
 
