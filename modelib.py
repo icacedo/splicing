@@ -1,5 +1,8 @@
 import sys
 import gzip
+# openturns no longer works with mamba install
+# works with pip3 install
+# don't know why
 import openturns as ot
 import math
 from itertools import combinations
