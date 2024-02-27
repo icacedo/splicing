@@ -1,19 +1,7 @@
-'''
-import argparse
-
-parser = argparse.ArgumentParser()
-parser.add_argument('fasta', type=str, metavar='<file>',
-	help='wormbase fasta file for one gene')
-parser.add_argument('wb_gff', type=str, metavar='<file>',
-	help='wormbase nnotation gff file')
-parser.add_argument('apcgen_gff', type=str, metavar='<file>',
-	help='apc generated gff file')
-
-args = parser.parse_args()
-'''
 import re
 import os
 import json
+import modelib as ml
 
 def get_seq(fasta):
 
@@ -56,6 +44,54 @@ def get_wbgene_info(wb_gff, seq):
 				wbginfo[gID][ft] = sorted(wbginfo[gID][ft]) 
 
 	return wbginfo
+
+# read in .tsv files for probabilistic models
+def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, icost):
+		
+	re_elen_pdf, re_elen_log2 = ml.read_exin_len(elen)
+	ea, eb, eg = ml.read_len_params(elen)
+
+	re_ilen_pdf, re_ilen_log2 = ml.read_exin_len(ilen)
+	ia, ib, ig = ml.read_len_params(ilen)
+
+	re_emm_prob, re_emm_log2 = ml.read_exin_mm(emm)
+	re_imm_prob, re_imm_log2 = ml.read_exin_mm(imm)
+
+	re_dppm, re_dpwm = ml.read_pwm(dpwm)
+	re_appm, re_apwm = ml.read_pwm(apwm)
+
+	for gene in wbginfo:
+		wbginfo[gene]['escores'] = []
+		wbginfo[gene]['total_icost_score'] = 0
+		for exon in wbginfo[gene]['exons']:
+			# include region before start site and after 100 bp flank
+			if exon == wbginfo[gene]['exons'][0]: 
+				exon = (101, exon[1])
+			if exon == wbginfo[gene]['exons'][-1]:
+				exon = (exon[0], len(seq)-100)
+			exon = (exon[0]-1, exon[1]-1) # adjust indexing
+			elen_score = ml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
+			emm_score = ml.get_exin_mm_score(exon, seq, re_emm_log2)
+			escore = elen_score + emm_score
+			escore = float('{:.5e}'.format(escore))
+			wbginfo[gene]['total_icost_score'] += escore
+			wbginfo[gene]['escores'].append(escore)
+		wbginfo[gene]['iscores'] = []
+		for intron in wbginfo[gene]['introns']:
+			intron = (intron[0]-1, intron[1]-1) # adjust indexing
+			ilen_score = ml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
+			imm_score = ml.get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
+			dseq, aseq = ml.get_donacc_seq(intron, seq)
+			dpwm_score = ml.get_donacc_pwm_score(dseq, re_dpwm)
+			apwm_score = ml.get_donacc_pwm_score(aseq, re_apwm)
+			iscore = ilen_score + imm_score + dpwm_score + apwm_score
+			iscore = float('{:.5e}'.format(iscore))
+			wbginfo[gene]['iscores'].append(iscore)
+			wbginfo[gene]['total_icost_score'] += iscore
+		wbginfo[gene]['total_icost_score'] -= len(wbginfo[gene]['introns']) \
+																	* icost
+
+		return wbginfo
 
 def check_CDS(info):
 
@@ -208,12 +244,15 @@ def find_PTCs(apcgen_isos, seq):
 		
 	return apcgen_isos	
 
-def amass_info(fasta, wb_gff, apcgen_gff):
-
+def amass_info(fasta, wb_gff, apcgen_gff, elen, 
+				ilen, emm, imm, dpwm, apwm, icost):
+	
 	seq = get_seq(fasta)
 	wbg_info = get_wbgene_info(wb_gff, seq)
 	wbg_info = check_CDS(wbg_info)
-	wbg_info = get_codons(wbg_info, seq) #####
+	wbg_info = get_codons(wbg_info, seq)
+	wbg_info = score_wb_iso(seq, wbg_info, elen, ilen, 
+							emm, imm, dpwm, apwm, icost)
 	wbstart, wbstop = get_start_stop(wbg_info)
 	apcgen_isos = get_apcgen_info(apcgen_gff, wbstart, wbstop)
 	apcgen_isos = check_CDS(apcgen_isos)
@@ -224,6 +263,10 @@ def amass_info(fasta, wb_gff, apcgen_gff):
 	apcgen_isos.update(wbg_info)
 
 	return apcgen_isos
+
+
+
+
 '''
 apcgen_isos = amass_info(args.fasta, args.wb_gff, args.apcgen_gff)
 

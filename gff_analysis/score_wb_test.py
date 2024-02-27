@@ -22,13 +22,14 @@ parser.add_argument('--acceptor_pwm', type=str, metavar='<file>',
 	help='')
 
 args = parser.parse_args()
-
+# mRNA includes the 5' UTR before the start site
 seq = None
 for seqid, seq in ml.read_fastas(args.fasta):
 	seqid = seqid
 	seq = seq
 
 wbginfo = isl.get_wbgene_info(args.wb_gff, seq)
+print(wbginfo)
 
 re_elen_pdf, re_elen_log2 = ml.read_exin_len(args.exon_len)
 ea, eb, eg = ml.read_len_params(args.exon_len)
@@ -41,41 +42,43 @@ re_imm_prob, re_imm_log2 = ml.read_exin_mm(args.intron_mm)
 
 re_dppm, re_dpwm = ml.read_pwm(args.donor_pwm)
 re_appm, re_apwm = ml.read_pwm(args.acceptor_pwm)
-print(len(seq))
+
 for gene in wbginfo:
+	wbginfo[gene]['escores'] = []
+	wbginfo[gene]['total_score'] = 0
 	for exon in wbginfo[gene]['exons']:
-		print(exon, '***')
+		# include region before start site and after 100 bp flank
 		if exon == wbginfo[gene]['exons'][0]: 
 			exon = (101, exon[1])
-			print(exon)
 		if exon == wbginfo[gene]['exons'][-1]:
 			exon = (exon[0], len(seq)-100)
-			print(exon, '###')
 		exon = (exon[0]-1, exon[1]-1) # adjust indexing
 		elen_score = ml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
-		print(elen_score)
 		emm_score = ml.get_exin_mm_score(exon, seq, re_emm_log2)
-		print(emm_score)
 		escore = elen_score + emm_score
-		print(escore)
-	print('#####')
+		escore = float('{:.5e}'.format(escore))
+		wbginfo[gene]['total_score'] += escore
+		wbginfo[gene]['escores'].append(escore)
+	wbginfo[gene]['iscores'] = []
 	for intron in wbginfo[gene]['introns']:
-		print(intron)
 		intron = (intron[0]-1, intron[1]-1) # adjust indexing
 		ilen_score = ml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
-		print(ilen_score)
 		imm_score = ml.get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
-		print(imm_score)
 		dseq, aseq = ml.get_donacc_seq(intron, seq)
 		dpwm_score = ml.get_donacc_pwm_score(dseq, re_dpwm)
 		apwm_score = ml.get_donacc_pwm_score(aseq, re_apwm)
 		print(dpwm_score)
 		print(apwm_score)
+		iscore = ilen_score + imm_score + dpwm_score + apwm_score
+		iscore = float('{:.5e}'.format(iscore))
+		wbginfo[gene]['iscores'].append(iscore)
+		wbginfo[gene]['total_score'] += iscore
+
 
 # need to include icost in wb gene score
 
 
-
+print(wbginfo)
 
 
 

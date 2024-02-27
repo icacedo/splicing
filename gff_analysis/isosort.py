@@ -3,28 +3,27 @@ import argparse
 import os
 import json
 
-'''
-parser = argparse.ArgumentParser()
-parser.add_argument('fasta', type=str, metavar='<file>',
-	help='wormbase fasta file for one gene')
-parser.add_argument('wb_gff', type=str, metavar='<file>',
-	help='wormbase nnotation gff file')
-parser.add_argument('apcgen_gff', type=str, metavar='<file>',
-	help='apc generated gff file')
-
-args = parser.parse_args()
-
-apcgen_isos = isl.amass_info(args.fasta, args.wb_gff, args.apcgen_gff)
-
-for i in apcgen_isos:
-	print(i, apcgen_isos[i])
-'''
-
 parser = argparse.ArgumentParser()
 parser.add_argument('wb_dir', type=str, metavar='<directory>',
 	help='directory with wormbase fasta/gff files')
 parser.add_argument('apcgen_dir', type=str, metavar='<directory>',
 	help='directory with apc generated gff files')
+
+parser.add_argument('--elen', type=str, metavar='<file>',
+	help='exon length model .tsv')
+parser.add_argument('--ilen', type=str, metavar='<file>',
+	help='intron length model .tsv')
+parser.add_argument('--emm', type=str, metavar='<file>',
+	help='exon length model .tsv')
+parser.add_argument('--imm', type=str, metavar='<file>',
+	help='intron length model .tsv')
+parser.add_argument('--dpwm', type=str, metavar='<file>',
+	help='donor site pwm .tsv')
+parser.add_argument('--apwm', type=str, metavar='<file>',
+	help='acceptor site pwm .tsv')
+
+parser.add_argument('--icost', required=False, type=float, default=21.0, 
+	metavar='<float>', help='intron cost %(default).2d') 
 
 args = parser.parse_args()
 
@@ -53,7 +52,9 @@ for gID in paths:
 	fa = paths[gID][0]
 	wb_gff = paths[gID][1]
 	apcgen_gff = paths[gID][2]
-	isoforms_info = isl.amass_info(fa, wb_gff, apcgen_gff)
+	isoforms_info = isl.amass_info(fa, wb_gff, apcgen_gff, args.elen, 
+									args.ilen, args.emm, args.imm, 
+									args.dpwm, args.apwm, args.icost)
 	jstr = json.dumps(isoforms_info, indent = 4)
 	with open(f'out/{gID}.json', 'w') as outfile:
 		outfile.write(jstr)
