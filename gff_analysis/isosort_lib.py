@@ -77,6 +77,7 @@ def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, icost):
 			wbginfo[gene]['total_icost_score'] += escore
 			wbginfo[gene]['escores'].append(escore)
 		wbginfo[gene]['iscores'] = []
+		wbginfo[gene]['GTAG_scores'] = []
 		for intron in wbginfo[gene]['introns']:
 			intron = (intron[0]-1, intron[1]-1) # adjust indexing
 			ilen_score = ml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
@@ -84,6 +85,7 @@ def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, icost):
 			dseq, aseq = ml.get_donacc_seq(intron, seq)
 			dpwm_score = ml.get_donacc_pwm_score(dseq, re_dpwm)
 			apwm_score = ml.get_donacc_pwm_score(aseq, re_apwm)
+			wbginfo[gene]['GTAG_scores'].append((dpwm_score, apwm_score))
 			iscore = ilen_score + imm_score + dpwm_score + apwm_score
 			iscore = float('{:.5e}'.format(iscore))
 			wbginfo[gene]['iscores'].append(iscore)
@@ -116,7 +118,7 @@ def get_start_stop(wbginfo):
 
 	return wbstart, wbstop	
 	
-def get_apcgen_info(apcgen_gff, wbstart, wbstop):
+def get_apcgen_info(seq, apcgen_gff, wbstart, wbstop, dpwm, apwm):
 
 	apc_isos = {}
 	with open(apcgen_gff, 'r') as fp:
@@ -137,6 +139,9 @@ def get_apcgen_info(apcgen_gff, wbstart, wbstop):
 			if sline[2] == 'intron':
 				apc_isos[f'{gID}-{icount}'] += [sline]
 	
+	re_dppm, re_dpwm = ml.read_pwm(dpwm)
+	re_appm, re_apwm = ml.read_pwm(apwm)
+
 	apcgen_isos = {}	
 	for iso in apc_isos:
 		apcgen_isos[iso] = {}
@@ -144,8 +149,7 @@ def get_apcgen_info(apcgen_gff, wbstart, wbstop):
 		prob = float
 		escores = []
 		iscores = []
-		efreqs = []
-		ifreqs = []
+		gtag_scores = []
 		exons = []
 		introns = []
 		for ft in apc_isos[iso]:
@@ -159,6 +163,14 @@ def get_apcgen_info(apcgen_gff, wbstart, wbstop):
 				escore = float(escore.split('=')[1])
 				escores.append(escore)
 			if ft[2] == 'intron':
+				dsite = int(ft[3]) - 1
+				asite = int(ft[4]) - 1
+				dseq, aseq = ml.get_donacc_seq((dsite, asite), seq)
+				dpwm_score = ml.get_donacc_pwm_score(dseq, re_dpwm)
+				apwm_score = ml.get_donacc_pwm_score(aseq, re_apwm)
+				dpwm_score = float('{:.5e}'.format(dpwm_score))
+				apwm_score = float('{:.5e}'.format(dpwm_score))	
+				gtag_scores.append((dpwm_score, apwm_score))
 				introns.append((int(ft[3]), int(ft[4])))
 				iscore = ft[8].split(';')[1]
 				iscore = float(iscore.split('=')[1])
@@ -178,6 +190,7 @@ def get_apcgen_info(apcgen_gff, wbstart, wbstop):
 		apcgen_isos[iso]['escores'] = escores
 		apcgen_isos[iso]['introns'] = introns
 		apcgen_isos[iso]['iscores'] = iscores
+		apcgen_isos[iso]['gtag_scores'] = gtag_scores
 
 	return apcgen_isos
 
@@ -254,7 +267,7 @@ def amass_info(fasta, wb_gff, apcgen_gff, elen,
 	wbg_info = score_wb_iso(seq, wbg_info, elen, ilen, 
 							emm, imm, dpwm, apwm, icost)
 	wbstart, wbstop = get_start_stop(wbg_info)
-	apcgen_isos = get_apcgen_info(apcgen_gff, wbstart, wbstop)
+	apcgen_isos = get_apcgen_info(seq, apcgen_gff, wbstart, wbstop, dpwm, apwm)
 	apcgen_isos = check_CDS(apcgen_isos)
 	apcgen_isos = check_exon_count(apcgen_isos, wbg_info)
 	apcgen_isos = check_wb_frame(apcgen_isos, wbg_info)
@@ -414,12 +427,15 @@ def make_frame_sym(sym_seq_wb):
 	
 	return frame2
 
-'''
-def add_scores(sym_seq_apc, jfile):
+def add_scores(jfile):
 
-	sym_seq = ''
-	for s in sym_seq_apc
-		if s == '#' or s == '!':
-'''			
+	name = os.path.basename(jfile).split('.')[0]
+	with open(jfile, 'r') as jf: info = json.load(jf)
+		print(name)
+		print(info)
+
+
+
+
 
 
