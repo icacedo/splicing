@@ -77,7 +77,7 @@ def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, icost):
 			wbginfo[gene]['total_icost_score'] += escore
 			wbginfo[gene]['escores'].append(escore)
 		wbginfo[gene]['iscores'] = []
-		wbginfo[gene]['GTAG_scores'] = []
+		wbginfo[gene]['gtag_scores'] = []
 		for intron in wbginfo[gene]['introns']:
 			intron = (intron[0]-1, intron[1]-1) # adjust indexing
 			ilen_score = ml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
@@ -85,7 +85,7 @@ def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, icost):
 			dseq, aseq = ml.get_donacc_seq(intron, seq)
 			dpwm_score = ml.get_donacc_pwm_score(dseq, re_dpwm)
 			apwm_score = ml.get_donacc_pwm_score(aseq, re_apwm)
-			wbginfo[gene]['GTAG_scores'].append((dpwm_score, apwm_score))
+			wbginfo[gene]['gtag_scores'].append((dpwm_score, apwm_score))
 			iscore = ilen_score + imm_score + dpwm_score + apwm_score
 			iscore = float('{:.5e}'.format(iscore))
 			wbginfo[gene]['iscores'].append(iscore)
@@ -431,9 +431,12 @@ def add_scores(jfile):
 
 	name = os.path.basename(jfile).split('.')[0]
 	with open(jfile, 'r') as jf: info = json.load(jf)
-		print(name)
-		print(info)
-
+	c = 0
+	for iso in info:
+		print(info[iso]['escores'])
+		print(info[iso]['iscores'])
+		print(info[iso]['gtag_scores'], c)
+		c += 1
 
 
 
