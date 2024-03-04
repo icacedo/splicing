@@ -92,7 +92,6 @@ def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, icost):
 			wbginfo[gene]['total_icost_score'] += iscore
 		wbginfo[gene]['total_icost_score'] -= len(wbginfo[gene]['introns']) \
 																	* icost
-
 		return wbginfo
 
 def check_CDS(info):
@@ -169,7 +168,7 @@ def get_apcgen_info(seq, apcgen_gff, wbstart, wbstop, dpwm, apwm):
 				dpwm_score = ml.get_donacc_pwm_score(dseq, re_dpwm)
 				apwm_score = ml.get_donacc_pwm_score(aseq, re_apwm)
 				dpwm_score = float('{:.5e}'.format(dpwm_score))
-				apwm_score = float('{:.5e}'.format(dpwm_score))	
+				apwm_score = float('{:.5e}'.format(apwm_score))	
 				gtag_scores.append((dpwm_score, apwm_score))
 				introns.append((int(ft[3]), int(ft[4])))
 				iscore = ft[8].split(';')[1]
@@ -277,15 +276,6 @@ def amass_info(fasta, wb_gff, apcgen_gff, elen,
 
 	return apcgen_isos
 
-
-
-
-'''
-apcgen_isos = amass_info(args.fasta, args.wb_gff, args.apcgen_gff)
-
-for i in apcgen_isos:
-	print(i, apcgen_isos[i])
-'''
 # ch.4738 has a short first exon 
 # all wb genes have at least 1 intron
 # but will APC generate isos with no introns?
@@ -347,12 +337,9 @@ def make_wb_sym(jfile, seq):
 
 	return sym_seq_wb
 
-def make_apc_sym(jfile, seq):
+def make_apc_sym(iso, info, seq):
 
-	name = os.path.basename(jfile).split('.')[0]
-	with open(jfile, 'r') as jf: info = json.load(jf)
-
-	first = info[f'ch.{name}-1']['exons'][0]
+	first = info[iso]['exons'][0]
 	if first[0] < first[1]:
 		endf = first[0]
 		fseq1 = seq[:endf-1]
@@ -364,7 +351,7 @@ def make_apc_sym(jfile, seq):
 		fsym1 = ''
 		for i in range(len(fseq1)): fsym1 += '!'
 
-	last = info[f'ch.{name}-1']['exons'][-1]
+	last = info[iso]['exons'][-1]
 	if last[0] < last[1]:
 		begf = last[1]
 		fseq2 = seq[begf:]
@@ -377,7 +364,7 @@ def make_apc_sym(jfile, seq):
 		for i in range(len(fseq2)): fsym2 += '!'
 			
 	esyms = []
-	for e in info[f'ch.{name}-1']['exons']:
+	for e in info[iso]['exons']:
 		if e[0] > e[1]:
 			esyms.append('')
 		if e[0] < e[1]:
@@ -387,7 +374,7 @@ def make_apc_sym(jfile, seq):
 			esyms.append(esym)
 
 	isyms = []
-	for i in info[f'ch.{name}-1']['introns']:
+	for i in info[iso]['introns']:
 		iseq = seq[i[0]-1:i[1]]
 		isym = ''
 		for i in range(len(iseq)): isym += '-'
@@ -427,18 +414,9 @@ def make_frame_sym(sym_seq_wb):
 	
 	return frame2
 
-def add_scores(jfile):
+def string_hyphs(seq, string):
 
-	name = os.path.basename(jfile).split('.')[0]
-	with open(jfile, 'r') as jf: info = json.load(jf)
-	c = 0
-	for iso in info:
-		print(info[iso]['escores'])
-		print(info[iso]['iscores'])
-		print(info[iso]['gtag_scores'], c)
-		c += 1
+	hyphs = ['-' for i in range(len(seq) - len(string) + 3)]
+	line = string + ''.join(hyphs)
 
-
-
-
-
+	return line
