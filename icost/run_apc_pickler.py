@@ -61,13 +61,13 @@ if args.read_gff:
 else:
 	count = 0
 	for fID in fastas:
+		print(fID)
 		fpath = apc_dir + fastas[fID]	
 		subprocess.run(f'python3 {program} {fpath} --outdir {outdir}'
 			f' --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
 		if args.limit:
 			if count == args.limit - 1: break
-		if count == 1: break
 		count += 1
 
 
