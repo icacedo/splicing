@@ -1,6 +1,6 @@
 import argparse
 import gzip
-import modelib as ml
+import apc_model_lib as aml
 import csv
 
 parser = argparse.ArgumentParser(
@@ -49,7 +49,7 @@ def len_tsv_write(exins, fp, outdir=None):
 '''
 def len_tsv_write(data, a, b, g, size_limit, fp, outdir=None):
 	
-	exinlen_yscores, exinlen_yvalues = ml.memoize_fdist(data, a, b, g, size_limit, pre=6)
+	exinlen_yscores, exinlen_yvalues = aml.memoize_fdist(data, a, b, g, size_limit, pre=6)
 
 	path = fp.split('/')
 	root, ext = path[-1].split('.')
@@ -68,7 +68,7 @@ def len_tsv_write(data, a, b, g, size_limit, fp, outdir=None):
 
 def mm_tsv_write(exins, fp, outdir=None):
 
-	exinmm_scores, exinmm_probs, order = ml.make_mm(exins)
+	exinmm_scores, exinmm_probs, order = aml.make_mm(exins)
 	
 	path = fp.split('/')
 	root, ext = path[-1].split('.')
@@ -98,31 +98,31 @@ else:
 	len_limit = None
 
 if args.extxt and args.mm:
-	exons = ml.read_txt_seqs(args.extxt)
+	exons = aml.read_txt_seqs(args.extxt)
 	mm_tsv_write(exons, args.extxt, args.outdir)
 elif args.extxt and args.len:
-	exons = ml.read_txt_seqs(args.extxt)
-	data, a, b, g, limit = ml.fdist_params(exons, size_limit=len_limit) #***
+	exons = aml.read_txt_seqs(args.extxt)
+	data, a, b, g, limit = aml.fdist_params(exons, size_limit=len_limit) #***
 	len_tsv_write(data, a, b, g, limit, args.extxt, args.outdir) #***
 	#len_tsv_write(exons, args.extxt, args.outdir)	
 elif args.extxt:
-	exons = ml.read_txt_seqs(args.extxt)
-	data, a, b, g, limit = ml.fdist_params(exons, size_limit=len_limit) #***
+	exons = aml.read_txt_seqs(args.extxt)
+	data, a, b, g, limit = aml.fdist_params(exons, size_limit=len_limit) #***
 	len_tsv_write(data, a, b, g, limit, args.extxt, args.outdir) #***
 	#len_tsv_write(exons, args.extxt, args.outdir)
 	mm_tsv_write(exons, args.extxt, args.outdir)
 							
 if args.intxt and args.mm:
-	introns = ml.read_txt_seqs(args.intxt)
+	introns = aml.read_txt_seqs(args.intxt)
 	mm_tsv_write(introns, args.intxt, args.outdir)
 elif args.intxt and args.len:
-	introns = ml.read_txt_seqs(args.intxt)
-	data, a, b, g, limit = ml.fdist_params(introns, size_limit=len_limit) #***
+	introns = aml.read_txt_seqs(args.intxt)
+	data, a, b, g, limit = aml.fdist_params(introns, size_limit=len_limit) #***
 	len_tsv_write(introns, a, b, g, limit, args.intxt, args.outdir) #***
 	#len_tsv_write(introns, args.intxt, args.outdir)
 elif args.intxt:
-	introns = ml.read_txt_seqs(args.intxt)
-	data, a, b, g, limit = ml.fdist_params(introns, size_limit=len_limit) #***
+	introns = aml.read_txt_seqs(args.intxt)
+	data, a, b, g, limit = aml.fdist_params(introns, size_limit=len_limit) #***
 	len_tsv_write(data, a, b, g, limit, args.intxt, args.outdir) #***
 	#len_tsv_write(introns, args.intxt, args.outdir)
 	mm_tsv_write(introns, args.intxt, args.outdir)
@@ -154,7 +154,7 @@ def de(num, pre=6):
 
 def pwm_tsv_write(donacc, fp, outdir=None):
 
-	pwm, ppm = ml.make_pwm(donacc)
+	pwm, ppm = aml.make_pwm(donacc)
 
 	path = fp.split('/')
 	root, ext = path[-1].split('.')
@@ -183,11 +183,11 @@ def pwm_tsv_write(donacc, fp, outdir=None):
 		tsvfile.close()
 
 if args.dntxt:
-	donors = ml.read_txt_seqs(args.dntxt)
+	donors = aml.read_txt_seqs(args.dntxt)
 	pwm_tsv_write(donors, args.dntxt, args.outdir)
 
 if args.actxt:
-	acceptors = ml.read_txt_seqs(args.actxt)
+	acceptors = aml.read_txt_seqs(args.actxt)
 	pwm_tsv_write(acceptors, args.actxt, args.outdir)
 
 
