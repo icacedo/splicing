@@ -74,7 +74,7 @@ for gID in fa_gff_pairs:
 		f' --exon_mm {args.exon_mm} --intron_mm {args.intron_mm}'
 		f' --donor_pwm {args.donor_pwm} --acceptor_pwm {args.acceptor_pwm}'
 		f' --icost {args.icost}'
-		f' > {args.gff_out}{gID}.{args.gff_name}.gff'
+		f' > {args.gff_out}ch.{gID}.{args.gff_name}.gff'
 		f'\n'
 	)
 f.close()
