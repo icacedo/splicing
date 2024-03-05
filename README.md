@@ -1,15 +1,17 @@
 # modeling the stochastic nature of alternative splicing
 
 ## manifest
-apc/
+### apc/
 code that generates all possible combinations of isoforms from a given gene
-icost/
+### icost/
 code that calculates the best intron cost for scoring isoforms
-gff_analysis/
+### gff_analysis/
 code that parses through apc results and organizes isoforms
-mkmdls_out/
+### mkmdls_out/
 output of make_models.py in apc/, includes .tsv files for position weight 
 matrix, Markov model and length models
+### results/
+code that generates svg/html files to view genes and isoforms, written by Ian
 need apc pickler
 then icost scoring
 then avg mdis
