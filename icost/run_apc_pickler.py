@@ -7,10 +7,8 @@ parser.add_argument('apc_dir', type=str, metavar='<directory>',
 	help='input directory with all apc fasta and gff files')
 parser.add_argument('--read_gff', action='store_true', 
 	help='get donor/acceptor sites from gff')
-parser.add_argument('--path2ml', type=str, metavar='<directory path>',
-	required=True, help='path to directory with modelib')
 parser.add_argument('--outdir', type=str, metavar='<outdir path>',
-	required=True, help='/path/ to outdir')
+	required=False, help='/path/ to outdir')
 parser.add_argument('--limit', type=int, metavar='<int>',
 	required=False, help='limit number of files to pkl, for testing')
 
@@ -36,9 +34,14 @@ for gfile in os.listdir(args.apc_dir):
 
 program = 'apc_pickler.py'
 apc_dir = args.apc_dir
-path2ml = args.path2ml
-outdir = args.outdir
-os.makedirs(os.path.dirname(outdir), exist_ok=True)
+if args.outdir:
+	outdir = args.outdir+'apc_pickles/'
+	os.makedirs(os.path.dirname(outdir), exist_ok=True)
+else:
+	outdir = 'apc_pickles/'
+	os.makedirs(os.path.dirname(outdir), exist_ok=True)
+		
+
 max_splice = args.max_splice
 min_intron = args.min_intron
 min_exon = args.min_exon
@@ -49,8 +52,7 @@ if args.read_gff:
 	for fID in fastas:
 		fpath = apc_dir + fastas[fID]
 		gpath = apc_dir + gffs[fID]
-		subprocess.run(f'python3 {program} {fpath} --path2ml {path2ml}'
-			f' --outdir {outdir}'
+		subprocess.run(f'python3 {program} {fpath} --outdir {outdir}'
 			f' --gff {gpath} --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
 		if args.limit:
@@ -60,8 +62,7 @@ else:
 	count = 0
 	for fID in fastas:
 		fpath = apc_dir + fastas[fID]	
-		subprocess.run(f'python3 {program} {fpath} --path2ml {path2ml}'
-			f' --outdir {outdir}'
+		subprocess.run(f'python3 {program} {fpath} --outdir {outdir}'
 			f' --max_splice {max_splice} --min_intron {min_intron}'
 			f' --min_exon {min_exon} --flank {flank}', shell=True)
 		if args.limit:

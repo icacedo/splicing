@@ -2,14 +2,13 @@ import argparse
 import pickle
 import csv
 import sys
+import modelib as ml
 
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_pkl', type=str, metavar='<file>',
 	help='input apc pickle file')
 parser.add_argument('fasta', type=str, metavar='<file>',
 	help='input single sequence fasta file')
-parser.add_argument('--path2ml', type=str, metavar='<directory path>',
-	help='path to directory with modelib')
 
 # probabilistic models
 parser.add_argument('--exon_len', required=False, type=str, metavar='<file>', 
@@ -28,10 +27,6 @@ parser.add_argument('--icost', required=False, type=float, default=0.0,
 	metavar='<float>', help='intron cost %(default).2d')
 
 args = parser.parse_args()
-
-sys.path.insert(0, args.path2ml)
-
-import modelib as ml
 
 seqid = None
 seq = None

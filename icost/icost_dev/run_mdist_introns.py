@@ -50,6 +50,7 @@ for ID in icost_gffs:
 	for path in icost_gffs[ID]:
 		gff1_apc = path 
 		gff2_wb = wb_gffs[ID]
+		print(gff1_apc)
 		icost = gff1_apc.split('_')[2]
 		print('gene ID:', ID)
 		print('tested icost:', icost)

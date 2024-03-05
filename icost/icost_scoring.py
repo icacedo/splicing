@@ -4,16 +4,14 @@ import argparse
 import numpy as np
 import mdist_lib as mdl
 import json
+import modelib as ml
+import shutil
 
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_pkls', type=str, metavar='<directory>', 
 	help='input directory with apc pickle files')
 parser.add_argument('apc_dir', type=str, metavar='<directory>',
 	help='input directory with apc fasta gff files')
-parser.add_argument('--path2ml', type=str, metavar='<directory path>', 
-	help='absolute path to directory with modelib')
-parser.add_argument('--tmp_outdir', type=str, metavar='<outdir path>',
-	required=True, help='/path/ to tmp_outdir with tmp gffs')
 parser.add_argument('--outdir', type=str, metavar='<outdir path>',
 	required=False, help='/path/ to .json file with results')
 
@@ -42,7 +40,7 @@ args = parser.parse_args()
 program = 'apc_score.py'
 apc_dir = args.apc_dir
 pkl_dir = args.apc_pkls
-tmp_outdir = args.tmp_outdir+'icost_out/'
+tmp_outdir = 'icost_tmp/'
 os.makedirs(os.path.dirname(tmp_outdir), exist_ok=True)
 
 exon_mm = args.exon_mm
@@ -51,7 +49,6 @@ exon_len = args.exon_len
 intron_len = args.intron_len
 donor_pwm = args.donor_pwm
 acceptor_pwm = args.acceptor_pwm
-mlpath = args.path2ml
 
 fasta_paths = {}
 for fname in os.listdir(apc_dir):
@@ -92,8 +89,7 @@ for i in np.arange(irange_lo, irange_up+0.1, irange_step):
 			f' --exon_len {exon_len} --intron_len {intron_len}'
 			f' --exon_mm {exon_mm} --intron_mm {intron_mm}'
 			f' --donor_pwm {donor_pwm} --acceptor_pwm {acceptor_pwm}'
-			f' --path2ml {mlpath} --icost {icost} > {agff_path}', 
-				shell=True )
+			f' --icost {icost} > {agff_path}', shell=True )
 		print('#')
 		print('gene ID:', ID)
 		print('tested icost:', icost)
@@ -115,7 +111,7 @@ for i in np.arange(irange_lo, irange_up+0.1, irange_step):
 		else:
 			icost_groups[icost] += info
 
-os.rmdir(tmp_outdir)
+shutil.rmtree(tmp_outdir)
 
 jsonString = json.dumps(sorted(icost_groups.items()), indent=4)
 if args.outdir:

@@ -46,7 +46,7 @@ apc_isoforms, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
 fpath = args.fasta
 fname = fpath.split('/')[-1]
 ID = fname.split('.')[1]
-outdir = args.outdir+'apc_pickles/'
+outdir = args.outdir
 os.makedirs(os.path.dirname(outdir), exist_ok=True)
 
 if args.gff:
