@@ -12,6 +12,10 @@ output of make_models.py in apc/, includes .tsv files for position weight
 matrix, Markov model and length models
 ### results/
 code that generates svg/html files to view genes and isoforms, written by Ian
+### data/
+contains curated dataset for apc analysis, apc generated gff files and training sequences for apc models
+### other/
+stuff
 need apc pickler
 then icost scoring
 then avg mdis
