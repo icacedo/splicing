@@ -17,25 +17,25 @@ contains curated dataset for apc analysis, apc generated gff files and training 
 stuff im trying to learn
 ## recipes
 ### unzipping files to be used
-'''
+```
 cd data/
 mkdir build/
 tar -xvf file.tar.gz -C build/
 gunzip file.txt.gz -c > build/file.txt
-'''
+```
 ### train probabilistic models
-'''
+```
 mkdir mkmdls_out/
 cd apc/
 python3 make_models.py --extxt ../data/build/exon.txt --intxt ../data/build/intron.txt --len_limit 500 --dntxt ../data/build/donor.txt --actxt ../data/build/acceptor.txt --outdir ../mkmdls_out/
 ### calculate icost
-'''
+```
 ### generate apc isoforms
-'''
+```
 cd apc/
 python3 write_apc_cmds.py ../data/build/apc/ --outfile apc_cmds.txt --gff_out /home/ismael/Data/apcgen_gffs/ --gff_name apcgen.ws290 --exon_len ../mkmdls_out/exon_len.tsv --intron_len ../mkmdls_out/intron_len.tsv --exon_mm ../mkmdls_out/exon_mm.tsv --intron_mm ../mkmdls_out/intron_mm.tsv --donor_pwm ../mkmdls_out/donor_pwm.tsv --acceptor_pwm ../mkmdls_out/acceptor_pwm.tsv
 python3 multi_apc.py apc_cmds.txt --cpus #
-'''
+```
 write_apc_cmps.py will output a text file with commands to run in multi_apc.py
 make sure openturns is importable for apc_model_lib.py so apc runs correctly
 recommend sending output to directory outside of splicing/, in case git pull errors out
