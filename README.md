@@ -1,13 +1,15 @@
-# Code for modeling the stochastic background of RNA splicing...
+# modeling the stochastic nature of alternative splicing
 
-## Questions for later ##
-+ exon EVD scores exons <20 bp as a non-zero probability
-+ there are no exons <20 bp in exon.txt
-+ g parameter is negative, so x=0 (exon len) will be greater
-+ see memoize_fdist in modelib, also x < size_limit or <=?
-+ probability/score should be 0/-100?
-+ calculation score/expecation for outliers?
+## directory structure
+need apc pickler
+then icost scoring
+then avg mdis
 
+
+### arch/
++ old apc code
+### arch2/ 
++ testing and devolpment scripts for rewriting apc code
 ## Directions for icost testing ##
 + apc_pickler.py
   	+ single apc gene fasta file as input

@@ -3,14 +3,13 @@ import argparse
 import pickle
 import os
 import sys
+import modelib as ml
 
 parser = argparse.ArgumentParser()
 parser.add_argument('fasta', type=str, metavar='<file>',
 	help='input single sequence fasta file')
 parser.add_argument('--gff', type=str, metavar='<file>', required=False,
 	help='input .gff3 for single gene')
-parser.add_argument('--path2ml', type=str, metavar='<directory path>',
-	required=True, help='path to directory with modelib')
 parser.add_argument('--outdir', type=str, metavar='<outdir path>',
 	required=True, help='/path/ to outdir')
 
@@ -25,10 +24,6 @@ parser.add_argument('--flank', required=False, type=int, default=100,
 	metavar='<int>', help='length of genomic flank on each side %(default)d')
 
 args = parser.parse_args()
-
-sys.path.insert(0, args.path2ml)
-
-import modelib as ml
 
 seqid = None
 seq = None
@@ -59,25 +54,10 @@ if args.gff:
 else:
 	name = outdir+'ch.'+ID+'.apc_isoforms.pkl'
 print(name)
-with open (name, 'wb') as pick:
+with open(name, 'wb') as pick:
 	pickle.dump(apc_isoforms, pick)
 
-with open (name, 'rb') as pick:
+with open(name, 'rb') as pick:
 	pickell = pickle.load(pick)
 
 assert apc_isoforms == pickell, 'pickled incorrectly'
-
-# first i need to compare isoforms...
-
-
-
-
-
-
-
-
-
-
-
-
-

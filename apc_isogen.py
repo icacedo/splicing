@@ -45,8 +45,13 @@ args = parser.parse_args()
 
 seqid = None
 seq = None
+coor = None
+wbgene = None
 for seqid, seq in ml.read_fastas(args.fasta):
 	seqid = seqid
+	seq_info = seqid.split(' ')
+	coor = seq_info[1]
+	wbgene = seq_info[2].split(':')[1]
 	seq = seq
 
 if args.gff:
@@ -145,6 +150,8 @@ for intron in intron_counts:
 name = seqid.split(' ')[0]
 
 print('# name:', name)
+print('# coordinates:', coor)
+print('# wb id:', wbgene)
 print('# length:', len(seq))
 print('# donors:', len(dons))
 print('# acceptors:', len(accs))
