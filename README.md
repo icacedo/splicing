@@ -2,8 +2,37 @@
 ## manifest
 ### apc/
 code that generates all possible combinations of isoforms from a given gene
+default icost is derived from code in icost/
++ apc_isogen.py
+	+ runs apc algorithm on a single gene
++ apc_model_lib.py
+ 	+ contains functions that are used to generate apc isoforms and probabilistic models
++ make_models.py
+  	+ creates .tsv files for acceptor/donor pwms, exon/intron Markov models, and exon/intron length models
++ multi_apc.py
+ 	+ parallelizes apc_isogen.py to be used on every gene in the apc dataset
++ write_apc_cmds.py
+	+ writes a text file with commands to be run in parallel  	   
 ### icost/
 code that calculates the best intron cost for scoring isoforms
++ apc_pickler.py
+	+ creates .pkl files from the output of aml.apc()
+  	+ takes one gene as input
++ apc_score.py
+	+ uses single a .pkl and fasta file
+ 	+ scores each isoform and writes to stout in gff format
++ icost_scoring.py
+	+ returns .json file with all scored isoforms and tested icost values
+	+ uses apc_score.py to score isoforms
++ mdist_lib.py
+	+ functions to be called in icost_scoring.py
+ + run_apc_pickler.py
+  	+ creates .pkl files for all genes
+	+ uses apc_pickler.py
++ avg_mdist.py
+ 	+ takes .json file from icost_scoring.py
+	+ returns average Manhattan distance for each tested icost across all genes/isoforms
+	+ view output to pick best icost
 ### gff_analysis/
 code that parses through apc results and organizes isoforms
 ### mkmdls_out/
