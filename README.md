@@ -28,8 +28,15 @@ gunzip file.txt.gz -c > build/file.txt
 mkdir mkmdls_out/
 cd apc/
 python3 make_models.py --extxt ../data/build/exon.txt --intxt ../data/build/intron.txt --len_limit 500 --dntxt ../data/build/donor.txt --actxt ../data/build/acceptor.txt --outdir ../mkmdls_out/
+```
 ### calculate icost
 ```
+cd icost/
+ln -s ../apc/apc_model_lib.py
+python3 run_apc_pickler.py ../data/build/apc/ --outdir /home/ismael/Data/
+python3 icost_scoring.py /home/ismael/Data/apc_pickles/ ../data/build/apc/ --exon_len ../mkmdls_out/exon_len.tsv --intron_len ../mkmdls_out/intron_len.tsv --intron_mm ../mkmdls_out/intron_mm.tsv --exon_mm ../mkmdls_out/exon_mm.tsv --intron_mm ../mkmdls_out/intron_mm.tsv --donor_pwm ../mkmdls_out/donor_pwm.tsv --acceptor_pwm ../mkmdls_out/acceptor_pwm.tsv --icost_range_up 50 --icost_step 1
+```
+
 ### generate apc isoforms
 ```
 cd apc/
@@ -38,7 +45,7 @@ python3 multi_apc.py apc_cmds.txt --cpus #
 ```
 write_apc_cmps.py will output a text file with commands to run in multi_apc.py
 make sure openturns is importable for apc_model_lib.py so apc runs correctly
-recommend sending output to directory outside of splicing/, in case git pull errors out
+
 need apc pickler
 then icost scoring
 then avg mdis
