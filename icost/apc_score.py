@@ -2,7 +2,7 @@ import argparse
 import pickle
 import csv
 import sys
-import modelib as ml
+import apc_model_lib as aml
 
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_pkl', type=str, metavar='<file>',
@@ -30,42 +30,42 @@ args = parser.parse_args()
 
 seqid = None
 seq = None
-for seqid, seq in ml.read_fastas(args.fasta):
+for seqid, seq in aml.read_fastas(args.fasta):
 	seqid = seqid
 	seq = seq
 
 if args.exon_len:
-	re_elen_pdf, re_elen_log2 = ml.read_exin_len(args.exon_len)
-	ea, eb, eg = ml.read_len_params(args.exon_len) 
+	re_elen_pdf, re_elen_log2 = aml.read_exin_len(args.exon_len)
+	ea, eb, eg = aml.read_len_params(args.exon_len) 
 if args.intron_len:
-	re_ilen_pdf, re_ilen_log2 = ml.read_exin_len(args.intron_len)
-	ia, ib, ig = ml.read_len_params(args.intron_len)
+	re_ilen_pdf, re_ilen_log2 = aml.read_exin_len(args.intron_len)
+	ia, ib, ig = aml.read_len_params(args.intron_len)
 if args.exon_mm:
-	re_emm_prob, re_emm_log2 = ml.read_exin_mm(args.exon_mm)
+	re_emm_prob, re_emm_log2 = aml.read_exin_mm(args.exon_mm)
 if args.intron_mm:
-	re_imm_prob, re_imm_log2 = ml.read_exin_mm(args.intron_mm)
+	re_imm_prob, re_imm_log2 = aml.read_exin_mm(args.intron_mm)
 if args.donor_pwm:
-	re_dppm, re_dpwm = ml.read_pwm(args.donor_pwm)
+	re_dppm, re_dpwm = aml.read_pwm(args.donor_pwm)
 if args.acceptor_pwm:
-	re_appm, re_apwm = ml.read_pwm(args.acceptor_pwm)
+	re_appm, re_apwm = aml.read_pwm(args.acceptor_pwm)
 
 with open(args.apc_pkl, 'rb') as pick:
 	apc_isoforms = pickle.load(pick)
 
 if args.exon_len:
-	re_elen_pdf, re_elen_log2 = ml.read_exin_len(args.exon_len)
-	ea, eb, eg = ml.read_len_params(args.exon_len) 
+	re_elen_pdf, re_elen_log2 = aml.read_exin_len(args.exon_len)
+	ea, eb, eg = aml.read_len_params(args.exon_len) 
 if args.intron_len:
-	re_ilen_pdf, re_ilen_log2 = ml.read_exin_len(args.intron_len)
-	ia, ib, ig = ml.read_len_params(args.intron_len)
+	re_ilen_pdf, re_ilen_log2 = aml.read_exin_len(args.intron_len)
+	ia, ib, ig = aml.read_len_params(args.intron_len)
 if args.exon_mm:
-	re_emm_prob, re_emm_log2 = ml.read_exin_mm(args.exon_mm)
+	re_emm_prob, re_emm_log2 = aml.read_exin_mm(args.exon_mm)
 if args.intron_mm:
-	re_imm_prob, re_imm_log2 = ml.read_exin_mm(args.intron_mm)
+	re_imm_prob, re_imm_log2 = aml.read_exin_mm(args.intron_mm)
 if args.donor_pwm:
-	re_dppm, re_dpwm = ml.read_pwm(args.donor_pwm)
+	re_dppm, re_dpwm = aml.read_pwm(args.donor_pwm)
 if args.acceptor_pwm:
-	re_appm, re_apwm = ml.read_pwm(args.acceptor_pwm)
+	re_appm, re_apwm = aml.read_pwm(args.acceptor_pwm)
 
 exon_scores = {}
 intron_scores = {}
@@ -73,17 +73,17 @@ for iso in apc_isoforms:
 	total_iso_score = 0
 	for exon in iso['exons']:	
 		if exon in exon_scores: continue
-		elen_score = ml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
-		emm_score = ml.get_exin_mm_score(exon, seq, re_emm_log2)
+		elen_score = aml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
+		emm_score = aml.get_exin_mm_score(exon, seq, re_emm_log2)
 		escore = elen_score + emm_score
 		exon_scores[exon] = escore
 	for intron in iso['introns']:
 		if intron in intron_scores: continue
-		ilen_score = ml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
-		imm_score = ml.get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
-		dseq, aseq = ml.get_donacc_seq(intron, seq)
-		dpwm_score = ml.get_donacc_pwm_score(dseq, re_dpwm)
-		apwm_score = ml.get_donacc_pwm_score(aseq, re_apwm)
+		ilen_score = aml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
+		imm_score = aml.get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
+		dseq, aseq = aml.get_donacc_seq(intron, seq)
+		dpwm_score = aml.get_donacc_pwm_score(dseq, re_dpwm)
+		apwm_score = aml.get_donacc_pwm_score(aseq, re_apwm)
 		iscore = ilen_score + imm_score + dpwm_score + apwm_score
 		intron_scores[intron] = iscore
 	for exon in iso['exons']:

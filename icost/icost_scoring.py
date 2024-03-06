@@ -4,7 +4,6 @@ import argparse
 import numpy as np
 import mdist_lib as mdl
 import json
-import modelib as ml
 import shutil
 
 parser = argparse.ArgumentParser()

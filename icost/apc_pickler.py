@@ -3,7 +3,7 @@ import argparse
 import pickle
 import os
 import sys
-import modelib as ml
+import apc_model_lib as aml
 
 parser = argparse.ArgumentParser()
 parser.add_argument('fasta', type=str, metavar='<file>',
@@ -27,21 +27,21 @@ args = parser.parse_args()
 
 seqid = None
 seq = None
-for seqid, seq in ml.read_fastas(args.fasta):
+for seqid, seq in aml.read_fastas(args.fasta):
 	seqid = seqid
 	seq = seq
 
 if args.gff:
-	dons, accs = ml.read_gff_sites(seq, args.gff)
+	dons, accs = aml.read_gff_sites(seq, args.gff)
 else:
-	dons, accs = ml.get_gtag(seq)
+	dons, accs = aml.get_gtag(seq)
 
 maxs = args.max_splice
 minin = args.min_intron
 minex = args.min_exon
 flank = args.flank
 
-apc_isoforms, trials = ml.apc(dons, accs, maxs, minin, minex, flank, seq)
+apc_isoforms, trials = aml.apc(dons, accs, maxs, minin, minex, flank, seq)
 
 fpath = args.fasta
 fname = fpath.split('/')[-1]
