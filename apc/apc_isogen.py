@@ -83,6 +83,7 @@ if args.acceptor_pwm:
 
 exon_scores = {}
 intron_scores = {}
+gtag_scores = {}
 for iso in apc_isoforms:
 	total_iso_score = 0
 	for exon in iso['exons']:	
@@ -100,13 +101,14 @@ for iso in apc_isoforms:
 		apwm_score = aml.get_donacc_pwm_score(aseq, re_apwm)
 		iscore = ilen_score + imm_score + dpwm_score + apwm_score
 		intron_scores[intron] = iscore
+		gtag_scores[intron] = (dpwm_score, apwm_score)
 	for exon in iso['exons']:
 		total_iso_score += exon_scores[exon]
 	for intron in iso['introns']:
 		total_iso_score += intron_scores[intron]
 	total_iso_score -= len(iso['introns']) * args.icost
 	iso['score'] = total_iso_score
-
+print(gtag_scores)
 apc_isoforms = sorted(apc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
 iso_weights = []
@@ -180,9 +182,12 @@ for iso in apc_isoforms:
 		for intron in iso['introns']:
 			iscore_f = '{:.5e}'.format(intron_scores[intron])
 			ifreq_f = '{:.5e}'.format(intron_freqs[intron])
+			gtscore_f = '{:5e}'.format(gtag_scores[intron][0])
+			agscore_f = '{:5e}'.format(gtag_scores[intron][1])
 			gff_writer.writerow([name, 'apc_isogen', 'intron', intron[0]+1,
 				intron[1]+1, iso_prob_f, '+', '.', 'Parent='+'iso-'+name+'-'
-				+str(count+1)+';score='+str(iscore_f)+';infreq='+str(ifreq_f)])
+				+str(count+1)+';score='+str(iscore_f)+';infreq='+str(ifreq_f)
+				+';dscore='+str(gtscore_f)+';ascore='+str(agscore_f)])
 		gff_writer.writerow([])
 		count += 1
 

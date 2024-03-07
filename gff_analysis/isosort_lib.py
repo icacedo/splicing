@@ -1,7 +1,7 @@
 import re
 import os
 import json
-import modelib as ml
+import apc_model_lib as aml
 
 def get_seq(fasta):
 
@@ -48,17 +48,17 @@ def get_wbgene_info(wb_gff, seq):
 # read in .tsv files for probabilistic models
 def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, icost):
 		
-	re_elen_pdf, re_elen_log2 = ml.read_exin_len(elen)
-	ea, eb, eg = ml.read_len_params(elen)
+	re_elen_pdf, re_elen_log2 = aml.read_exin_len(elen)
+	ea, eb, eg = aml.read_len_params(elen)
 
-	re_ilen_pdf, re_ilen_log2 = ml.read_exin_len(ilen)
-	ia, ib, ig = ml.read_len_params(ilen)
+	re_ilen_pdf, re_ilen_log2 = aml.read_exin_len(ilen)
+	ia, ib, ig = aml.read_len_params(ilen)
 
-	re_emm_prob, re_emm_log2 = ml.read_exin_mm(emm)
-	re_imm_prob, re_imm_log2 = ml.read_exin_mm(imm)
+	re_emm_prob, re_emm_log2 = aml.read_exin_mm(emm)
+	re_imm_prob, re_imm_log2 = aml.read_exin_mm(imm)
 
-	re_dppm, re_dpwm = ml.read_pwm(dpwm)
-	re_appm, re_apwm = ml.read_pwm(apwm)
+	re_dppm, re_dpwm = aml.read_pwm(dpwm)
+	re_appm, re_apwm = aml.read_pwm(apwm)
 
 	for gene in wbginfo:
 		wbginfo[gene]['escores'] = []
@@ -70,8 +70,8 @@ def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, icost):
 			if exon == wbginfo[gene]['exons'][-1]:
 				exon = (exon[0], len(seq)-100)
 			exon = (exon[0]-1, exon[1]-1) # adjust indexing
-			elen_score = ml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
-			emm_score = ml.get_exin_mm_score(exon, seq, re_emm_log2)
+			elen_score = aml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
+			emm_score = aml.get_exin_mm_score(exon, seq, re_emm_log2)
 			escore = elen_score + emm_score
 			escore = float('{:.5e}'.format(escore))
 			wbginfo[gene]['total_icost_score'] += escore
@@ -80,11 +80,11 @@ def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, icost):
 		wbginfo[gene]['gtag_scores'] = []
 		for intron in wbginfo[gene]['introns']:
 			intron = (intron[0]-1, intron[1]-1) # adjust indexing
-			ilen_score = ml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
-			imm_score = ml.get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
-			dseq, aseq = ml.get_donacc_seq(intron, seq)
-			dpwm_score = ml.get_donacc_pwm_score(dseq, re_dpwm)
-			apwm_score = ml.get_donacc_pwm_score(aseq, re_apwm)
+			ilen_score = aml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
+			imm_score = aml.get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
+			dseq, aseq = aml.get_donacc_seq(intron, seq)
+			dpwm_score = aml.get_donacc_pwm_score(dseq, re_dpwm)
+			apwm_score = aml.get_donacc_pwm_score(aseq, re_apwm)
 			wbginfo[gene]['gtag_scores'].append((dpwm_score, apwm_score))
 			iscore = ilen_score + imm_score + dpwm_score + apwm_score
 			iscore = float('{:.5e}'.format(iscore))
@@ -138,8 +138,8 @@ def get_apcgen_info(seq, apcgen_gff, wbstart, wbstop, dpwm, apwm):
 			if sline[2] == 'intron':
 				apc_isos[f'{gID}-{icount}'] += [sline]
 	
-	re_dppm, re_dpwm = ml.read_pwm(dpwm)
-	re_appm, re_apwm = ml.read_pwm(apwm)
+	re_dppm, re_dpwm = aml.read_pwm(dpwm)
+	re_appm, re_apwm = aml.read_pwm(apwm)
 
 	apcgen_isos = {}	
 	for iso in apc_isos:
@@ -164,9 +164,9 @@ def get_apcgen_info(seq, apcgen_gff, wbstart, wbstop, dpwm, apwm):
 			if ft[2] == 'intron':
 				dsite = int(ft[3]) - 1
 				asite = int(ft[4]) - 1
-				dseq, aseq = ml.get_donacc_seq((dsite, asite), seq)
-				dpwm_score = ml.get_donacc_pwm_score(dseq, re_dpwm)
-				apwm_score = ml.get_donacc_pwm_score(aseq, re_apwm)
+				dseq, aseq = aml.get_donacc_seq((dsite, asite), seq)
+				dpwm_score = aml.get_donacc_pwm_score(dseq, re_dpwm)
+				apwm_score = aml.get_donacc_pwm_score(aseq, re_apwm)
 				dpwm_score = float('{:.5e}'.format(dpwm_score))
 				apwm_score = float('{:.5e}'.format(apwm_score))	
 				gtag_scores.append((dpwm_score, apwm_score))
