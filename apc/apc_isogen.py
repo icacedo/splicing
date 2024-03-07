@@ -108,7 +108,7 @@ for iso in apc_isoforms:
 		total_iso_score += intron_scores[intron]
 	total_iso_score -= len(iso['introns']) * args.icost
 	iso['score'] = total_iso_score
-print(gtag_scores)
+
 apc_isoforms = sorted(apc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
 iso_weights = []
