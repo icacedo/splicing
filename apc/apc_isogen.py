@@ -51,7 +51,8 @@ for seqid, seq in aml.read_fastas(args.fasta):
 	seqid = seqid
 	seq_info = seqid.split(' ')
 	coor = seq_info[1]
-	wbgene = seq_info[2].split(':')[1]
+	strand = seq_info[2]
+	wbgene = seq_info[3].split(':')[1]
 	seq = seq
 
 if args.gff:
@@ -152,8 +153,9 @@ for intron in intron_counts:
 name = seqid.split(' ')[0]
 
 print('# name:', name)
-print('# coordinates:', coor)
 print('# wb id:', wbgene)
+print('# coordinates:', coor)
+print('# strand:', strand)
 print('# length:', len(seq))
 print('# donors:', len(dons))
 print('# acceptors:', len(accs))
