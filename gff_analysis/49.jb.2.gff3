@@ -1,0 +1,3 @@
+I	apc_isogen	gene	347469	349445	.	+	.	ID=Gene-ch.49
+I	apc_isogen	mRNA	347469	349445	0.354825	+	.	ID=iso-ch.49-1;Parent=Gene-ch.49
+I	apc_isogen	exon	347469	348669	0.354825	+	.	Parent=iso-ch.49-1
