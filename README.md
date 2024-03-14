@@ -65,7 +65,7 @@ python3 make_models.py --extxt ../data/build/exon.txt --intxt ../data/build/intr
 cd icost/
 ln -s ../apc/apc_model_lib.py
 python3 run_apc_pickler.py ../data/build/apc282/ --outdir /home/ismael/Data/
-python3 icost_scoring.py /home/ismael/Data/apc_pickles/ ../data/build/apc282/ --exon_len ../mkmdls_out/exon_len.tsv --intron_len ../mkmdls_out/intron_len.tsv --intron_mm ../mkmdls_out/intron_mm.tsv --exon_mm ../mkmdls_out/exon_mm.tsv --intron_mm ../mkmdls_out/intron_mm.tsv --donor_pwm ../mkmdls_out/donor_pwm.tsv --acceptor_pwm ../mkmdls_out/acceptor_pwm.tsv --icost_range_up 50 --icost_step 1
+python3 icost_scoring.py /home/ismael/Data/apc_pickles/ ../data/build/apc282/ --outdir /home/ismael/Data/ --exon_len ../mkmdls_out/exon_len.tsv --intron_len ../mkmdls_out/intron_len.tsv --intron_mm ../mkmdls_out/intron_mm.tsv --exon_mm ../mkmdls_out/exon_mm.tsv --intron_mm ../mkmdls_out/intron_mm.tsv --donor_pwm ../mkmdls_out/donor_pwm.tsv --acceptor_pwm ../mkmdls_out/acceptor_pwm.tsv --icost_range_up 50 --icost_step 1
 python3 avg_mdist.py results_icost.json
 ```
 best icost is 21, tested in increments of 1
