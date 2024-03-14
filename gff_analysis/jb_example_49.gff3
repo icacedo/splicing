@@ -1,0 +1,15 @@
+I	apc_isogen	intron	347582	347629	29.2678	 +	.	id=29.2678
+I	apc_isogen	intron	347707	347761	37.7455	 +	.	id=37.7455
+I	apc_isogen	intron	347984	348041	26.4575	 +	.	id=26.4575
+I	apc_isogen	intron	347580	347629	28.85	 +	.	id=28.85
+I	apc_isogen	intron	347972	348041	21.214	 +	.	id=21.214
+I	apc_isogen	intron	347711	347761	33.7009	 +	.	id=33.7009
+I	apc_isogen	intron	347707	347768	32.5389	 +	.	id=32.5389
+I	apc_isogen	intron	347913	348041	16.1883	 +	.	id=16.1883
+I	apc_isogen	intron	347586	347629	23.6662	 +	.	id=23.6662
+I	apc_isogen	exon	347717	347761	32.1822	 +	.	id=32.1822
+I	apc_isogen	gene	347580	347650	.	+	.	ID=Gene-ch.49
+I	apc_isogen	mRNA	347580	347650	3.54825e-01	+	.	ID=iso-ch.49-1;Parent=Gene-ch.49
+I	apc_isogen	exon	347580	347620	3.54825e-01	+	.	Parent=iso-ch.49-1
+I	apc_isogen	exon	347651	347700	3.54825e-01	+	.	Parent=iso-ch.49-1
+I	apc_isogen	intron	347621	347650	3.54825e-01	+	.	Parent=iso-ch.49-1

@@ -62,6 +62,7 @@ for intron in iscores:
 	beg = coor[0] + intron[0]
 	end = coor[0] + intron[1]
 	score = iscores[intron]
-	print(f'{chrom}\t{source}\tintron\t{beg}\t{end}\t',
-			f'{strand}\t.\tParent=Gene-{name};score={score}:name=jeans')
+	print(f'{chrom}\t{source}\tintron\t{beg}\t{end}\t{score}\t',
+			f'{strand}\t.\tid={score}')
+	
 
