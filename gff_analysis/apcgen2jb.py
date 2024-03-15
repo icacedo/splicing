@@ -51,18 +51,73 @@ with open(args.gff, 'r') as fp:
 					dscores[intron[0]] = dscore
 					ascores[intron[1]] = ascore
 
-seq = ''
-with open(args.fasta, 'r') as fp:
+with open(args.gff, 'r') as fp:
 	for line in fp.readlines():
 		line = line.rstrip()
-		if line.startswith('>'): continue
-		seq += line
+		line = line.split('\t')
+		if len(line) < 9: continue
+		if line[2] == 'gene':
+			beg = coor[0] + int(line[3])
+			end = coor[1] + int(line[4])
+			print(f'{chrom}\t{source}\tgene\t{beg}\t{end}\t.\t',
+					f'{strand}\t.\t{line[8]}')
+		if line[2] == 'mRNA':
+			line[0] = chrom	
+			line[3] = str(coor[0] + int(line[3]))
+			line[4] = str(coor[1] + int(line[4]))
+			print('\t'.join(line))
+		if line[2] == 'exon':
+			beg = coor[0] + int(line[3])
+			end = coor[0] + int(line[4])
+			par = line[8].split(';')[0]
+			print(f'{chrom}\t{source}\texon\t{beg}\t{end}\t.\t',
+					f'{strand}\t.\t{par}')
+		if line[2] == 'intron':	
+			beg = coor[0] + int(line[3])
+			end = coor[0] + int(line[4])
+			par = line[8].split(';')[0]
+			print(f'{chrom}\t{source}\tintron\t{beg}\t{end}\t.\t',
+					f'{strand}\t.\t{par}')
+
+#print('#')
 
 for intron in iscores:
 	beg = coor[0] + intron[0]
 	end = coor[0] + intron[1]
 	score = iscores[intron]
 	print(f'{chrom}\t{source}\tintron\t{beg}\t{end}\t{score}\t',
-			f'{strand}\t.\tid={score}')
+			f'{strand}\t.\tID={score}')
+
+#print('#')
+
+for exon in escores:
+	beg = coor[0] + exon[0]
+	end = coor[0] + exon[1]
+	score = escores[exon]
+	print(f'{chrom}\t{source}\texon\t{beg}\t{end}\t{score}\t',
+			f'{strand}\t.\tID={score}')
+
+#print('#')
+
+for dsite in dscores:
+	beg = coor[0] + dsite
+	end = beg + 4
+	score = dscores[dsite]
+	print(f'{chrom}\t{source}\tdonor\t{beg}\t{end}\t{score}\t',
+			f'{strand}\t.\tID={score}')
+
+#print('#')
+
+for asite in ascores:
+	end = coor[0] + asite
+	beg = end - 5
+	score = ascores[asite]
+	print(f'{chrom}\t{source}\tacceptor\t{beg}\t{end}\t{score}\t',
+			f'{strand}\t.\tID={score}')
+
+
+
+
+
 	
 
