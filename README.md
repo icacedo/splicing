@@ -68,14 +68,14 @@ python3 run_apc_pickler.py ../data/build/apc282/ --outdir /home/ismael/Data/
 python3 icost_scoring.py /home/ismael/Data/apc_pickles/ ../data/build/apc282/ --outdir /home/ismael/Data/ --exon_len ../mkmdls_out/exon_len.tsv --intron_len ../mkmdls_out/intron_len.tsv --intron_mm ../mkmdls_out/intron_mm.tsv --exon_mm ../mkmdls_out/exon_mm.tsv --intron_mm ../mkmdls_out/intron_mm.tsv --donor_pwm ../mkmdls_out/donor_pwm.tsv --acceptor_pwm ../mkmdls_out/acceptor_pwm.tsv --icost_range_up 50 --icost_step 1
 python3 avg_mdist.py results_icost.json
 ```
-best icost is 21, tested in increments of 1
+best icost is 22, tested in increments of 1
 ### generate apc isoforms
 ```
 cd apc/
-python3 write_apc_cmds.py ../data/build/apc282/ --outfile apc_cmds.txt --gff_out /home/ismael/Data/apcgen_gffs/ --gff_name apcgen.ws290 --exon_len ../mkmdls_out/exon_len.tsv --intron_len ../mkmdls_out/intron_len.tsv --exon_mm ../mkmdls_out/exon_mm.tsv --intron_mm ../mkmdls_out/intron_mm.tsv --donor_pwm ../mkmdls_out/donor_pwm.tsv --acceptor_pwm ../mkmdls_out/acceptor_pwm.tsv
+python3 write_apc_cmds.py ../data/build/apc282/ --outfile apc_cmds.txt --gff_out /home/ismael/Data/apcgen_gffs/ --gff_name apcgen.ws282 --exon_len ../mkmdls_out/exon_len.tsv --intron_len ../mkmdls_out/intron_len.tsv --exon_mm ../mkmdls_out/exon_mm.tsv --intron_mm ../mkmdls_out/intron_mm.tsv --donor_pwm ../mkmdls_out/donor_pwm.tsv --acceptor_pwm ../mkmdls_out/acceptor_pwm.tsv
 python3 multi_apc.py apc_cmds.txt --cpus 14
 ```
-default icost is 21
+default icost is 22
 write_apc_cmps.py will output a text file with commands to run in multi_apc.py
 make sure openturns is importable for apc_model_lib.py so apc runs correctly
 

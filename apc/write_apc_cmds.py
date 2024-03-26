@@ -39,7 +39,7 @@ parser.add_argument('--donor_pwm', required=False, type=str, metavar='<file>',
 	help='donor pwm .tsv')
 parser.add_argument('--acceptor_pwm', required=False, type=str, metavar='<file>',
 	help='acceptor pwm .tsv')
-parser.add_argument('--icost', required=False, type=float, default=21,
+parser.add_argument('--icost', required=False, type=float, default=22,
 	metavar='<float>', help='intron cost %(default).2d')
 	
 args = parser.parse_args()
