@@ -3,7 +3,9 @@ import argparse
 import os
 import json
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+	description='adds labels to apc generated isoforms,' 
+				' writes to .json files in out/')
 parser.add_argument('wb_dir', type=str, metavar='<directory>',
 	help='directory with wormbase fasta/gff files')
 parser.add_argument('apcgen_dir', type=str, metavar='<directory>',

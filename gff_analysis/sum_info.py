@@ -2,7 +2,8 @@ import argparse
 import os
 import json
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+		description='generates lists of isoforms based on categories')
 parser.add_argument('json_dir', type=str, metavar='<directory>',
 	help='directory with isosort json files')
 
@@ -17,7 +18,7 @@ for fname in os.listdir(args.json_dir):
 		if info[f'ch.{gID}-1']['wb_frame'] == True:
 			prob = info[f'ch.{gID}-1']['prob']
 			wbmatch.append((fname, prob))
-print(wbmatch)
+
 wbmatch_bins = {
 	0.99: [],
 	0.90: [],
@@ -47,6 +48,7 @@ print(f'bin\tiso count')
 for bn in wbmatch_bins:
 	print(f'{bn}\t{len(wbmatch_bins[bn])}')
 print('#####')
+
 # next check if other isoforms matches wb
 wbmatch2 = []
 no_match = []
@@ -54,19 +56,21 @@ for fname in os.listdir(args.json_dir):
 	gID = fname.split('.')[0]
 	with open(args.json_dir+fname) as jfile:
 		info = json.load(jfile)
-		for iso in info:
-			if iso == f'ch.{gID}-1' or iso == f'ch.{gID}-wb': continue
-			if info[iso]['wb_frame'] == True:
-				wbmatch = (iso, info[iso]['prob'])
-				wbmatch2.append(wbmatch)			
+	for iso in info:
+		print(iso)
+		if iso == f'ch.{gID}-1' or iso == f'ch.{gID}-wb': continue
+		if info[iso]['wb_frame'] == True:
+			wbmatch = (iso, info[iso]['prob'])
+			wbmatch2.append(wbmatch)			
+	break
 
 for w in wbmatch2:
 	print(w)
-
+'''
 print('#####')
 print('# genes with incorrect top iso prediction, correct second iso prediction')
 for w in wbmatch2:
 	if w[0].split('-')[1] == str(2):
 		print(w[0].split('-')[0])
-
+'''
 
