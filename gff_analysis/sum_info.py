@@ -1,6 +1,7 @@
 import argparse
 import os
 import json
+import csv
 
 parser = argparse.ArgumentParser(
 		description='generates lists of isoforms based on categories')
@@ -47,30 +48,75 @@ print(f'top iso match: {len(wbmatch)} out of {total}')
 print(f'bin\tiso count')
 for bn in wbmatch_bins:
 	print(f'{bn}\t{len(wbmatch_bins[bn])}')
-print('#####')
 
-# next check if other isoforms matches wb
+gmatches = []
+for gene in wbmatch:
+	gmatches.append(gene[0].split('.')[0])
+
 wbmatch2 = []
-no_match = []
+for fname in os.listdir(args.json_dir):
+	gID = fname.split('.')[0]
+	if gID in gmatches: continue
+	with open(args.json_dir+fname) as jfile:
+		info = json.load(jfile)
+	for iso in info:
+		if iso == f'ch.{gID}-1' or iso == f'ch.{gID}-wb': continue
+		if info[iso]['wb_frame'] == True:
+			match2 = (iso, info[iso]['prob'])
+			wbmatch2.append(match2)		
+
+gmatches2 = []
+for gene in wbmatch2:
+	iid = gene[0].split('.')[1]
+	gmatches2.append(iid.split('-')[0])
+
+nomatch = []
+for fname in os.listdir(args.json_dir):
+	gID = fname.split('.')[0]
+	if gID in gmatches: continue
+	if gID in gmatches2: continue
+	nomatch.append(gID)
+
+total_nomatch = len(wbmatch2) + len(nomatch)
+print(f'top iso no match: {total_nomatch} out of {total}')
+print(f'other iso match: {len(wbmatch2)} out of {total_nomatch}' )
+
+match2nd = []
+for w in wbmatch2:
+	if w[0].split('-')[1] == str(2):
+		match2nd.append(w[0].split('-')[0])
+
+print(f'2nd iso match: {len(match2nd)} out of {len(wbmatch2)}')
+print(f'no iso match: {len(nomatch)} out of {total_nomatch}')
+
+isomatches = {}
 for fname in os.listdir(args.json_dir):
 	gID = fname.split('.')[0]
 	with open(args.json_dir+fname) as jfile:
 		info = json.load(jfile)
+	has_match = False
 	for iso in info:
-		print(iso)
-		if iso == f'ch.{gID}-1' or iso == f'ch.{gID}-wb': continue
+		if 'wb' in iso: continue
 		if info[iso]['wb_frame'] == True:
-			wbmatch = (iso, info[iso]['prob'])
-			wbmatch2.append(wbmatch)			
-	break
+			has_match = True
+			iid = iso.split('-')
+			isomatches[iid[0]] = int(iid[1])
+	if has_match == False:
+		isomatches[f'ch.{gID}'] = 0
 
-for w in wbmatch2:
-	print(w)
-'''
-print('#####')
-print('# genes with incorrect top iso prediction, correct second iso prediction')
-for w in wbmatch2:
-	if w[0].split('-')[1] == str(2):
-		print(w[0].split('-')[0])
-'''
+dlist = []
+for item in isomatches:
+	d = {}
+	d['iso id'] = item
+	d['wb match'] = isomatches[item]
+	dlist.append(d)
+	
+fields = ['iso id', 'wb match']
+filename = 'wb_matching_isos.csv'
+with open(filename, 'w') as csvfile:
+	writer = csv.DictWriter(csvfile, fieldnames=fields)
+	writer.writeheader()
+	writer.writerows(dlist)
+
+		
 
