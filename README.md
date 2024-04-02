@@ -78,6 +78,14 @@ python3 multi_apc.py apc_cmds.txt --cpus 14
 default icost is 22
 write_apc_cmps.py will output a text file with commands to run in multi_apc.py
 make sure openturns is importable for apc_model_lib.py so apc runs correctly
+### organizing isoforms
+```
+cd gff_analysis/
+ln -s ../apc/apc_model_lib.py
+python3 isosort.py ../data/build/apc282/ ../data/build/apcgen_gffs/ --elen ../mkmdls_out/exon_len.tsv --ilen ../mkmdls_out/intron_len.tsv --emm ../mkmdls_out/exon_mm.tsv --imm ../mkmdls_out/intron_mm.tsv --apwm ../mkmdls_out/acceptor_pwm.tsv --dpwm ../mkmdls_out/donor_pwm.tsv
+python3 sum_info.py out/
+```
+isosort add labels to apc generated isoforms, sum_info gives brief summary of these isoforms and outputs a csv identifying which apc generated isoforms match wormbase (0 means no match)
 
 
 

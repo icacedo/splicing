@@ -24,7 +24,7 @@ parser.add_argument('--dpwm', type=str, metavar='<file>',
 parser.add_argument('--apwm', type=str, metavar='<file>',
 	help='acceptor site pwm .tsv')
 
-parser.add_argument('--icost', required=False, type=float, default=21.0, 
+parser.add_argument('--icost', required=False, type=float, default=22.0, 
 	metavar='<float>', help='intron cost %(default).2d') 
 
 args = parser.parse_args()

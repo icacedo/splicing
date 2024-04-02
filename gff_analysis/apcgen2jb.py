@@ -5,6 +5,11 @@ parser.add_argument('gff')
 
 args = parser.parse_args()
 
+# ch.5647 is on the negative strand, top iso matches wb
+# WBGene00012489
+# ch.9727 is on the positive strand, top iso matches wb
+# WBGene00044472
+
 escores = {}
 iscores = {}
 dscores = {}
