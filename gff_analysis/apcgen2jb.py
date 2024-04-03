@@ -5,8 +5,8 @@ parser.add_argument('gff')
 
 args = parser.parse_args()
 
-# ch.5647 is on the negative strand, top iso matches wb
-# WBGene00012489
+# ch.9940 is on the negative strand, top iso matches wb
+# WBGene0004483
 # ch.9727 is on the positive strand, top iso matches wb
 # WBGene00044472
 
@@ -78,18 +78,27 @@ with open(args.gff, 'r') as fp:
 			line[8] = line[8].split(';')[0]
 			print('\t'.join(line))
 		if line[2] == 'exon':
-			beg = coor[0] + int(line[3])
-			end = coor[0] + int(line[4])
+			if strand == '+':
+				beg = coor[0] + int(line[3])
+				end = coor[0] + int(line[4])
+			if strand == '-':
+				beg = coor[1] - int(line[4]) + 2
+				end = coor[1] - int(line[3]) + 2
 			par = line[8].split(';')[0]
 			escore = escores[(int(line[3]), int(line[4]))]
 			efs = (
 				f'{chrom}\t{source}\texon\t{beg}\t{end}\t.\t'
 				f'{strand}\t.\t{par};escore={escore}'
 			)
-			print(efs)		
-		if line[2] == 'intron':	
-			beg = coor[0] + int(line[3])
-			end = coor[0] + int(line[4])
+			print(efs)
+
+		if line[2] == 'intron':
+			if strand == '+':
+				beg = coor[0] + int(line[3])
+				end = coor[0] + int(line[4])
+			if strand == '-':
+				beg = coor[1] - int(line[4]) + 2
+				end = coor[1] - int(line[3]) + 2
 			par = line[8].split(';')[0]
 			iscore = iscores[(int(line[3]), int(line[4]))]
 			dsite = intron[0]
@@ -106,8 +115,12 @@ with open(args.gff, 'r') as fp:
 print('# introns')
 
 for intron in iscores:
-	beg = coor[0] + intron[0]
-	end = coor[0] + intron[1]
+	if strand == '+':
+		beg = coor[0] + intron[0]
+		end = coor[0] + intron[1]
+	if strand == '-':
+		beg = coor[1] - intron[1] + 2
+		end = coor[1] - intron[0] + 2
 	score = iscores[intron]
 	ifs = (
 		f'{chrom}\t{source}\tintron\t{beg}\t{end}\t{score}\t'
@@ -118,8 +131,12 @@ for intron in iscores:
 print('# exons')
 
 for exon in escores:
-	beg = coor[0] + exon[0]
-	end = coor[0] + exon[1]
+	if strand == '+':
+		beg = coor[0] + exon[0]
+		end = coor[0] + exon[1]
+	if strand == '-':
+		beg = coor[1] - exon[1] + 2
+		end = coor[1] - exon[0] + 2
 	score = escores[exon]
 	efs = (
 		f'{chrom}\t{source}\texon\t{beg}\t{end}\t{score}\t'
@@ -130,8 +147,12 @@ for exon in escores:
 print('# donors')
 
 for dsite in dscores:
-	beg = coor[0] + dsite
-	end = beg + 4
+	if strand == '+':
+		beg = coor[1] + dsite
+		end = beg + 4
+	if strand == '-':
+		end = coor[1] - dsite + 2
+		beg = end - 4
 	score = dscores[dsite]
 	dfs = (
 		f'{chrom}\t{source}\tdonor\t{beg}\t{end}\t{score}\t'
@@ -142,8 +163,12 @@ for dsite in dscores:
 print('# acceptors')
 
 for asite in ascores:
-	end = coor[0] + asite
-	beg = end - 5
+	if strand == '+':
+		end = coor[0] + asite
+		beg = end - 5
+	if strand == '-':
+		beg = coor[1] - asite + 2
+		end = beg + 5
 	score = ascores[asite]
 	afs = (
 		f'{chrom}\t{source}\tacceptor\t{beg}\t{end}\t{score}\t'
