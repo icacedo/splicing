@@ -90,28 +90,32 @@ print(f'2nd iso match: {len(match2nd)} out of {len(wbmatch2)}')
 print(f'no iso match: {len(nomatch)} out of {total_nomatch}')
 
 isomatches = {}
+iso_wbgenes = {}
 for fname in os.listdir(args.json_dir):
 	gID = fname.split('.')[0]
 	with open(args.json_dir+fname) as jfile:
 		info = json.load(jfile)
 	has_match = False
 	for iso in info:
-		if 'wb' in iso: continue
+		iid = iso.split('-')
+		if 'wb' in iso: 
+			iso_wbgenes[iid[0]] = info[iso]['Parent=Gene']
+			continue
 		if info[iso]['wb_frame'] == True:
 			has_match = True
-			iid = iso.split('-')
 			isomatches[iid[0]] = int(iid[1])
 	if has_match == False:
 		isomatches[f'ch.{gID}'] = 0
 
 dlist = []
-for item in isomatches:
+for iid in isomatches:
 	d = {}
-	d['iso id'] = item
-	d['wb match'] = isomatches[item]
+	d['iso id'] = iid
+	d['wb match'] = isomatches[iid]
+	d['WBGene'] = iso_wbgenes[iid]
 	dlist.append(d)
-	
-fields = ['iso id', 'wb match']
+
+fields = ['iso id', 'WBGene', 'wb match']
 filename = 'wb_matching_isos.csv'
 with open(filename, 'w') as csvfile:
 	writer = csv.DictWriter(csvfile, fieldnames=fields)
