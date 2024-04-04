@@ -3,6 +3,7 @@ import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('jb_gff')
+parser.add_argument('out_dir')
 
 args = parser.parse_args()
 
@@ -42,11 +43,11 @@ with open(args.jb_gff, 'r') as fp:
 			accs.append(line)
 
 bname = os.path.splitext(os.path.basename(args.jb_gff))[0]
-writer(isos, bname, 'isos')
-writer(ints, bname, 'ints')
-writer(exos, bname, 'exos')
-writer(dons, bname, 'dons')
-writer(accs, bname, 'accs')
+writer(isos, args.out_dir + bname, 'isos')
+writer(ints, args.out_dir + bname, 'ints')
+writer(exos, args.out_dir + bname, 'exos')
+writer(dons, args.out_dir + bname, 'dons')
+writer(accs, args.out_dir + bname, 'accs')
 			
 			
 			
