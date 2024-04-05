@@ -1,5 +1,6 @@
 import argparse
 import isosort_lib as isl
+import csv
 import os
 import json
 
@@ -9,19 +10,17 @@ parser.add_argument('fa_dir', type=str, metavar='<directory>',
 parser.add_argument('j_dir', type=str, metavar='<directory>',
 	help='directory with apc isoform json files')
 parser.add_argument('g_list', type=str, metavar='<file>',
-	help='text file with list of genes with bad isos to examine')
+	help='csv file with list of genes with bad isos to examine')
 
 args = parser.parse_args()
 
 paths = {}
-
-with open(args.g_list, 'r') as fp:
-	for line in fp.readlines():
-		line = line.rstrip()
-		if line.startswith('#'): continue
-		ID = line.split('.')[1]
+with open(args.g_list, 'r') as csvfile:
+	reader = csv.DictReader(csvfile)
+	for row in reader:
+		ID = row['iso id'].split('.')[1]
 		paths[ID] = []
-
+	
 for fname in os.listdir(args.fa_dir):
 	if fname.endswith('.gff3'): continue
 	ID = fname.split('.')[1]

@@ -148,7 +148,7 @@ print('# donors')
 
 for dsite in dscores:
 	if strand == '+':
-		beg = coor[1] + dsite
+		beg = coor[0] + dsite
 		end = beg + 4
 	if strand == '-':
 		end = coor[1] - dsite + 2
