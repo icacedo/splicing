@@ -5,7 +5,8 @@
 import argparse
 import random
 from datetime import datetime
-import apc_model_lib
+import apc_model_lib as aml
+import os
 
 parser = argparse.ArgumentParser(
 	description='genetic algorithm for weight and icost optimization')
@@ -25,7 +26,7 @@ parser.add_argument('--min_exon', required=False, type=int, default=25,
 	metavar='<int>', help='minimum length of exon %(default)d')
 parser.add_argument('--flank', required=False, type=int, default=100,
 	metavar='<int>', help='length of genomic flank on each side %(default)d')
-parser.add_argument('--limit', required=False, type=int, default=20, 
+parser.add_argument('--limit', required=False, type=int, default=100, 
 	metavar='<int>', help='limit number of saved apc isoforms %(default)d')
 
 parser.add_argument('--elen', required=False, type=str, 
@@ -38,13 +39,13 @@ parser.add_argument('--emm', required=False, type=str,
 	default='../mkmdls_out/exon_mm.tsv', metavar='<file>',
 	help='path to exon markov model .tsv [%(default)s]')
 parser.add_argument('--imm', required=False, type=str, 
-	default='../mkmdls_out/intron.mm.tsv', metavar='<file>',
+	default='../mkmdls_out/intron_mm.tsv', metavar='<file>',
 	help='path to intron markov model .tsv [%(default)s]')
 parser.add_argument('--dpwm', required=False, type=str, 
-	default='../mkdls_out/donor_pwm.tsv', metavar='<file>',
+	default='../mkmdls_out/donor_pwm.tsv', metavar='<file>',
 	help='path to donor pwm .tsv [%(default)s]')
 parser.add_argument('--apwm', required=False, type=str, 
-	default='../mkdls_out/acceptor_pwm.tsv', metavar='<file>',
+	default='../mkmdls_out/acceptor_pwm.tsv', metavar='<file>',
 	help='path to acceptor pwm .tsv [%(default)s]')
 parser.add_argument('--icost', required=False, type=float, default=0.0,
 	metavar='<float>', help='intron cost %(default).2d')
@@ -74,16 +75,22 @@ def chrom():
 
 	return genotype
 
-print(chrom())
+def get_fit(chrom):
 
-#def get_info(fasta, gff):
+	tmpfile = f'tmp.{os.getpid()}.gff'
+	cmd = (
+		f'python3 {args.program} {args.fasta} --gff {args.gff} '
+		f'--max_splice {args.max_splice} --min_intron {args.min_intron} '
+		f'--min_exon {args.min_exon} --flank {args.flank} ' 
+		f'--limit {args.limit} --exon_len {args.elen} '
+		f'--intron_len {args.ilen} --exon_mm {args.emm} '
+		f'--intron_mm {args.imm} --donor_pwm {args.dpwm} '
+		f'--acceptor_pwm {args.apwm} > {tmpfile}'
+		)
 
+	os.system(cmd)
 
-
-#def get_fit(chrom, info):
-	
-	
-
+get_fit(chrom)
 
 
 

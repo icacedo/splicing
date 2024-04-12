@@ -8,7 +8,7 @@ def get_gff_intron_probs(gff):
 			line = line.rstrip()
 			line = line.split('\t')
 			if len(line) < 8: continue
-			if line[2] == 'intron' and line[6] == '+':
+			if line[2] == 'intron': #and line[6] == '+': why was this here?
 				beg = int(line[3])
 				end = int(line[4])
 				score = line[5]

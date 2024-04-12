@@ -17,7 +17,8 @@ args = parser.parse_args()
 
 def worker(cmd):
 	fpath = cmd.split(' ')[2]
-	gID = fpath.split('.')[1]
+	name = fpath.split('/')[-1]
+	gID = name.split('.')[1]
 	print(f'working on {gID}')
 	return subprocess.run(cmd, shell=True, capture_output=True).stdout.decode()
 
@@ -32,24 +33,11 @@ with open(args.file, 'r') as fp:
 
 os.makedirs(dpath, exist_ok=True)
 
+starttime = time.time()
 pool = mp.Pool(args.cpus)
 pool.map(worker, jobs)
-
-# testing time
-'''	
-starttime = time.time()
-pool = mp.Pool(args.cpus)
-for result in pool.map(worker, jobs):
-	print(result, end='')
 endtime = time.time()
-print(endtime-starttime)
-
-starttime = time.time()
-for i in jobs:
-	worker(i)
-endtime = time.time()
-print(endtime-starttime)
-'''
+print('time:', endtime-starttime)
 
 
 
