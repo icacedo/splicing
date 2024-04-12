@@ -1,7 +1,3 @@
-# notes from Network Models and Optimization pp 1-47
-# chapter: Multiobjective Genetic Algorithms
-# also https://www.geeksforgeeks.org/genetic-algorithms/#
-
 import argparse
 import random
 from datetime import datetime
@@ -75,6 +71,23 @@ def chrom():
 
 	return genotype
 
+def bad_introns(gff):
+
+	with open(gff, 'r') as fp:
+		for line in fp.readlines():
+			line = line.rstrip()
+			line = line.split('\t')
+			if line[1] == 'RNASeq_splice': 
+				beg = int(line[3])
+				if beg <= 100 + args.min_exon: continue
+				print(line)
+
+bad_introns(args.gff)
+
+
+
+
+'''
 def get_fit(chrom):
 
 	tmpfile = f'tmp.{os.getpid()}.gff'
@@ -90,8 +103,13 @@ def get_fit(chrom):
 
 	os.system(cmd)
 
-get_fit(chrom)
+	with open(tmpfile, 'r') as fp:
+		for line in fp.readlines():
+			line = line.rstrip()
+			
 
+get_fit(chrom)
+'''
 
 
 
