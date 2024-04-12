@@ -40,18 +40,18 @@ parser.add_argument('--acceptor_pwm', required=False, type=str, metavar='<file>'
 	help='acceptor pwm .tsv')
 
 # penalties
-parser.add_argument('--welen', required=False, type='<float>', default=1.0,
-	help='exon length model weight [%(default).2f]')
-parser.add_argument('--wilen', required=False, type='<float>', default=1.0,
-	help='intron length model weight [%(default).2f]')
-parser.add_argument('--wemm', required=False, type='<float>', default=1.0,
-	help='exon Markov model weight [%(default).2f]')
-parser.add_argument('--wimm', required=False, type='<float>', default=1.0,
-	help='intron Markov model weight [%(default).2f]')
-parser.add_argument('--wdpwm', required=False, type='<float>', default=1.0,
-	help='donor pwm model weight [%(default).2f]')
-parser.add_argument('--wapwm', required=False, type='<float>', default=1.0,
-	help='acceptor pwm model weight [%(default).2f]')
+parser.add_argument('--welen', required=False, type=float, metavar='<float>', 
+	default=1.0, help='exon length model weight [%(default).2f]')
+parser.add_argument('--wilen', required=False, type=float, metavar='<float>', 
+	default=1.0, help='intron length model weight [%(default).2f]')
+parser.add_argument('--wemm', required=False, type=float, metavar='<float>', 
+	default=1.0, help='exon Markov model weight [%(default).2f]')
+parser.add_argument('--wimm', required=False, type=float, metavar='<float>', 
+	default=1.0, help='intron Markov model weight [%(default).2f]')
+parser.add_argument('--wdpwm', required=False, type=float, metavar='<float>', 
+	default=1.0, help='donor pwm model weight [%(default).2f]')
+parser.add_argument('--wapwm', required=False, type=float, metavar='<float>', 
+	default=1.0, help='acceptor pwm model weight [%(default).2f]')
 parser.add_argument('--icost', required=False, type=float, default=0.0,
 	metavar='<float>', help='intron cost %(default).2d')
 	
@@ -117,7 +117,7 @@ for iso in apc_isoforms:
 											'GT', 'AG') * args.wimm 
 		dseq, aseq = aml.get_donacc_seq(intron, seq)
 		dpwm_score = aml.get_donacc_pwm_score(dseq, re_dpwm) * args.wdpwm
-		apwm_score = aml.get_donacc_pwm_score(aseq, re_apwm) * args.apwm
+		apwm_score = aml.get_donacc_pwm_score(aseq, re_apwm) * args.wapwm
 		iscore = ilen_score + imm_score + dpwm_score + apwm_score
 		intron_scores[intron] = iscore
 		gtag_scores[intron] = (dpwm_score, apwm_score)

@@ -5,15 +5,17 @@
 import argparse
 import random
 from datetime import datetime
+import apc_model_lib
 
 parser = argparse.ArgumentParser(
 	description='genetic algorithm for weight and icost optimization')
 parser.add_argument('fasta', type=str, metavar='<file>',
 	help='single gene fasta file')
 parser.add_argument('gff', type=str, metavar='<file>',
-	help='single gene fasta file')
-parser.add_argument('--program', type=str, metavar='<exec>', 
-	help='path to apc program')
+	help='single gene gff file')
+parser.add_argument('--program', required=False, type=str, 
+	default='../apc/apc_isogen.py', metavar='<exec>', 
+	help='path to apc program [%(default)s]')
 
 parser.add_argument('--max_splice', required=False, type=int, default=3,
 	metavar='<int>', help='maximum number of splicing events %(default)d')
@@ -57,16 +59,28 @@ parser.add_argument('--die', required=False, type=float, default=0.5,
 args = parser.parse_args()
 
 random.seed(datetime.now().timestamp())
-print(random.random())
 
 def chrom():
 
 	genotype = {
-		'--w
-
+		'--welen': random.random(),
+		'--wilen': random.random(),
+		'--wemm': random.random(),
+		'--wimm': random.random(),
+		'--wdpwm': random.random(),
+		'--wapwm': random.random(),
+		'--icost': random.randint(0, 100)
 	}
 
-def score_fit(chrom):
+	return genotype
+
+print(chrom())
+
+#def get_info(fasta, gff):
+
+
+
+#def get_fit(chrom, info):
 	
 	
 
