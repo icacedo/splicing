@@ -38,6 +38,20 @@ parser.add_argument('--donor_pwm', required=False, type=str, metavar='<file>',
 	help='donor pwm .tsv')
 parser.add_argument('--acceptor_pwm', required=False, type=str, metavar='<file>',
 	help='acceptor pwm .tsv')
+
+# penalties
+parser.add_argument('--welen', required=False, type='<float>', default=1.0,
+	help='exon length model weight [%(default).2f]')
+parser.add_argument('--wilen', required=False, type='<float>', default=1.0,
+	help='intron length model weight [%(default).2f]')
+parser.add_argument('--wemm', required=False, type='<float>', default=1.0,
+	help='exon Markov model weight [%(default).2f]')
+parser.add_argument('--wimm', required=False, type='<float>', default=1.0,
+	help='intron Markov model weight [%(default).2f]')
+parser.add_argument('--wdpwm', required=False, type='<float>', default=1.0,
+	help='donor pwm model weight [%(default).2f]')
+parser.add_argument('--wapwm', required=False, type='<float>', default=1.0,
+	help='acceptor pwm model weight [%(default).2f]')
 parser.add_argument('--icost', required=False, type=float, default=0.0,
 	metavar='<float>', help='intron cost %(default).2d')
 	
@@ -89,17 +103,21 @@ for iso in apc_isoforms:
 	total_iso_score = 0
 	for exon in iso['exons']:	
 		if exon in exon_scores: continue
-		elen_score = aml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
-		emm_score = aml.get_exin_mm_score(exon, seq, re_emm_log2)
+		elen_score = aml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg) \
+			* args.welen
+		emm_score = aml.get_exin_mm_score(exon, seq, re_emm_log2) \
+			* args.wemm
 		escore = elen_score + emm_score
 		exon_scores[exon] = escore
 	for intron in iso['introns']:
 		if intron in intron_scores: continue
-		ilen_score = aml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
-		imm_score = aml.get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
+		ilen_score = aml.get_exin_len_score(intron, re_ilen_log2, 
+											ia, ib, ig) * args.wilen
+		imm_score = aml.get_exin_mm_score(intron, seq, re_imm_log2, 
+											'GT', 'AG') * args.wimm 
 		dseq, aseq = aml.get_donacc_seq(intron, seq)
-		dpwm_score = aml.get_donacc_pwm_score(dseq, re_dpwm)
-		apwm_score = aml.get_donacc_pwm_score(aseq, re_apwm)
+		dpwm_score = aml.get_donacc_pwm_score(dseq, re_dpwm) * args.wdpwm
+		apwm_score = aml.get_donacc_pwm_score(aseq, re_apwm) * args.apwm
 		iscore = ilen_score + imm_score + dpwm_score + apwm_score
 		intron_scores[intron] = iscore
 		gtag_scores[intron] = (dpwm_score, apwm_score)
