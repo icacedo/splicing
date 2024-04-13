@@ -2,6 +2,7 @@ import argparse
 import random
 from datetime import datetime
 import apc_model_lib as aml
+import mdist_lib as mdl
 import os
 
 parser = argparse.ArgumentParser(
@@ -73,6 +74,7 @@ def chrom():
 
 def bad_introns(gff):
 
+	good_ints = 0
 	with open(gff, 'r') as fp:
 		for line in fp.readlines():
 			line = line.rstrip()
@@ -80,19 +82,24 @@ def bad_introns(gff):
 			if line[1] == 'RNASeq_splice': 
 				beg = int(line[3])
 				if beg <= 100 + args.min_exon: continue
-				print(line)
+				good_ints += 1
 
-bad_introns(args.gff)
+	if good_ints > 1:
+		return False
+	if good_ints <= 1:
+		return True	
 
-
-
-
-'''
 def get_fit(chrom):
 
+	# difference between apc and bli mdist for ch.7184 is significant
+	# only using bli maybe not good?
 	tmpfile = f'tmp.{os.getpid()}.gff'
+	#if bad_introns(args.gff):
+	line1 = f'python3 {args.program} {args.fasta} '
+	#else:
+		#line1 = f'python3 {args.program} {args.fasta} --gff {args.gff} '
 	cmd = (
-		f'python3 {args.program} {args.fasta} --gff {args.gff} '
+		f'{line1}'
 		f'--max_splice {args.max_splice} --min_intron {args.min_intron} '
 		f'--min_exon {args.min_exon} --flank {args.flank} ' 
 		f'--limit {args.limit} --exon_len {args.elen} '
@@ -100,17 +107,16 @@ def get_fit(chrom):
 		f'--intron_mm {args.imm} --donor_pwm {args.dpwm} '
 		f'--acceptor_pwm {args.apwm} > {tmpfile}'
 		)
+	os.system(cmd)	
+	introns1 = mdl.get_gff_intron_probs(tmpfile)
+	introns2 = mdl.get_gff_intron_probs(args.gff)
+	fit = mdl.get_mdist(introns1, introns2)
+	os.remove(tmpfile)
 
-	os.system(cmd)
+	return fit
 
-	with open(tmpfile, 'r') as fp:
-		for line in fp.readlines():
-			line = line.rstrip()
-			
-
-get_fit(chrom)
-'''
-
+fit = get_fit(chrom)
+print(fit)
 
 
 
