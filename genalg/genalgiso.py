@@ -94,12 +94,11 @@ def get_fit(chrom, fasta, gff, bli=True):
 	# difference between apc and bli mdist for ch.7184 is significant
 	# only using bli maybe not good?
 	tmpfile = f'tmp.{os.getpid()}.gff'
-	'''
-	if bad_introns(args.gff):
-		line1 = f'python3 {args.program} {args.fasta} '
-	else:
-		line1 = f'python3 {args.program} {args.fasta} --gff {args.gff} '
-	'''
+	
+	#if bad_introns(args.gff):
+	#	line1 = f'python3 {args.program} {args.fasta} '
+	#else:
+	#	line1 = f'python3 {args.program} {args.fasta} --gff {args.gff} '
 	if bli:
 		line1 = f'python3 {args.program} {fasta} --gff {gff} '
 	else:
@@ -116,38 +115,40 @@ def get_fit(chrom, fasta, gff, bli=True):
 		)
 	os.system(cmd)	
 	introns1 = mdl.get_gff_intron_probs(tmpfile)
-	introns2 = mdl.get_gff_intron_probs(args.gff)
+	introns2 = mdl.get_gff_intron_probs(gff)
 	fit = mdl.get_mdist(introns1, introns2)
 	os.remove(tmpfile)
 
 	return fit
-'''
-fit = get_fit(chrom, args.fasta, args.gff)
-fit2 = get_fit(chrom, args.fasta, args.gff, bli=False)
-print(fit)
-print(fit2)
-'''
+
 path = '../data/build/apc282/'
-pairs = {}
+fastas = {}
+gffs = {}
 for file in os.listdir(path):
 	iid = file.split('.')[1]
-	if iid not in pairs:
-		pairs[iid] = []
-		pairs[iid].append(path+file)
-	else:
-		pairs[iid].append(path+file)
+	if file.endswith('.fa'): fastas[iid] = path + file
+	if file.endswith('.gff3'): gffs[iid] = path + file
+
+pairs = {}
+for iid in fastas:
+	pairs[iid] = []
+	pairs[iid].append(fastas[iid])
+
+for iid in gffs:
+	pairs[iid].append(gffs[iid])
 
 count = 0
 for iid in pairs:
-	print(pairs[iid])
-	count += 1 
-	if count == 5: break
 	print(iid)
-	fit1 = get_fit(chrom, args.fasta, args.gff)
-	fit2 = get_fit(chrom, args.fasta, args.gff, bli=False)
-	print(fit1)
-	print(fit2)
+	fa = pairs[iid][0] 
+	gff = pairs[iid][1]
+	fit1 = get_fit(chrom, fa, gff)
+	fit2 = get_fit(chrom, fa, gff, bli=False)
+	print('bli:', fit1)
+	print('apc:', fit2)
 	print('#####')
+	count += 1
+	if count == 5: break
 
 
 
