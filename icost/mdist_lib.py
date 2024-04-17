@@ -37,16 +37,18 @@ def get_mdist(introns1, introns2):
 					key=lambda item: item[1], reverse=True))
 
 	dd = 0
+	isonum = 0
 	for i in introns1:
 		beg = i[0]
 		end = i[1]
 		iprob1 = '{0:.6f}'.format(introns1[i])
 		iprob2 = '{0:.6f}'.format(introns2[i])
-		print(f'{introns1[i]}\t{introns2[i]}')
+		#print(f'{introns1[i]}\t{introns2[i]}')
+		isonum += 1
 		d = introns1[i] - introns2[i]
 		dd += abs(d)
 		
-	return float('{0:.6f}'.format(dd))
+	return float('{0:.6f}'.format(dd)), isonum
 
 def icost_groups(icost_gffs, wb_gffs):
 

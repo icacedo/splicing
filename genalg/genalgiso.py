@@ -89,17 +89,24 @@ def bad_introns(gff):
 	if good_ints <= 1:
 		return True	
 
-def get_fit(chrom):
+def get_fit(chrom, fasta, gff, bli=True):
 
 	# difference between apc and bli mdist for ch.7184 is significant
 	# only using bli maybe not good?
 	tmpfile = f'tmp.{os.getpid()}.gff'
+	'''
 	if bad_introns(args.gff):
 		line1 = f'python3 {args.program} {args.fasta} '
 	else:
 		line1 = f'python3 {args.program} {args.fasta} --gff {args.gff} '
+	'''
+	if bli:
+		line1 = f'python3 {args.program} {fasta} --gff {gff} '
+	else:
+		line1 = f'python3 {args.program} {fasta} '
 	cmd = (
 		f'{line1}'
+		f'--icost 22 '
 		f'--max_splice {args.max_splice} --min_intron {args.min_intron} '
 		f'--min_exon {args.min_exon} --flank {args.flank} ' 
 		f'--limit {args.limit} --exon_len {args.elen} '
@@ -111,17 +118,36 @@ def get_fit(chrom):
 	introns1 = mdl.get_gff_intron_probs(tmpfile)
 	introns2 = mdl.get_gff_intron_probs(args.gff)
 	fit = mdl.get_mdist(introns1, introns2)
-	#os.remove(tmpfile)
+	os.remove(tmpfile)
 
 	return fit
-
-fit = get_fit(chrom)
+'''
+fit = get_fit(chrom, args.fasta, args.gff)
+fit2 = get_fit(chrom, args.fasta, args.gff, bli=False)
 print(fit)
+print(fit2)
+'''
+path = '../data/build/apc282/'
+pairs = {}
+for file in os.listdir(path):
+	iid = file.split('.')[1]
+	if iid not in pairs:
+		pairs[iid] = []
+		pairs[iid].append(path+file)
+	else:
+		pairs[iid].append(path+file)
 
-
-
-
-
+count = 0
+for iid in pairs:
+	print(pairs[iid])
+	count += 1 
+	if count == 5: break
+	print(iid)
+	fit1 = get_fit(chrom, args.fasta, args.gff)
+	fit2 = get_fit(chrom, args.fasta, args.gff, bli=False)
+	print(fit1)
+	print(fit2)
+	print('#####')
 
 
 
