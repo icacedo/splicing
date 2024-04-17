@@ -94,10 +94,10 @@ def get_fit(chrom):
 	# difference between apc and bli mdist for ch.7184 is significant
 	# only using bli maybe not good?
 	tmpfile = f'tmp.{os.getpid()}.gff'
-	#if bad_introns(args.gff):
-	line1 = f'python3 {args.program} {args.fasta} '
-	#else:
-		#line1 = f'python3 {args.program} {args.fasta} --gff {args.gff} '
+	if bad_introns(args.gff):
+		line1 = f'python3 {args.program} {args.fasta} '
+	else:
+		line1 = f'python3 {args.program} {args.fasta} --gff {args.gff} '
 	cmd = (
 		f'{line1}'
 		f'--max_splice {args.max_splice} --min_intron {args.min_intron} '
@@ -111,7 +111,7 @@ def get_fit(chrom):
 	introns1 = mdl.get_gff_intron_probs(tmpfile)
 	introns2 = mdl.get_gff_intron_probs(args.gff)
 	fit = mdl.get_mdist(introns1, introns2)
-	os.remove(tmpfile)
+	#os.remove(tmpfile)
 
 	return fit
 

@@ -42,6 +42,7 @@ def get_mdist(introns1, introns2):
 		end = i[1]
 		iprob1 = '{0:.6f}'.format(introns1[i])
 		iprob2 = '{0:.6f}'.format(introns2[i])
+		print(f'{introns1[i]}\t{introns2[i]}')
 		d = introns1[i] - introns2[i]
 		dd += abs(d)
 		
