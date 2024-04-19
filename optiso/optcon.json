@@ -1,0 +1,22 @@
+{
+    "gff_introns": "false",
+    "cli": {
+        "--min_exon": 25,
+        "--min_intron": 35,
+        "--max_splice": 3,
+        "--flank": 99,
+        "--limit": 20
+    },
+    "data": [
+        {
+            "name": "ch.1101",
+            "fasta": "../data/build/apc282/ch.1101.fa",
+            "gff": "../data/build/apc282/ch.1101.gff3"
+        },
+        {
+            "name": "ch.14110",
+            "fasta": "../data/build/apc282/ch.14110.fa",
+            "gff": "../data/build/apc282/ch.14110.gff3"
+        }
+    ]
+}
