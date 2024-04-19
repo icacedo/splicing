@@ -16,9 +16,9 @@ parser.add_argument('--min_exon', required=False, type=int, default=25,
 	metavar='<int>', help='minimum length exon [%(default)i]')
 parser.add_argument('--max_splice', required=False, type=int, default=3,
 	metavar='<int>', help='maximum number of introns [%(default)i]')
-parser.add_argument('--flank', required=False, type=int, default=99,
+parser.add_argument('--flank', required=False, type=int, default=100,
 	metavar='<int>', help='genomic flank on each side [%(default)i]')
-parser.add_argument('--limit', required=False, type=int, default=20,
+parser.add_argument('--limit', required=False, type=int, default=100,
 	metavar='<int>', help='limit number of transcripts [%(default)i]')
 
 arg = parser.parse_args()
@@ -28,12 +28,32 @@ config = {}
 if arg.gff: config['gff_introns'] = 'true'
 else: config['gff_introns'] = 'false'
 
+apwm = None
+dpwm = None
+emm = None
+imm = None
+elen = None
+ilen = None
+for file in os.listdir(arg.model_dir):
+	if file == 'acceptor.pwm': apwm = arg.model_dir + file
+	if file == 'donor.pwm': dpwm = arg.model_dir + file
+	if file == 'exon.mm': emm = arg.model_dir + file
+	if file == 'intron.mm': imm = arg.model_dir + file
+	if file == 'exon.len': elen = arg.model_dir + file
+	if file == 'intron.len': ilen = arg.model_dir + file
+
 config['cli'] = {
 	'--min_exon': arg.min_exon,
 	'--min_intron': arg.min_intron,
 	'--max_splice': arg.max_splice,
 	'--flank': arg.flank,
-	'--limit': arg.limit
+	'--limit': arg.limit,
+	'--apwm': apwm,
+	'--dpwm': dpwm,
+	'--emm': emm,
+	'--imm': imm,
+	'--elen': elen,
+	'--ilen': ilen
 }
 
 fpaths = {}

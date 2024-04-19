@@ -4,19 +4,25 @@
         "--min_exon": 25,
         "--min_intron": 35,
         "--max_splice": 3,
-        "--flank": 99,
-        "--limit": 20
+        "--flank": 100,
+        "--limit": 100,
+        "--apwm": "cmodels/acceptor.pwm",
+        "--dpwm": "cmodels/donor.pwm",
+        "--emm": "cmodels/exon.mm",
+        "--imm": "cmodels/intron.mm",
+        "--elen": "cmodels/exon.len",
+        "--ilen": "cmodels/intron.len"
     },
     "data": [
         {
-            "name": "ch.1101",
-            "fasta": "../data/build/apc282/ch.1101.fa",
-            "gff": "../data/build/apc282/ch.1101.gff3"
+            "name": "ch.1342",
+            "fasta": "../data/build/apc282/ch.1342.fa",
+            "gff": "../data/build/apc282/ch.1342.gff3"
         },
         {
-            "name": "ch.14110",
-            "fasta": "../data/build/apc282/ch.14110.fa",
-            "gff": "../data/build/apc282/ch.14110.gff3"
+            "name": "ch.8073",
+            "fasta": "../data/build/apc282/ch.8073.fa",
+            "gff": "../data/build/apc282/ch.8073.gff3"
         }
     ]
 }
