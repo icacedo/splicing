@@ -56,6 +56,7 @@ config['cli'] = {
 	'--ilen': ilen
 }
 
+
 fpaths = {}
 for file in os.listdir(arg.wb_dir):
 	fsp = file.split('.')
@@ -70,18 +71,28 @@ for file in os.listdir(arg.wb_dir):
 
 fpaths = {name:sorted(fpaths[name]) for name in fpaths.keys()}
 
-genes = []
+def add_gene(config, name, paths):
+
+	gconfig = config
+	ginfo = {
+		'name': name,
+		'fasta': paths[0],
+		'gff': paths[1]
+	}
+	gconfig['data'] = [ginfo]
+
+	return gconfig
+
+if not os.path.exists('outfigs/'):
+	os.makedirs('outfigs/')
+
 count = 0
-for name in fpaths:
-	gene = {}
-	gene['name'] = name
-	gene['fasta'] = fpaths[name][0]
-	gene['gff'] = fpaths[name][1]
-	genes.append(gene)
+for gene in fpaths:
+	gconfig = add_gene(config, gene, fpaths[gene])
+	iid = gene.split('.')[1]
+	with open(f'outfigs/{iid}.config.json', 'w') as jfile:
+		json.dump(gconfig, jfile, indent=4)
 	count += 1
 	if count == 2: break
 
-config['data'] = genes
 
-with open('optcon.json', 'w') as jfile:
-	json.dump(config, jfile, indent=4)
