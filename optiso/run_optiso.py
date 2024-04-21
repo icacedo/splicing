@@ -13,7 +13,8 @@ arg = parser.parse_args()
 
 sum_params = {}
 for file in os.listdir(arg.config_dir):
-	name = f'ch.{file.split('.')[0]}'
+	iid = file.split('.')[0]
+	name = f'ch.{iid}'
 	cmd = f'./optiso {arg.config_dir}{file} --cpu {arg.cpu}'
 	result = subprocess.run(cmd, shell=True, capture_output=True)
 	jstring = result.stdout.decode('utf-8')
