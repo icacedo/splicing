@@ -86,13 +86,13 @@ def add_gene(config, name, paths):
 if not os.path.exists('outfigs/'):
 	os.makedirs('outfigs/')
 
-#count = 0
+count = 0
 for gene in fpaths:
 	gconfig = add_gene(config, gene, fpaths[gene])
 	iid = gene.split('.')[1]
 	with open(f'outfigs/{iid}.config.json', 'w') as jfile:
 		json.dump(gconfig, jfile, indent=4)
-	#count += 1
-	#if count == 2: break
+	count += 1
+	if count == 5: break
 
 
