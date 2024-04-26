@@ -18,7 +18,7 @@ for file in os.listdir(arg.config_dir):
 	iid = file.split('.')[0]
 	name = f'ch.{iid}'	
 	cmd = (
-		f'./optiso1 {arg.config_dir}{file} --program ./isoformer '
+		f'./optiso {arg.config_dir}{file} --program ./isoformer '
 		f'--cpu {arg.cpu}'
 	)
 	print(name)

@@ -1,14 +1,8 @@
 import sys
 import gzip
-import openturns as ot
 import math
+import openturns as ot
 from itertools import combinations
-
-# unit testing in python
-# https://www.dataquest.io/blog/unit-tests-python/
-
-# for testing
-#fp = sys.argv[1]
 
 ################################
 ##### File Reading Section #####
