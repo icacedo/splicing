@@ -115,7 +115,7 @@ def fdist_params(exinseqs, nbins=None, pre=None, size_limit=None):
 	if size_limit:
 		sample = ot.Sample([[x] for x in exinlens if x < size_limit])
 	else:
-		size_limit = max(data)
+		size_limit = max(exinlens)
 		sample = ot.Sample([[x] for x in exinlens if x < size_limit])	
 
 	distFrechet = ot.FrechetFactory().buildAsFrechet(sample)
@@ -128,6 +128,7 @@ def fdist_params(exinseqs, nbins=None, pre=None, size_limit=None):
 
 # at size_limit 500-max exon/intron fit frechet dist
 # lower than 500, no longer frechet dist
+# pre stands for precision (decimals)
 def memoize_fdist(data, a, b, g, size_limit, pre=None):
 		
 	assert size_limit >= 500, "limit too small for frechet"
@@ -161,8 +162,24 @@ def memoize_fdist(data, a, b, g, size_limit, pre=None):
 	return y_scores, y_values
 
 # assign x values (exon/intron lengths) below smallest observed 0 prob
-def zero_prob(exinlens, y_values)
+# use this to make the model files
+def zero_prob(exinlens, y_values):
 
+	small = min(exinlens)
+	y_vals = []
+	total = 0
+	for i in range(len(y_values)):
+		if i < small:
+			y_vals.append(0)
+		else:
+			total += y_values[i]
+			y_vals.append(y_values[i])
+	y_vals = [0, 0, 0.2, 0.5, 0.1]
+	total = 0.8
+	new_ys = [x/total for x in y_vals]
+	
+	return new_ys
+		
 ##### len model scoring #####
 
 def read_exin_len(exin_len_tsv):
