@@ -1,34 +1,44 @@
 import isomod as im
 import sys
+import apc_model_lib as aml
 
 fasta = sys.argv[1]
 gff = sys.argv[2]
-exons = sys.argv[3]
+wb_dir = sys.argv[3]
 
 seqid, seq = im.read_fasta(fasta)
 
-print(seq)
+dons, accs = im.read_gff_sites(seq, gff)
 
-dons, accs = im.read_gff_sites(seq, gff, gtag=True)
+all_es, all_is, all_ds, all_as = im.get_all_tn_seqs(wb_dir)
+'''
+exlens, a, b, g, size_limit = im.fdist_params(all_es)
 
-print(dons, accs)
-
-re_seq = im.read_txt_seqs(exons)
-
-#print(re_seq)
-
-exinlens, a, b, g, size_limit = im.fdist_params(re_seq)
-
-scores, y_values = im.memoize_fdist(exinlens, a, b, g, 500)
-
-print(y_values)
+scores, y_values = im.memoize_fdist(exlens, a, b, g, 1000)
+print(exlens)
 print(len(y_values))
 print(max(y_values))
 print(min(y_values))
-print(max(exinlens), min(exinlens))
+print(max(exlens), min(exlens))
 
-im.zero_prob(exinlens, y_values)
+new_ys = im.zero_prob(exlens, y_values)
 
+#print(new_ys)
+totl = 0
+for i in y_values:
+    totl += i
+print(totl)
+
+tot = 0
+for i in new_ys:
+    tot += i
+print(tot)
+
+elens = []
+for seq in all_es:
+    if len(seq) <= 20:
+        print(seq)
+'''
 
 
 

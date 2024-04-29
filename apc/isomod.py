@@ -1,6 +1,7 @@
 import sys
 import gzip
 import math
+import os
 import openturns as ot
 from itertools import combinations
 
@@ -28,35 +29,86 @@ def read_gff_sites(seq, gff, gtag=True):
 	accs = []
 
 	with open(gff) as fp:
-		while True:
-			line = fp.readline()
-			line = line.rstrip()
-			if not line: break
-			fields = line.split('\t')
-			if fields[2] == 'intron':
-				beg = int(fields[3]) - 1
-				end = int(fields[4]) - 1
-				if gtag:
-					if seq[beg:beg+2] == 'GT': 
-						dons.append(beg)
-					if seq[end-1:end+1] == 'AG': 
-						accs.append(end)
-	fp.close()	
-	return sorted(set(dons)), sorted(set(accs))
-
-# read exon/intron or donor/acceptor sequences file
-def read_txt_seqs(tnseqfile):
-
-	tn_seqs = [] # training sequences
-
-	with open(tnseqfile, 'r') as fp:
-		tn_seq = ''
 		for line in fp.readlines():
 			line = line.rstrip()
-			tn_seq = line
-			tn_seqs.append(tn_seq)
-		fp.close()
-	return tn_seqs
+			line = line.split('\t')
+			if line[2] == 'intron':
+				beg = int(line[3]) - 1
+				end = int(line[4])
+				if gtag:
+					if seq[beg:beg+2] == 'GT': 
+						dons.append(beg-1)
+					if seq[end-2:end] == 'AG': 
+						accs.append(end-1)
+				if not gtag: 
+					dons.append(beg-1)
+					accs.append(end-1)
+	fp.close()	
+
+	return sorted(set(dons)), sorted(set(accs))
+
+# get exon/intron/donor/acceptor training seqs from gffs
+def get_gff_tn_seqs(seq, gff):
+
+	iseqs = []
+	eseqs = []
+	dseqs = []
+	aseqs = []
+	with open(gff, 'r') as fp:
+		for line in fp.readlines():
+			line = line.rstrip()
+			line = line.split('\t')
+			if line[2] == 'intron': 
+				beg = int(line[3])
+				end = int(line[4])
+				iseq = seq[beg-1:end]
+				if len(iseq) <= 20:
+					print(gff, iseq)
+				iseqs.append(iseq)
+				dseq = seq[beg-1:beg+4]
+				dseqs.append(dseq)
+				aseq = seq[end-6:end]
+				aseqs.append(aseq)
+			if line[2] == 'exon':
+				beg = int(line[3])
+				end = int(line[4])
+				eseq = seq[beg-1:end]
+				if len(eseq) <= 20:
+					print(gff, eseq)
+				eseqs.append(eseq)
+
+	return eseqs, iseqs, dseqs, aseqs
+
+def get_all_tn_seqs(wb_dir):
+
+	fastas = {}
+	gffs = {}
+	for fname in os.listdir(wb_dir):
+		fid = fname.split('.')[1]
+		if fname.endswith('.fa'):
+			fastas[fid] = wb_dir + fname
+		if fname.endswith('.gff3'):
+			gffs[fid] = wb_dir + fname
+			
+	pairs = {}
+	for fid in fastas:
+		pairs[fid] = [fastas[fid], gffs[fid]]
+
+	all_eseqs = []
+	all_iseqs = []
+	all_dseqs = []
+	all_aseqs = []
+	for fid in pairs:
+		seqid, seq = read_fasta(pairs[fid][0])
+		gff = pairs[fid][1]
+		eseqs, iseqs, dseqs, aseqs = get_gff_tn_seqs(seq, gff)
+		for e, i, d, a in zip(eseqs, iseqs, dseqs, aseqs):
+			all_eseqs.append(e)
+			all_iseqs.append(i)
+			all_dseqs.append(d)
+			all_aseqs.append(a)
+
+	return all_eseqs, all_iseqs, all_dseqs, all_aseqs
 
 ################################
 ##### Length Model Section #####
@@ -101,6 +153,7 @@ def get_exinbins(exinseqs, nbins=None, pre=None):
 	return count_bins[:nbins], freq_bins[:nbins], sizes, freqs
 
 def frechet_pdf(x, a, b, g):
+
 	if x < g: return 0
 	z = (x-g)/b
 	term1 = (a/b)
@@ -163,7 +216,7 @@ def memoize_fdist(data, a, b, g, size_limit, pre=None):
 
 # assign x values (exon/intron lengths) below smallest observed 0 prob
 # use this to make the model files
-def zero_prob(exinlens, y_values):
+def zero_prob(exinlens, y_values, pre=6):
 
 	small = min(exinlens)
 	y_vals = []
@@ -174,9 +227,7 @@ def zero_prob(exinlens, y_values):
 		else:
 			total += y_values[i]
 			y_vals.append(y_values[i])
-	y_vals = [0, 0, 0.2, 0.5, 0.1]
-	total = 0.8
-	new_ys = [x/total for x in y_vals]
+	new_ys = [float(f'{x/total:.{pre}f}') for x in y_vals]
 	
 	return new_ys
 		

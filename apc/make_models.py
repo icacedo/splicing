@@ -1,16 +1,12 @@
 import argparse
 import gzip
-import apc_model_lib as aml
+import isomod as im
 import openturns as ot 
 import csv
 
 parser = argparse.ArgumentParser(
 	description='Generates len, MM, and PWM models for apc')
 
-parser.add_argument('--extxt', type=str, metavar='<file>', 
-	required=False, help='input text file with exon sequences')
-parser.add_argument('--intxt', type=str, metavar='<file>',
-	required=False, help='input text file with intron sequences')
 parser.add_argument('--len_limit', type=int, metavar='<int>',
 	required=False, help='size limit for length model')
 parser.add_argument('--dntxt', type=str, metavar='<file>',
@@ -24,33 +20,10 @@ parser.add_argument('-len', action='store_true', help='make only len')
 
 args = parser.parse_args()
 
-# note: parameters/best fit dist change depending on maximum length considered
-# exon lens cutoff at 250 have a weibull distribution
-# exon lens cutoff at 500/1000 have a frechet distribution
-# if no cutoff, both are frechet
-# leave default in ml.memoize_fdist to 1000 so both have a frechet distribution
-'''
-def len_tsv_write(exins, fp, outdir=None):
-	
-	exinlen_yscores, exinlen_yvalues = ml.memoize_fdist(exins, pre2=6)
-
-	path = fp.split('/')
-	root, ext = path[-1].split('.')
-	if outdir:
-		filename = outdir + root + '_len' + '.tsv'
-	else:
-		filename = root + '_len' + '.tsv'
-
-	with open(filename, 'w', newline='') as tsvfile:
-		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow(['% len '+root+' P', root+' log2(P/expect)'])
-		for i in range(len(exinlen_yscores)):
-			writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
-	tsvfile.close()
-'''
 def len_tsv_write(data, a, b, g, size_limit, fp, outdir=None):
 	
-	exinlen_yscores, exinlen_yvalues = aml.memoize_fdist(data, a, b, g, size_limit, pre=6)
+	exinlen_yscores, exinlen_yvalues = aml.memoize_fdist(
+		data, a, b, g, size_limit, pre=6)
 
 	path = fp.split('/')
 	root, ext = path[-1].split('.')
@@ -61,7 +34,8 @@ def len_tsv_write(data, a, b, g, size_limit, fp, outdir=None):
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow(['% EVD params: '+'a: '+str(a)+' b: '+str(b)+' g '+str(g)])
+		writer.writerow(['% EVD params: '+'a: '+str(a)+' b: '+str(b)+' g '
+				   +str(g)])
 		writer.writerow(['% len '+root+' P', root+' log2(P/expect)'])
 		for i in range(len(exinlen_yscores)):
 			writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
@@ -80,7 +54,7 @@ def mm_tsv_write(exins, fp, outdir=None):
 
 	with open(filename, 'w', newline='') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow(['% mm '+root+' '+str(order+1)+'mer', 'mm '+root+' P', \
+		writer.writerow(['% mm '+root+' '+str(order+1)+'mer', 'mm '+root+' P',
 			'mm '+root+' log2(P/0.25)'])
 		for key in exinmm_scores:
 			writer.writerow([key + 'A', exinmm_probs[key][0], 
