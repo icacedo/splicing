@@ -48,6 +48,7 @@ def read_gff_sites(seq, gff, gtag=True):
 	return sorted(set(dons)), sorted(set(accs))
 
 # get exon/intron/donor/acceptor training seqs from gffs
+'''
 def get_gff_tn_seqs(seq, gff):
 
 	iseqs = []
@@ -78,6 +79,63 @@ def get_gff_tn_seqs(seq, gff):
 				eseqs.append(eseq)
 
 	return eseqs, iseqs, dseqs, aseqs
+'''
+def get_top_exins(seq, gff):
+
+	wb_ints = []
+	wb_exos = []
+	rsplice_ints = {}
+	with open(gff, 'r') as fp:
+		for line in fp.readlines():
+			line = line.rstrip().split('\t')
+			if line[1] == 'WormBase':
+				if line[2] == 'intron':
+					intron = line[3], line[4]
+					wb_ints.append(intron)
+				if line[2] == 'exon':
+					exon = line[3], line[4]
+					wb_exos.append(exon)
+			if line[1] == 'RNASeq_splice':
+				if line[2] == 'intron':
+					intron = int(line[3]), int(line[4])
+					rsplice_ints[intron] = float(line[5])
+
+	rsplice_ints = {i: j for i, j in sorted(rsplice_ints.items(), 
+								 key=lambda tem: tem[1], reverse=True)}
+	total = 0
+	for intron in rsplice_ints:
+		total += rsplice_ints[intron]
+
+	top_ints = []
+	scores = 0
+	for intron in rsplice_ints:
+		if scores >= 99: break
+		top_ints.append(intron)
+		scores += (rsplice_ints[intron]/total)*100
+	
+	print(sorted(top_ints), '#$#')
+	print(wb_exos)
+	exends = []
+	exbegs = []
+	for intron in sorted(top_ints):
+		exends.append(intron[0]-1)
+		exbegs.append(intron[1]+1)
+	exends = sorted(exends)
+	exbegs = sorted(exbegs)
+	print(exends)
+	print(exbegs)
+	for i in range(len(exends)-1):
+		print(i, exbegs[i], exends[i+1])
+		
+
+
+
+
+
+
+
+
+
 
 def get_all_tn_seqs(wb_dir):
 

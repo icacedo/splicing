@@ -10,7 +10,12 @@ seqid, seq = im.read_fasta(fasta)
 
 dons, accs = im.read_gff_sites(seq, gff)
 
-all_es, all_is, all_ds, all_as = im.get_all_tn_seqs(wb_dir)
+#all_es, all_is, all_ds, all_as = im.get_all_tn_seqs(wb_dir)
+
+
+im.get_top_exins(seq, gff)
+
+
 '''
 exlens, a, b, g, size_limit = im.fdist_params(all_es)
 
@@ -39,6 +44,10 @@ for seq in all_es:
     if len(seq) <= 20:
         print(seq)
 '''
+# isoforms
+# 3a.1
+# 3c.1
+# 3c.2
 
 
 
