@@ -80,6 +80,7 @@ def get_gff_tn_seqs(seq, gff):
 
 	return eseqs, iseqs, dseqs, aseqs
 '''
+# work in progress
 def get_top_exins(seq, gff):
 
 	wb_ints = []
@@ -127,16 +128,6 @@ def get_top_exins(seq, gff):
 	for i in range(len(exends)-1):
 		print(i, exbegs[i], exends[i+1])
 		
-
-
-
-
-
-
-
-
-
-
 def get_all_tn_seqs(wb_dir):
 
 	fastas = {}
@@ -288,46 +279,161 @@ def zero_prob(exinlens, y_values, pre=6):
 	new_ys = [float(f'{x/total:.{pre}f}') for x in y_vals]
 	
 	return new_ys
-		
+
+###########################
+##### Scoring Section #####	
+###########################
+
 ##### len model scoring #####
 
-def read_exin_len(exin_len_tsv):
+def read_len(len_model):
 
-	with open(exin_len_tsv, 'r') as fp:
-		re_len_pdf = []
-		re_len_sco = []
+	re_len = []
+	with open(len_model, 'r') as fp:
 		for line in fp.readlines():
 			line = line.rstrip()
 			if line.startswith('%'): continue
-			line = line.split('\t')
-			re_len_pdf.append(line[0])
-			re_len_sco.append(line[1])
-	return re_len_pdf, re_len_sco
+			re_len.append(float(line))
 
-def read_len_params(exin_len_tsv):
-	
-	with open(exin_len_tsv, 'r') as fp:
-		a = None
-		b = None
-		g = None
+	return re_len
+
+##### Markov Model scoring #####
+
+def read_mm(mm_model):
+
+	mm_scores = {}
+	with open(mm_model, 'r') as fp:
 		for line in fp.readlines():
 			line = line.rstrip()
-			if line.startswith('% EVD params:'):
-				line = line.split(' ')
-				a = float(line[4])
-				b = float(line[6])
-				g = float(line[8])
-			else: break
-		return a, b, g
+			if line.startswith('%'): continue
+			if line == '': continue
+			line = line.split(' ')
+			mm_scores[line[0]] = float(line[1])
 
-def get_exin_len_score(exin, exin_len_model, a, b, g):
+	return mm_scores
 
-	exin_len = exin[1] - exin[0] + 1
+##### PWM model scoring #####
 
-	if exin_len < len(exin_len_model):
-		exin_len_score = exin_len_model[exin_len]
-	else:
-		exin_prob = frechet_pdf(exin_len, a, b, g)
-		expect = 1/exin_len
-		exin_len_score = math.log2(exin_prob/expect)
-	return float(exin_len_score)
+def read_pwm(pwm_model):
+
+	pwm_scores = []
+	with open(pwm_model, 'r') as fp:
+		for line in fp.readlines():
+			line = line.rstrip()
+			if line.startswith('%'): continue
+			line = line.split(' ')
+			pwm_scores.append(line)
+	
+	return pwm_scores
+
+
+
+
+
+
+
+
+#######################################
+##### All Biological Combinations #####
+#######################################
+
+def get_gtag(seq):
+
+	dons = []
+	accs = []
+	for i in range(len(seq)):
+		if seq[i:i+2] == 'GT':
+			dons.append(i)
+		if seq[i:i+2] == 'AG':
+			accs.append(i+1)
+
+	return dons, accs
+
+# using index starting at 0
+def short_introns(dons, accs, minin):
+
+	for d, a in zip(dons, accs):
+		intron_length = a - d + 1
+		if intron_length < minin:
+			return True
+
+	return False
+
+# using index starting at 0
+def short_exons(dons, accs, flank, minex, seq):
+
+	# check 5' first exon
+	fexlen = dons[0] - flank
+	if fexlen < minex:
+		return True
+
+	# check 3' last exon
+	lexbeg = accs[-1] + 1
+	lexend = len(seq) - flank - 1 
+	lexlen = lexend - lexbeg + 1
+	if lexlen < minex:
+		return True
+
+	# check interior exons
+	for i in range(len(dons)-1):
+		if dons[i+1] - accs[i] - 1 < minex:
+			return True
+
+	return False	
+
+def get_exons(dsites, asites, flank, seq):
+
+	exons = []
+	exons.append((flank, dsites[0]-1))
+	for i in range(1, len(dsites)):
+		exbeg = asites[i-1] + 1
+		exend = dsites[i] - 1
+		exons.append((exbeg, exend))
+	exons.append((asites[-1]+1, len(seq)-flank-1))
+
+	return exons	
+
+def get_introns(dsites, asites):
+
+	introns = []	
+	for d, a in zip(dsites, asites):	
+		introns.append((d, a))
+
+	return introns
+
+def abc(dons, accs, maxs, minin, minex, flank, seq):
+	
+	# use .copy() when appending dictionaries to lists
+	abc_isoforms = []
+
+	abc_isoform = {
+		'seq': '',
+		'beg': '',
+		'end': '',
+		'exons': [],
+		'introns': [],
+		'score': 0
+	}	
+	
+	trials = 0
+	short_introns_exons = 0
+	nsites = min(len(dons), len(accs), maxs)
+	for n in range(1, nsites+1):
+		for dsites in combinations(dons, n):
+			for asites in combinations(accs, n):
+				trials += 1
+				if short_introns(dsites, asites, minin): continue
+				if short_exons(dsites, asites, flank, minex, seq): continue
+				abc_isoform['seq'] = seq
+				abc_isoform['beg'] = flank
+				abc_isoform['end'] = len(seq) - flank - 1
+				abc_isoform['exons'] = get_exons(dsites, asites, flank, seq)
+				abc_isoform['introns'] = get_introns(dsites, asites)
+				abc_isoforms.append(abc_isoform.copy())	
+	return abc_isoforms, trials
+
+
+
+
+
+

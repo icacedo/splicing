@@ -12,8 +12,7 @@ dons, accs = im.read_gff_sites(seq, gff)
 
 #all_es, all_is, all_ds, all_as = im.get_all_tn_seqs(wb_dir)
 
-
-im.get_top_exins(seq, gff)
+#im.get_top_exins(seq, gff)
 
 
 '''

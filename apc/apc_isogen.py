@@ -1,4 +1,5 @@
 import argparse
+import isomod as im
 import apc_model_lib as aml
 import csv
 import sys
@@ -14,11 +15,11 @@ parser.add_argument('--gff', type=str, metavar='<file>', required=False,
 	help='input .gff3 for single gene')
 
 # apc parameters
-parser.add_argument('--max_splice', required=False, type=int, default=3,
+parser.add_argument('--maxs', required=False, type=int, default=3,
 	metavar='<int>', help='maximum number of splicing events %(default)d')
-parser.add_argument('--min_intron', required=False, type=int, default=25,
+parser.add_argument('--minin', required=False, type=int, default=25,
 	metavar='<int>', help='minimum length of intron %(default)d')
-parser.add_argument('--min_exon', required=False, type=int, default=25,
+parser.add_argument('--minex', required=False, type=int, default=25,
 	metavar='<int>', help='minimum length of exon %(default)d')
 parser.add_argument('--flank', required=False, type=int, default=100,
 	metavar='<int>', help='length of genomic flank on each side %(default)d')
@@ -26,17 +27,17 @@ parser.add_argument('--limit', required=False, type=int, default=20,
 	metavar='<int>', help='limit number of saved apc isoforms %(default)d')
 
 # probabilistic models
-parser.add_argument('--exon_len', required=False, type=str, metavar='<file>', 
+parser.add_argument('--elen', required=False, type=str, metavar='<file>', 
 	help='exon length model .tsv')
-parser.add_argument('--intron_len', required=False, type=str, metavar='<file>',
+parser.add_argument('--ilen', required=False, type=str, metavar='<file>',
 	help='intron length model .tsv')
-parser.add_argument('--exon_mm', required=False, type=str, metavar='<file>',
+parser.add_argument('--emm', required=False, type=str, metavar='<file>',
 	help='exon markov model .tsv')
-parser.add_argument('--intron_mm', required=False, type=str, metavar='<file>',
+parser.add_argument('--imm', required=False, type=str, metavar='<file>',
 	help='intron markov model .tsv')
-parser.add_argument('--donor_pwm', required=False, type=str, metavar='<file>',
+parser.add_argument('--dpwm', required=False, type=str, metavar='<file>',
 	help='donor pwm .tsv')
-parser.add_argument('--acceptor_pwm', required=False, type=str, metavar='<file>',
+parser.add_argument('--apwm', required=False, type=str, metavar='<file>',
 	help='acceptor pwm .tsv')
 
 # penalties
@@ -57,44 +58,32 @@ parser.add_argument('--icost', required=False, type=float, default=0.0,
 	
 args = parser.parse_args()
 
-seqid = None
-seq = None
-coor = None
-wbgene = None
-for seqid, seq in aml.read_fastas(args.fasta):
-	seqid = seqid
-	seq_info = seqid.split(' ')
-	coor = seq_info[1]
-	strand = seq_info[2]
-	wbgene = seq_info[3].split(':')[1]
-	seq = seq
+seqid, seq = im.read_fasta(args.fasta)
+seq_info = seqid.split(' ')
+coor = seq_info[1]
+strand = seq_info[2]
+wbgene = seq_info[3]
 
 if args.gff:
-	dons, accs = aml.read_gff_sites(seq, args.gff) 
+	dons, accs = im.read_gff_sites(seq, args.gff) 
 else:
-	dons, accs = aml.get_gtag(seq)
+	dons, accs = im.get_gtag(seq)
 
-maxs = args.max_splice
-minin = args.min_intron
-minex = args.min_exon
-flank = args.flank
+abc_isoforms, trials = im.abc(dons, accs, args.maxs, args.minin, 
+#							  args.minex, args.flank, seq)
 
-apc_isoforms, trials = aml.apc(dons, accs, maxs, minin, minex, flank, seq)
-
-if args.exon_len:
-	re_elen_pdf, re_elen_log2 = aml.read_exin_len(args.exon_len)
-	ea, eb, eg = aml.read_len_params(args.exon_len) 
-if args.intron_len:
-	re_ilen_pdf, re_ilen_log2 = aml.read_exin_len(args.intron_len)
-	ia, ib, ig = aml.read_len_params(args.intron_len)
-if args.exon_mm:
-	re_emm_prob, re_emm_log2 = aml.read_exin_mm(args.exon_mm)
-if args.intron_mm:
-	re_imm_prob, re_imm_log2 = aml.read_exin_mm(args.intron_mm)
-if args.donor_pwm:
-	re_dppm, re_dpwm = aml.read_pwm(args.donor_pwm)
+if args.elen:
+	elen_scores = im.read_len(args.elen)
+if args.ilen:
+	ilen_scores = im.read_len(args.elen)
+if args.emm:
+	emm_scores = im.read_mm(args.emm)
+if args.imm:
+	imm_scores = im.read_mm(args.imm)
+if args.dpwm:
+	dpwm_scores = im.read_pwm(args.dpwm)
 if args.acceptor_pwm:
-	re_appm, re_apwm = aml.read_pwm(args.acceptor_pwm)
+	apwm_scores = im.read_pwm(args.apwm)
 
 exon_scores = {}
 intron_scores = {}
@@ -210,6 +199,6 @@ for iso in apc_isoforms:
 				+';dscore='+str(gtscore_f)+';ascore='+str(agscore_f)])
 		gff_writer.writerow([])
 		count += 1
-
+'''
 
 
