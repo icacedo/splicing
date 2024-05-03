@@ -284,7 +284,7 @@ def zero_prob(exinlens, y_values, pre=6):
 ##### Scoring Section #####	
 ###########################
 
-##### len model scoring #####
+# len model scoring
 
 def read_len(len_model):
 
@@ -296,6 +296,86 @@ def read_len(len_model):
 			re_len.append(float(line))
 
 	return re_len
+
+def score_len(re_len, exin):
+
+	length = exin[1] - exin[0]
+	score = re_len[length]
+	
+	return score
+
+# mm scoring
+
+def score_mm(re_mm, exin, seq, dpwm=None, apwm=None):
+
+	beg = exin[0]
+	end = exin[1] + 1
+	exin_seq = seq[beg:end]
+
+	k = 0
+	for kmer in re_mm:
+		k = len(kmer)
+		break
+	
+	if dpwm and apwm:
+		exin_seq = exin_seq[len(dpmw):-len(apwm)]
+
+	score = 0
+	for i in range(len(exin_seq)):
+		if len(exin_seq[i:i+k]) == k:
+			kmer = exin_seq[i:i+k]
+			score += float(re_mm[kmer])
+
+	return score
+
+# pwm model scoring
+
+def get_daseq(intron, seq):
+
+	d_start = intron[0]
+	d_end = d_start + 5
+	a_end = intron[1] + 1
+	a_start = a_end -6
+	d_seq = seq[d_start:d_end]
+	a_seq = seq[a_start:a_end]
+	
+	return d_seq, a_seq
+
+def score_pwm(daseq, pwm):
+	
+	da_score = 0
+	count = 0
+	for i in range(len(daseq)):
+		if daseq[i] == 'A':
+			da_score += float(pwm[count][0])
+		if daseq[i] == 'C':
+			da_score += float(pwm[count][1])
+		if daseq[i] == 'G':
+			da_score += float(pwm[count][2])
+		if daseq[i] == 'T':
+			da_score += float(pwm[count][3])
+		count += 1
+
+	return da_score
+
+def get_entropy(probs):
+
+	h = 0
+	for p in probs:
+		h -= p * math.log2(p)
+	return h
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##### Markov Model scoring #####
 
