@@ -304,16 +304,17 @@ def score_len(re_len, exin):
 	
 	return score
 '''
-def score_elen(re_len, exin):
+def score_len(re_len, exin):
 
 	if re_len == None: return 0
 
 	length = exin[1] - exin[0]
 	len_prob = re_len[length]
-	print(length)
-	exp = 1/length
-	print(len_prob/exp)
-	len_score = math.log2(0)
+	if len_prob == 0:
+		len_score = -99
+	else:
+		exp = 1/length
+		len_score = math.log2(0)
 
 	return len_score
 
@@ -343,13 +344,13 @@ def score_mm(re_mm, exin, seq, dpwm=None, apwm=None):
 	if dpwm and apwm:
 		exin_seq = exin_seq[len(dpmw):-len(apwm)]
 
-	score = 0
+	mm_score = 0
 	for i in range(len(exin_seq)):
 		if len(exin_seq[i:i+k]) == k:
 			kmer = exin_seq[i:i+k]
-			score += float(re_mm[kmer])
+			mm_score += math.log2(float(re_mm[kmer])/0.25)
 
-	return score
+	return mm_score
 
 # pwm model scoring
 

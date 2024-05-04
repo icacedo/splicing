@@ -300,6 +300,7 @@ def make_mm(exinseqs, order=3):
 				context[prev] = now
 			else:
 				context[seq[i:i+order]] += now
+	
 	mm_scores = {}
 	mm_probs = {}
 	for nts in sorted(context):	

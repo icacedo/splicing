@@ -87,10 +87,34 @@ re_apwm = im.read_pwm(args.apwm) if args.apwm else None
 # CONVERT PROBS TO SCORES
 for iso in abc_isoforms:
 	for exon in iso['exons']:
-		print(exon)
-		elen_score = im.score_elen(re_elen, exon)
-		print(elen_score)
+		elen_score = im.score_len(re_elen, exon)
+		emm_score = im.score_mm(re_emm, exon, seq)
+		print(emm_score)
+		# finished getting score
 	break
+
+'''
+# is the same
+import apc_model_lib as aml
+eseqs = ['ACTGATGCATGCATGC', 'GCTACGTA', 'GTCGCGTGTGACCCGAT']
+mmsc, mmpb, order = aml.make_mm(eseqs)
+print(dict(sorted(mmpb.items())))
+print(dict(sorted(mmsc.items())))
+
+import isoform as isf
+
+mm = isf.create_markov(eseqs, 3, 0, 0)
+print(dict(sorted(mm.items())))
+
+print(math.log2(1/0.25), '#$##')
+print('#####')
+probs = [0.5, 0.1, 0.3, 0.1]
+total = 0
+for p in probs:
+	total += math.log2(p/0.25)
+print(total)
+'''
+
 
 
 
