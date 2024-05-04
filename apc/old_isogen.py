@@ -16,11 +16,11 @@ parser.add_argument('--gff', type=str, metavar='<file>', required=False,
 # apc parameters
 parser.add_argument('--max_splice', required=False, type=int, default=3,
 	metavar='<int>', help='maximum number of splicing events %(default)d')
-parser.add_argument('--min_intron', required=False, type=int, default=25,
+parser.add_argument('--min_intron', required=False, type=int, default=35,
 	metavar='<int>', help='minimum length of intron %(default)d')
 parser.add_argument('--min_exon', required=False, type=int, default=25,
 	metavar='<int>', help='minimum length of exon %(default)d')
-parser.add_argument('--flank', required=False, type=int, default=100,
+parser.add_argument('--flank', required=False, type=int, default=99,
 	metavar='<int>', help='length of genomic flank on each side %(default)d')
 parser.add_argument('--limit', required=False, type=int, default=20, 
 	metavar='<int>', help='limit number of saved apc isoforms %(default)d')
@@ -70,6 +70,7 @@ apc_isoforms, trials = aml.apc(dons, accs, maxs, minin, minex, flank, seq)
 if args.exon_len:
 	re_elen_pdf, re_elen_log2 = aml.read_exin_len(args.exon_len)
 	ea, eb, eg = aml.read_len_params(args.exon_len) 
+'''
 if args.intron_len:
 	re_ilen_pdf, re_ilen_log2 = aml.read_exin_len(args.intron_len)
 	ia, ib, ig = aml.read_len_params(args.intron_len)
@@ -81,7 +82,7 @@ if args.donor_pwm:
 	re_dppm, re_dpwm = aml.read_pwm(args.donor_pwm)
 if args.acceptor_pwm:
 	re_appm, re_apwm = aml.read_pwm(args.acceptor_pwm)
-
+'''
 exon_scores = {}
 intron_scores = {}
 gtag_scores = {}
@@ -90,10 +91,13 @@ for iso in apc_isoforms:
 	for exon in iso['exons']:	
 		if exon in exon_scores: continue
 		elen_score = aml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
-		emm_score = aml.get_exin_mm_score(exon, seq, re_emm_log2)
-		escore = elen_score + emm_score
-		print(escore, '#####')
-		exon_scores[exon] = escore
+		print(exon, elen_score)
+		#emm_score = aml.get_exin_mm_score(exon, seq, re_emm_log2)
+		#escore = elen_score + emm_score
+		#print(elen_score, '#####')
+		#print(exon)
+		#exon_scores[exon] = escore
+	'''
 	for intron in iso['introns']:
 		if intron in intron_scores: continue
 		ilen_score = aml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
@@ -112,6 +116,7 @@ for iso in apc_isoforms:
 	iso['score'] = total_iso_score
 	print(iso)
 	break
+	
 
 apc_isoforms = sorted(apc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
@@ -154,7 +159,7 @@ for intron in intron_counts:
 	intron_freqs[intron] = intron_counts[intron] / intron_total
 
 name = seqid.split(' ')[0]
-'''
+
 print('# name:', name)
 print('# wb id:', wbgene)
 print('# coordinates:', coor)

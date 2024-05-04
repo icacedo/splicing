@@ -71,29 +71,38 @@ else:
 
 abc_isoforms, trials = im.abc(dons, accs, args.maxs, args.minin, 
 							  args.minex, args.flank, seq)
-
+'''
 if args.elen:
 	re_elen = im.read_len(args.elen)
-if args.ilen:
-	re_ilen = im.read_len(args.elen)
-if args.emm:
-	re_emm = im.read_mm(args.emm)
-if args.imm:
-	re_imm = im.read_mm(args.imm)
-if args.dpwm:
-	re_dpwm = im.read_pwm(args.dpwm)
-if args.apwm:
-	re_apwm = im.read_pwm(args.apwm)
+else:
+	re_elen = None
+'''
+re_elen = im.read_len(args.elen) if args.elen else None
+re_ilen = im.read_len(args.elen) if args.ilen else None
+re_emm = im.read_mm(args.emm) if args.emm else None
+re_imm = im.read(args.imm) if args.imm else None
+re_dpwm = im.read_pwm(args.dpwm) if args.dpwm else None
+re_apwm = im.read_pwm(args.apwm) if args.apwm else None
 
-exon_scores = {}
-intron_scores = {}
-gtag_scores = {}
+# CONVERT PROBS TO SCORES
 for iso in abc_isoforms:
+	for exon in iso['exons']:
+		print(exon)
+		elen_score = im.score_elen(re_elen, exon)
+		print(elen_score)
+	break
+
+
+
+'''
 	total_iso_score = 0
 	total_escore = 0
 	total_iscore = 0
 	for exon in iso['exons']:	
+
 		total_escore += im.score_len(re_elen, exon) * args.welen
+		print(im.score_len(re_elen, exon) * args.welen, '@@@')
+		print(exon)
 		total_escore += im.score_mm(re_emm, exon, seq) * args.wemm
 		print(total_escore, '#####')
 		exon_scores[exon] = total_escore
@@ -110,7 +119,7 @@ for iso in abc_isoforms:
 	total_iso_score -= len(iso['introns']) * args.icost * 100
 	iso['score'] = total_iso_score
 	print(iso)
-	break
+
 
 abc_isoforms = sorted(abc_isoforms, key=lambda iso: iso['score'], 
 					  reverse=True)
@@ -154,7 +163,7 @@ for intron in intron_counts:
 	intron_freqs[intron] = intron_counts[intron] / intron_total
 
 name = seqid.split(' ')[0]
-'''
+
 print('# name:', name)
 print('# wb id:', wbgene)
 print('# coordinates:', coor)

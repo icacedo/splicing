@@ -296,13 +296,36 @@ def read_len(len_model):
 			re_len.append(float(line))
 
 	return re_len
-
+'''
 def score_len(re_len, exin):
 
 	length = exin[1] - exin[0]
 	score = re_len[length]
 	
 	return score
+'''
+def score_elen(re_len, exin):
+
+	if re_len == None: return 0
+
+	length = exin[1] - exin[0]
+	len_prob = re_len[length]
+	print(length)
+	exp = 1/length
+	print(len_prob/exp)
+	len_score = math.log2(0)
+
+	return len_score
+
+	iscore = 0
+	if re_len == re_ilen:
+		print("inrons")
+		for intron in iso['introns']:
+			length = intron[1] - intron[0]
+			iscore += re_len[length]
+
+	return iscore
+
 
 # mm scoring
 
