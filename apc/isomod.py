@@ -277,7 +277,12 @@ def zero_prob(exinlens, y_values, pre=6):
 			total += y_values[i]
 			y_vals.append(y_values[i])
 	new_ys = [float(f'{x/total:.{pre}f}') for x in y_vals]
-	
+	'''
+if args.elen:
+	re_elen = im.read_len(args.elen)
+else:
+	re_elen = None
+'''
 	return new_ys
 
 ###########################
@@ -296,14 +301,7 @@ def read_len(len_model):
 			re_len.append(float(line))
 
 	return re_len
-'''
-def score_len(re_len, exin):
 
-	length = exin[1] - exin[0]
-	score = re_len[length]
-	
-	return score
-'''
 def score_len(re_len, exin):
 
 	if re_len == None: return 0
@@ -314,18 +312,9 @@ def score_len(re_len, exin):
 		len_score = -99
 	else:
 		exp = 1/length
-		len_score = math.log2(0)
+		len_score = math.log2(len_prob/exp)
 
 	return len_score
-
-	iscore = 0
-	if re_len == re_ilen:
-		print("inrons")
-		for intron in iso['introns']:
-			length = intron[1] - intron[0]
-			iscore += re_len[length]
-
-	return iscore
 
 
 # mm scoring
@@ -371,13 +360,13 @@ def score_pwm(daseq, pwm):
 	count = 0
 	for i in range(len(daseq)):
 		if daseq[i] == 'A':
-			da_score += float(pwm[count][0])
+			da_score += math.log2(float(pwm[count][0])/0.25)
 		if daseq[i] == 'C':
-			da_score += float(pwm[count][1])
+			da_score += math.log2(float(pwm[count][1])/0.25)
 		if daseq[i] == 'G':
-			da_score += float(pwm[count][2])
+			da_score += math.log2(float(pwm[count][2])/0.25)
 		if daseq[i] == 'T':
-			da_score += float(pwm[count][3])
+			da_score += math.log2(float(pwm[count][3])/0.25)
 		count += 1
 
 	return da_score
@@ -441,11 +430,11 @@ def read_pwm(pwm_model):
 ##### All Biological Combinations #####
 #######################################
 
-def get_gtag(seq):
+def get_gtag(seq, flank, minex):
 
 	dons = []
 	accs = []
-	for i in range(len(seq)):
+	for i in range(flank + minex, len(seq) - flank - minex - 1):
 		if seq[i:i+2] == 'GT':
 			dons.append(i)
 		if seq[i:i+2] == 'AG':

@@ -57,97 +57,102 @@ parser.add_argument('--icost', required=False, type=float, default=0.0,
 	metavar='<float>', help='intron cost %(default).2d')
 	
 args = parser.parse_args()
-
+# 13301 is the shortest gene, quick to test
 seqid, seq = im.read_fasta(args.fasta)
 seq_info = seqid.split(' ')
 coor = seq_info[1]
 strand = seq_info[2]
 wbgene = seq_info[3].split(':')[1]
-# 13301 is the shortest gene, quick to test
+
 if args.gff:
 	dons, accs = im.read_gff_sites(seq, args.gff) 
 else:
-	dons, accs = im.get_gtag(seq)
+	dons, accs = im.get_gtag(seq, args.flank, args.minex)
 
+print(dons)
+print(accs)
+print(seq[124:126])
+print(seq[123:136])
+# acceptor site 124 starts at 123, which is not included in the scan
 abc_isoforms, trials = im.abc(dons, accs, args.maxs, args.minin, 
 							  args.minex, args.flank, seq)
+
+
+print(trials)
 '''
-if args.elen:
-	re_elen = im.read_len(args.elen)
-else:
-	re_elen = None
-'''
+print('#####')
+minin = 1
+minex = 1
+maxs = 5
+klanf = 1
+#		0---------------1719--
+seeq = 'CCGTCCGTCCAGCCCCAGAGCC'
+d, a = im.get_gtag(seeq, klanf, minex)
+
+print(d, a)
+# isomod short exons is correct
+
+isos, trails = im.abc(d, a, maxs, minin, minex, klanf, seeq)
+print(isos)
+print(len(isos))
+
+
 re_elen = im.read_len(args.elen) if args.elen else None
 re_ilen = im.read_len(args.elen) if args.ilen else None
 re_emm = im.read_mm(args.emm) if args.emm else None
-re_imm = im.read(args.imm) if args.imm else None
+re_imm = im.read_mm(args.imm) if args.imm else None
 re_dpwm = im.read_pwm(args.dpwm) if args.dpwm else None
 re_apwm = im.read_pwm(args.apwm) if args.apwm else None
 
-# CONVERT PROBS TO SCORES
+escores = {}
+iscores = {}
+dscores = {}
+ascores = {}
 for iso in abc_isoforms:
 	for exon in iso['exons']:
-		elen_score = im.score_len(re_elen, exon)
-		emm_score = im.score_mm(re_emm, exon, seq)
-		print(emm_score)
-		# finished getting score
-	break
-
-'''
-# is the same
-import apc_model_lib as aml
-eseqs = ['ACTGATGCATGCATGC', 'GCTACGTA', 'GTCGCGTGTGACCCGAT']
-mmsc, mmpb, order = aml.make_mm(eseqs)
-print(dict(sorted(mmpb.items())))
-print(dict(sorted(mmsc.items())))
-
-import isoform as isf
-
-mm = isf.create_markov(eseqs, 3, 0, 0)
-print(dict(sorted(mm.items())))
-
-print(math.log2(1/0.25), '#$##')
-print('#####')
-probs = [0.5, 0.1, 0.3, 0.1]
-total = 0
-for p in probs:
-	total += math.log2(p/0.25)
-print(total)
-'''
-
-
-
-
-'''
-	total_iso_score = 0
-	total_escore = 0
-	total_iscore = 0
-	for exon in iso['exons']:	
-
-		total_escore += im.score_len(re_elen, exon) * args.welen
-		print(im.score_len(re_elen, exon) * args.welen, '@@@')
-		print(exon)
-		total_escore += im.score_mm(re_emm, exon, seq) * args.wemm
-		print(total_escore, '#####')
-		exon_scores[exon] = total_escore
+		if exon in escores: continue
+		if args.elen: 
+			elen_score = im.score_len(re_elen, exon) * args.welen
+		else:
+			elen_score = 0
+		if args.emm: 
+			emm_score = im.score_mm(re_emm, exon, seq) * args.wemm
+		else:
+			emm_score = 0
+		escores[exon] = elen_score + emm_score
 	for intron in iso['introns']:
-		total_iscore += im.score_len(re_ilen, intron) * args.wilen
-		total_iscore += im.score_mm(re_imm, intron, seq) * args.wimm
+		if intron in iscores: continue
+		if args.ilen: 
+			ilen_score = im.score_len(re_ilen, intron) * args.wilen
+		else:
+			ilen_score = 0
+		if args.imm: 
+			imm_score = im.score_mm(re_imm, intron, seq) * args.wimm
+		else:
+			imm_score = 0
 		dseq, aseq = im.get_daseq(intron, seq)
-		dscore = im.score_pwm(dseq, re_dpwm) * args.wdpwm
-		iscore = im.score_pwm(aseq, re_apwm) * args.wapwm
-		total_iscore += dscore + iscore
-		intron_scores[intron] = total_iscore
-		gtag_scores[intron] = (dscore, iscore)
-	total_iso_score = total_escore + total_iscore
-	total_iso_score -= len(iso['introns']) * args.icost * 100
-	iso['score'] = total_iso_score
-	print(iso)
+		if args.dpwm: 
+			dpwm_score = im.score_pwm(dseq, re_dpwm) * args.wdpwm
+		else:
+			dpwm_score = 0
+		if args.apwm: 
+			apwm_score = im.score_pwm(aseq, re_apwm) * args.wapwm
+		else:
+			apwm_score = 0
+		iscores[intron] = ilen_score + imm_score + dpwm_score + apwm_score
+		dscores[intron] = dpwm_score
+		ascores[intron] = apwm_score
+	for exon in iso['exons']:
+		iso['score'] += escores[exon]
+	for intron in iso['introns']:
+		iso['score'] += iscores[intron]
 
+abc_isoforms = sorted(abc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
-abc_isoforms = sorted(abc_isoforms, key=lambda iso: iso['score'], 
-					  reverse=True)
-
+for a in abc_isoforms:
+	print(a['beg'], a['end'], a['exons'], a['introns'], a['score'])
+'''
+'''
 iso_weights = []
 iso_total = 0
 for iso in abc_isoforms:
