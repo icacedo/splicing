@@ -346,10 +346,17 @@ def short_exon(dons, accs, seqlen, flank, min):
 def gtag_sites(seq, flank, minex):
 	dons = []
 	accs = []
+	'''
 	for i in range(flank + minex, len(seq) -flank -minex):
 		if seq[i:i+2]   == 'GT': dons.append(i)
 		# this method includes A if it is the exon
 		if seq[i-1:i+1] == 'AG': accs.append(i)
+	'''
+	for i in range(flank + minex, len(seq) -flank - minex - 1):
+		if seq[i:i+2] == 'GT':
+			dons.append(i)
+		if seq[i:i+2] == 'AG':
+			accs.append(i+1)
 	return dons, accs
 
 def gff_sites(seq, gff, gtag=True):

@@ -96,7 +96,7 @@ isos, trails = im.abc(d, a, maxs, minin, minex, klanf, seeq)
 print(isos)
 print(len(isos))
 
-
+'''
 re_elen = im.read_len(args.elen) if args.elen else None
 re_ilen = im.read_len(args.elen) if args.ilen else None
 re_emm = im.read_mm(args.emm) if args.emm else None
@@ -151,7 +151,10 @@ abc_isoforms = sorted(abc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
 for a in abc_isoforms:
 	print(a['beg'], a['end'], a['exons'], a['introns'], a['score'])
-'''
+
+print(im.score_len(re_elen, (50, 76)))
+
+
 '''
 iso_weights = []
 iso_total = 0

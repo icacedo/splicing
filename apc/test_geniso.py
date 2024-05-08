@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import argparse
 import test_isoform as isoform
 
@@ -76,7 +74,7 @@ isos, infoo = isoform.all_possible(seeq, minin, minex, maxs, klanf)
 print(isos)
 print(len(isos))
 
-'''
+
 # score isoforms
 
 for tx in txs:
@@ -95,8 +93,9 @@ txs = sorted(txs, key=lambda iso: iso['score'], reverse=True)
 for t in txs:
 	print(t['beg'], t['end'], t['exons'], t['introns'], t['score'])
 
-'''
+print(isoform.score_len(elen, 26))
 # summary output
+print(elen)
 '''
 print('# name:', name)
 print('# length:', len(seq))

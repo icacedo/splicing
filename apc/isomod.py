@@ -311,7 +311,7 @@ def score_len(re_len, exin):
 	if len_prob == 0:
 		len_score = -99
 	else:
-		exp = 1/length
+		exp = 1/len(re_len)
 		len_score = math.log2(len_prob/exp)
 
 	return len_score
