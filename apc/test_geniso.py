@@ -94,8 +94,9 @@ for t in txs:
 	print(t['beg'], t['end'], t['exons'], t['introns'], t['score'])
 
 print(isoform.score_len(elen, 26))
+print(isoform.score_len(elen, 25))
+print(isoform.score_len(elen, 119))
 # summary output
-print(elen)
 '''
 print('# name:', name)
 print('# length:', len(seq))

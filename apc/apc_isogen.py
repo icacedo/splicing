@@ -98,7 +98,7 @@ print(len(isos))
 
 '''
 re_elen = im.read_len(args.elen) if args.elen else None
-re_ilen = im.read_len(args.elen) if args.ilen else None
+re_ilen = im.read_len(args.ilen) if args.ilen else None
 re_emm = im.read_mm(args.emm) if args.emm else None
 re_imm = im.read_mm(args.imm) if args.imm else None
 re_dpwm = im.read_pwm(args.dpwm) if args.dpwm else None
@@ -139,22 +139,27 @@ for iso in abc_isoforms:
 			apwm_score = im.score_pwm(aseq, re_apwm) * args.wapwm
 		else:
 			apwm_score = 0
+		#print(ilen_score, '@@@')
 		iscores[intron] = ilen_score + imm_score + dpwm_score + apwm_score
 		dscores[intron] = dpwm_score
 		ascores[intron] = apwm_score
 	for exon in iso['exons']:
 		iso['score'] += escores[exon]
 	for intron in iso['introns']:
+		#print(iscores[intron], intron)
+		#print(iscores)
 		iso['score'] += iscores[intron]
+	
 
 abc_isoforms = sorted(abc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
 for a in abc_isoforms:
-	print(a['beg'], a['end'], a['exons'], a['introns'], a['score'])
+	if a['score'] != 0:
+		print(a['beg'], a['end'], a['exons'], a['introns'], a['score'])
 
-print(im.score_len(re_elen, (50, 76)))
-
-
+print(im.score_len(re_elen, (50, 75)))
+print(im.score_len(re_elen, (50, 74)))
+print(im.score_len(re_elen, (50, 168)))
 '''
 iso_weights = []
 iso_total = 0

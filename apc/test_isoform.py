@@ -213,7 +213,7 @@ def score_len(model, x):
 		s = math.log2(q/expect)
 		return s
 	else:
-		return model['val'][x]
+		return model['val'][x-1]
 
 ##########################
 ## MARKOV MODEL SECTION ##
