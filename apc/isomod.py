@@ -331,7 +331,7 @@ def score_mm(re_mm, exin, seq, dpwm=None, apwm=None):
 		break
 	
 	if dpwm and apwm:
-		exin_seq = exin_seq[len(dpmw):-len(apwm)]
+		exin_seq = exin_seq[len(dpwm):-len(apwm)]
 
 	mm_score = 0
 	for i in range(len(exin_seq)):

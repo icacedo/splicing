@@ -60,7 +60,7 @@ imm  = isoform.read_markov(arg.imm) if arg.imm  else None
 name, seq = next(isoform.read_fasta(arg.fasta))
 txs, info = isoform.all_possible(seq, arg.min_intron, arg.min_exon,
 	arg.max_splice, arg.flank, gff=arg.introns)
-
+'''
 print(info['trials'])
 print('#####')
 #		0---------------1719--
@@ -69,14 +69,13 @@ minin = 1
 minex = 1
 maxs = 5
 klanf = 1
-
+# acceptor site 124 starts at 123, which is not included in the scan
 isos, infoo = isoform.all_possible(seeq, minin, minex, maxs, klanf)
 print(isos)
 print(len(isos))
-
+'''
 
 # score isoforms
-
 for tx in txs:
 	score = 0
 	if apwm: score += isoform.score_apwm(apwm, tx) * arg.wapwm
@@ -84,7 +83,8 @@ for tx in txs:
 	if elen: score += isoform.score_elen(elen, tx) * arg.welen
 	if ilen: score += isoform.score_ilen(ilen, tx) * arg.wilen
 	if emm:  score += isoform.score_emm(emm, tx) * arg.wemm
-	if imm:  score += isoform.score_imm(imm, tx, dpwm, apwm) * arg.wimm
+	if imm:  score += isoform.score_imm(imm, tx, [1, 1, 1, 1, 1],
+									 [1, 1, 1, 1, 1, 1,]) * arg.wimm
 	score -= len(tx['introns']) * arg.icost
 	tx['score'] = score
 
@@ -93,9 +93,9 @@ txs = sorted(txs, key=lambda iso: iso['score'], reverse=True)
 for t in txs:
 	print(t['beg'], t['end'], t['exons'], t['introns'], t['score'])
 
-print(isoform.score_len(elen, 26))
-print(isoform.score_len(elen, 25))
-print(isoform.score_len(elen, 119))
+#print(isoform.score_len(ilen, 26))
+#print(isoform.score_len(ilen, 25))
+#print(isoform.score_len(ilen, 119))
 # summary output
 '''
 print('# name:', name)

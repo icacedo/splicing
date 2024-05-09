@@ -6,7 +6,6 @@ import sys
 import math
 import json
 
-# params for test seq: maxs 100, minin 3, minex 4, flank 5
 parser = argparse.ArgumentParser(
 	description='generate and score alternative isoforms')
 parser.add_argument('fasta', type=str, metavar='<file>',
@@ -69,34 +68,9 @@ if args.gff:
 else:
 	dons, accs = im.get_gtag(seq, args.flank, args.minex)
 
-print(dons)
-print(accs)
-print(seq[124:126])
-print(seq[123:136])
-# acceptor site 124 starts at 123, which is not included in the scan
 abc_isoforms, trials = im.abc(dons, accs, args.maxs, args.minin, 
 							  args.minex, args.flank, seq)
 
-
-print(trials)
-'''
-print('#####')
-minin = 1
-minex = 1
-maxs = 5
-klanf = 1
-#		0---------------1719--
-seeq = 'CCGTCCGTCCAGCCCCAGAGCC'
-d, a = im.get_gtag(seeq, klanf, minex)
-
-print(d, a)
-# isomod short exons is correct
-
-isos, trails = im.abc(d, a, maxs, minin, minex, klanf, seeq)
-print(isos)
-print(len(isos))
-
-'''
 re_elen = im.read_len(args.elen) if args.elen else None
 re_ilen = im.read_len(args.ilen) if args.ilen else None
 re_emm = im.read_mm(args.emm) if args.emm else None
@@ -126,8 +100,8 @@ for iso in abc_isoforms:
 			ilen_score = im.score_len(re_ilen, intron) * args.wilen
 		else:
 			ilen_score = 0
-		if args.imm: 
-			imm_score = im.score_mm(re_imm, intron, seq) * args.wimm
+		if args.imm:
+			imm_score = im.score_mm(re_imm, intron, seq, re_dpwm, re_apwm) * args.wimm
 		else:
 			imm_score = 0
 		dseq, aseq = im.get_daseq(intron, seq)
@@ -139,17 +113,13 @@ for iso in abc_isoforms:
 			apwm_score = im.score_pwm(aseq, re_apwm) * args.wapwm
 		else:
 			apwm_score = 0
-		#print(ilen_score, '@@@')
 		iscores[intron] = ilen_score + imm_score + dpwm_score + apwm_score
 		dscores[intron] = dpwm_score
 		ascores[intron] = apwm_score
 	for exon in iso['exons']:
 		iso['score'] += escores[exon]
 	for intron in iso['introns']:
-		#print(iscores[intron], intron)
-		#print(iscores)
 		iso['score'] += iscores[intron]
-	
 
 abc_isoforms = sorted(abc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
@@ -157,9 +127,7 @@ for a in abc_isoforms:
 	if a['score'] != 0:
 		print(a['beg'], a['end'], a['exons'], a['introns'], a['score'])
 
-print(im.score_len(re_elen, (50, 75)))
-print(im.score_len(re_elen, (50, 74)))
-print(im.score_len(re_elen, (50, 168)))
+
 '''
 iso_weights = []
 iso_total = 0
