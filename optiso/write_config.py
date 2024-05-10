@@ -35,8 +35,8 @@ imm = None
 elen = None
 ilen = None
 for file in os.listdir(arg.model_dir):
-	if file == 'acceptor.pwm': apwm = arg.model_dir + file
-	if file == 'donor.pwm': dpwm = arg.model_dir + file
+	if file == 'acc.pwm': apwm = arg.model_dir + file
+	if file == 'don.pwm': dpwm = arg.model_dir + file
 	if file == 'exon.mm': emm = arg.model_dir + file
 	if file == 'intron.mm': imm = arg.model_dir + file
 	if file == 'exon.len': elen = arg.model_dir + file
@@ -83,16 +83,17 @@ def add_gene(config, name, paths):
 
 	return gconfig
 
-if not os.path.exists('outfigs/'):
-	os.makedirs('outfigs/')
-
-count = 0
+c1 = 0
+c2 = 1
 for gene in fpaths:
 	gconfig = add_gene(config, gene, fpaths[gene])
 	iid = gene.split('.')[1]
-	with open(f'outfigs/{iid}.config.json', 'w') as jfile:
+	if not os.path.exists(f'outfigs{c2}/'): os.makedirs(f'outfigs{c2}/')
+	with open(f'outfigs{c2}/{iid}.config.json', 'w') as jfile:
 		json.dump(gconfig, jfile, indent=4)
-	count += 1
-	if count == 5: break
+	c1 += 1
+	if c1%70 == 0: c2 += 1
+
+
 
 
