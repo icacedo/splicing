@@ -123,12 +123,12 @@ for iso in abc_isoforms:
 
 abc_isoforms = sorted(abc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
+'''
 for a in abc_isoforms:
 	if a['score'] != 0:
 		print(a['beg'], a['end'], a['exons'], a['introns'], a['score'])
-
-
 '''
+
 iso_weights = []
 iso_total = 0
 for iso in abc_isoforms:
@@ -193,22 +193,22 @@ for iso in abc_isoforms:
 			iso['end']+1, iso_prob_f, '+', '.', 'ID=iso-'+name+'-'+
 			str(count+1)+';Parent=Gene-'+name])
 		for exon in iso['exons']:
-			escore_f = '{:.5e}'.format(exon_scores[exon])
+			escore_f = '{:.5e}'.format(escores[exon])
 			efreq_f = '{:.5e}'.format(exon_freqs[exon])
 			gff_writer.writerow([name, 'abc_isogen', 'exon', exon[0]+1,
 				exon[1]+1, iso_prob_f, '+', '.', 'Parent='+'iso-'+name+'-'
 				+str(count+1)+';score='+str(escore_f)+';exfreq='+str(efreq_f)])
 		for intron in iso['introns']:
-			iscore_f = '{:.5e}'.format(intron_scores[intron])
+			iscore_f = '{:.5e}'.format(iscores[intron])
 			ifreq_f = '{:.5e}'.format(intron_freqs[intron])
-			gtscore_f = '{:5e}'.format(gtag_scores[intron][0])
-			agscore_f = '{:5e}'.format(gtag_scores[intron][1])
+			gtscore_f = '{:5e}'.format(dscores[intron])
+			agscore_f = '{:5e}'.format(ascores[intron])
 			gff_writer.writerow([name, 'abc_isogen', 'intron', intron[0]+1,
 				intron[1]+1, iso_prob_f, '+', '.', 'Parent='+'iso-'+name+'-'
 				+str(count+1)+';score='+str(iscore_f)+';infreq='+str(ifreq_f)
 				+';dscore='+str(gtscore_f)+';ascore='+str(agscore_f)])
 		gff_writer.writerow([])
 		count += 1
-'''
+
 
 

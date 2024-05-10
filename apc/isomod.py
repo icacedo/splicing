@@ -307,7 +307,10 @@ def score_len(re_len, exin):
 	if re_len == None: return 0
 
 	length = exin[1] - exin[0]
-	len_prob = re_len[length]
+	if length > len(re_len):
+		len_prob == 0
+	else:
+		len_prob = re_len[length]
 	if len_prob == 0:
 		len_score = -100
 	else:

@@ -93,11 +93,12 @@ txs = sorted(txs, key=lambda iso: iso['score'], reverse=True)
 for t in txs:
 	print(t['beg'], t['end'], t['exons'], t['introns'], t['score'])
 
+# scores are actually just a tiny bit off..
 #print(isoform.score_len(ilen, 26))
 #print(isoform.score_len(ilen, 25))
 #print(isoform.score_len(ilen, 119))
 # summary output
-'''
+
 print('# name:', name)
 print('# length:', len(seq))
 print('# donors:', info['donors'])
@@ -155,4 +156,4 @@ for i in range(limit):
 		print(f'{cs}intron\t{b}\t{e}\t{s:.4g}\t+\t.\tParent={tid}')
 
 	print()
-'''
+
