@@ -361,15 +361,27 @@ def score_pwm(daseq, pwm):
 	
 	da_score = 0
 	count = 0
+	print(daseq, '!!!')
 	for i in range(len(daseq)):
+		print(i, '^^^^')
 		if daseq[i] == 'A':
-			da_score += math.log2(float(pwm[count][0])/0.25)
+			if pwm[count][0] == 0: da_score += -100
+			else:
+				da_score += math.log2(float(pwm[count][0])/0.25)
 		if daseq[i] == 'C':
-			da_score += math.log2(float(pwm[count][1])/0.25)
+			if pwm[count][1] == 0: da_score += -100
+			else:
+				da_score += math.log2(float(pwm[count][1])/0.25)
 		if daseq[i] == 'G':
-			da_score += math.log2(float(pwm[count][2])/0.25)
+			if pwm[count][2] == 0: da_score += -100
+			else:
+				print(type(pwm[count][2]), 'typepe')
+				print('WOWOWOW', float(pwm[count][2]), daseq, daseq[i], i)
+				da_score += math.log2(float(pwm[count][2])/0.25)
 		if daseq[i] == 'T':
-			da_score += math.log2(float(pwm[count][3])/0.25)
+			if pwm[count][3] == 0: da_score += -100
+			else:
+				da_score += math.log2(float(pwm[count][3])/0.25)
 		count += 1
 
 	return da_score

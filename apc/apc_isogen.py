@@ -68,6 +68,9 @@ if args.gff:
 else:
 	dons, accs = im.get_gtag(seq, args.flank, args.minex)
 
+for d in dons:
+	print(seq[d:d+2])
+
 abc_isoforms, trials = im.abc(dons, accs, args.maxs, args.minin, 
 							  args.minex, args.flank, seq)
 
@@ -106,6 +109,7 @@ for iso in abc_isoforms:
 			imm_score = 0
 		dseq, aseq = im.get_daseq(intron, seq)
 		if args.dpwm: 
+			print(dseq, aseq, '!&*', intron)
 			dpwm_score = im.score_pwm(dseq, re_dpwm) * args.wdpwm
 		else:
 			dpwm_score = 0

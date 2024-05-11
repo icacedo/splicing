@@ -4,7 +4,7 @@ import json
 import os
 import random
 
-import isoform
+import test_isoform as isoform
 
 CFG = None
 INTRONS = None

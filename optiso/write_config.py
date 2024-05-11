@@ -93,7 +93,7 @@ for gene in fpaths:
 		json.dump(gconfig, jfile, indent=4)
 	c1 += 1
 	if c1%70 == 0: c2 += 1
-	if c1 == 2: break
+
 
 
 
