@@ -19,7 +19,7 @@ parser.add_argument('--gff_name', required=True, type=str, metavar='<str>',
 # apc parameters
 parser.add_argument('--maxs', required=False, type=int, default=3,
 	metavar='<int>', help='maximum number of splicing events %(default)d')
-parser.add_argument('--minin', required=False, type=int, default=25,
+parser.add_argument('--minin', required=False, type=int, default=35,
 	metavar='<int>', help='minimum length of intron %(default)d')
 parser.add_argument('--minex', required=False, type=int, default=25,
 	metavar='<int>', help='minimum length of exon %(default)d')
@@ -61,7 +61,7 @@ if args.weights:
 	with open(args.weights, 'r') as fp:
 		for line in fp.readlines():
 			line = line.rstrip()
-			line = line.split('  ')
+			line = line.split('\t')
 			fit = line[0]
 			wdpwm = line[1]
 			wapwm = line[2]
