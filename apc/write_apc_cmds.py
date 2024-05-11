@@ -103,7 +103,7 @@ for gID in fa_gff_pairs:
 	if args.weights:
 		wts = (
 			f' --wdpwm {ftwts[gid]['wdpwm']} --wapwm {ftwts[gid]['wapwm']} '
-			f'--wemm {ftwts[gid]['wemm']} --wimm {ftwts[gid]['wapwm']} '
+			f'--wemm {ftwts[gid]['wemm']} --wimm {ftwts[gid]['wimm']} '
 			f'--welen {ftwts[gid]['welen']} --wilen {ftwts[gid]['wilen']} '
 			f'--icost {ftwts[gid]['icost']}'
 		)
