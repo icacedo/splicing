@@ -99,13 +99,13 @@ for gID in fa_gff_pairs:
 	gff_in = ''
 	if args.read_gff:
 		gff_in = ' --gff ' + gff_path
-	wts = ''
+	#wts = ''
 	if args.weights:
 		wts = (
-			f' --wdpwm {ftwts[gid]['wdpwm']} --wapwm {ftwts[gid]['wapwm']} '
-			f'--wemm {ftwts[gid]['wemm']} --wimm {ftwts[gid]['wimm']} '
-			f'--welen {ftwts[gid]['welen']} --wilen {ftwts[gid]['wilen']} '
-			f'--icost {ftwts[gid]['icost']}'
+			f" --wdpwm {ftwts[gid]['wdpwm']} --wapwm {ftwts[gid]['wapwm']} "
+			f"--wemm {ftwts[gid]['wemm']} --wimm {ftwts[gid]['wimm']} "
+			f"--welen {ftwts[gid]['welen']} --wilen {ftwts[gid]['wilen']} "
+			f"--icost {ftwts[gid]['icost']}"
 		)
 	f.write(
 		f'python3 apc_isogen.py {fa_path}'
