@@ -420,3 +420,6 @@ def string_hyphs(seq, string):
 	line = string + ''.join(hyphs)
 
 	return line
+
+
+
