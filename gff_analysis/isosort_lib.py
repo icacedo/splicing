@@ -1,7 +1,7 @@
 import re
 import os
 import json
-import apc_model_lib as aml
+import isomod as im
 
 def get_seq(fasta):
 
@@ -45,20 +45,15 @@ def get_wbgene_info(wb_gff, seq):
 
 	return wbginfo
 
-# read in .tsv files for probabilistic models
-def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, icost):
+def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, 
+				 welen, wilen, wemm, wimm, wdpwm, wapwm, icost):
 		
-	re_elen_pdf, re_elen_log2 = aml.read_exin_len(elen)
-	ea, eb, eg = aml.read_len_params(elen)
-
-	re_ilen_pdf, re_ilen_log2 = aml.read_exin_len(ilen)
-	ia, ib, ig = aml.read_len_params(ilen)
-
-	re_emm_prob, re_emm_log2 = aml.read_exin_mm(emm)
-	re_imm_prob, re_imm_log2 = aml.read_exin_mm(imm)
-
-	re_dppm, re_dpwm = aml.read_pwm(dpwm)
-	re_appm, re_apwm = aml.read_pwm(apwm)
+	re_elen = im.read_len(elen)
+	re_ilen = im.read_len(ilen) 
+	re_emm = im.read_mm(emm)
+	re_imm = im.read_mm(imm) 
+	re_dpwm = im.read_pwm(dpwm) 
+	re_apwm = im.read_pwm(apwm) 
 
 	for gene in wbginfo:
 		wbginfo[gene]['escores'] = []
@@ -70,8 +65,9 @@ def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm, icost):
 			if exon == wbginfo[gene]['exons'][-1]:
 				exon = (exon[0], len(seq)-100)
 			exon = (exon[0]-1, exon[1]-1) # adjust indexing
-			elen_score = aml.get_exin_len_score(exon, re_elen_log2, ea, eb, eg)
-			emm_score = aml.get_exin_mm_score(exon, seq, re_emm_log2)
+			elen_score = im.score_len(re_elen, exon)
+			emm_score = im.score_mm(re_emm, exon, seq)
+
 			escore = elen_score + emm_score
 			escore = float('{:.5e}'.format(escore))
 			wbginfo[gene]['total_icost_score'] += escore
