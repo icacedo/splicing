@@ -57,7 +57,7 @@ def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm,
 
 	for gene in wbginfo:
 		wbginfo[gene]['escores'] = []
-		wbginfo[gene]['total_icost_score'] = 0
+		wbginfo[gene]['total_score'] = 0
 		for exon in wbginfo[gene]['exons']:
 			# include region before start site and after 100 bp flank
 			if exon == wbginfo[gene]['exons'][0]: 
@@ -67,27 +67,26 @@ def score_wb_iso(seq, wbginfo, elen, ilen, emm, imm, dpwm, apwm,
 			exon = (exon[0]-1, exon[1]-1) # adjust indexing
 			elen_score = im.score_len(re_elen, exon)
 			emm_score = im.score_mm(re_emm, exon, seq)
-
 			escore = elen_score + emm_score
 			escore = float('{:.5e}'.format(escore))
-			wbginfo[gene]['total_icost_score'] += escore
+			wbginfo[gene]['total_score'] += escore
 			wbginfo[gene]['escores'].append(escore)
 		wbginfo[gene]['iscores'] = []
 		wbginfo[gene]['gtag_scores'] = []
 		for intron in wbginfo[gene]['introns']:
 			intron = (intron[0]-1, intron[1]-1) # adjust indexing
-			ilen_score = aml.get_exin_len_score(intron, re_ilen_log2, ia, ib, ig)
-			imm_score = aml.get_exin_mm_score(intron, seq, re_imm_log2, 'GT', 'AG')
-			dseq, aseq = aml.get_donacc_seq(intron, seq)
-			dpwm_score = aml.get_donacc_pwm_score(dseq, re_dpwm)
-			apwm_score = aml.get_donacc_pwm_score(aseq, re_apwm)
+			ilen_score = im.score_len(re_ilen, intron)
+			imm_score = im.score_mm(re_imm, intron, seq, re_dpwm, re_apwm)
+			dseq, aseq = im.get_daseq(intron, seq)
+			dpwm_score = im.score_pwm(dseq, re_dpwm)
+			apwm_score = im.score_pwm(aseq, re_apwm)
 			wbginfo[gene]['gtag_scores'].append((dpwm_score, apwm_score))
 			iscore = ilen_score + imm_score + dpwm_score + apwm_score
 			iscore = float('{:.5e}'.format(iscore))
 			wbginfo[gene]['iscores'].append(iscore)
-			wbginfo[gene]['total_icost_score'] += iscore
-		wbginfo[gene]['total_icost_score'] -= len(wbginfo[gene]['introns']) \
-																	* icost
+			wbginfo[gene]['total_score'] += iscore
+		wbginfo[gene]['total_score'] -= len(wbginfo[gene]['introns']) \
+															* icost * 100
 		return wbginfo
 
 def check_CDS(info):
@@ -107,12 +106,11 @@ def check_CDS(info):
 def get_start_stop(wbginfo):
 	
 	for gn in wbginfo:
-		clist = []
 		wbstart = wbginfo[gn]['exons'][0][0]	
 		wbstop = wbginfo[gn]['exons'][-1][1]
 
 	return wbstart, wbstop	
-	
+
 def get_apcgen_info(seq, apcgen_gff, wbstart, wbstop, dpwm, apwm):
 
 	apc_isos = {}
@@ -133,9 +131,9 @@ def get_apcgen_info(seq, apcgen_gff, wbstart, wbstop, dpwm, apwm):
 				apc_isos[f'{gID}-{icount}'] += [sline]
 			if sline[2] == 'intron':
 				apc_isos[f'{gID}-{icount}'] += [sline]
-	
-	re_dppm, re_dpwm = aml.read_pwm(dpwm)
-	re_appm, re_apwm = aml.read_pwm(apwm)
+
+	re_dpwm = im.read_pwm(dpwm)
+	re_apwm = im.read_pwm(apwm)
 
 	apcgen_isos = {}	
 	for iso in apc_isos:
@@ -160,9 +158,9 @@ def get_apcgen_info(seq, apcgen_gff, wbstart, wbstop, dpwm, apwm):
 			if ft[2] == 'intron':
 				dsite = int(ft[3]) - 1
 				asite = int(ft[4]) - 1
-				dseq, aseq = aml.get_donacc_seq((dsite, asite), seq)
-				dpwm_score = aml.get_donacc_pwm_score(dseq, re_dpwm)
-				apwm_score = aml.get_donacc_pwm_score(aseq, re_apwm)
+				dseq, aseq = im.get_daseq((dsite, asite), seq)
+				dpwm_score = im.score_pwm(dseq, re_dpwm)
+				apwm_score = im.score_pwm(aseq, re_apwm)
 				dpwm_score = float('{:.5e}'.format(dpwm_score))
 				apwm_score = float('{:.5e}'.format(apwm_score))	
 				gtag_scores.append((dpwm_score, apwm_score))
@@ -253,14 +251,17 @@ def find_PTCs(apcgen_isos, seq):
 	return apcgen_isos	
 
 def amass_info(fasta, wb_gff, apcgen_gff, elen, 
-				ilen, emm, imm, dpwm, apwm, icost):
+				ilen, emm, imm, dpwm, apwm, welen,
+				wilen, wemm, wimm, wdpwm, wapwm, icost):
 	
 	seq = get_seq(fasta)
 	wbg_info = get_wbgene_info(wb_gff, seq)
 	wbg_info = check_CDS(wbg_info)
 	wbg_info = get_codons(wbg_info, seq)
 	wbg_info = score_wb_iso(seq, wbg_info, elen, ilen, 
-							emm, imm, dpwm, apwm, icost)
+							emm, imm, dpwm, apwm, welen,
+							wilen, wemm, wimm, wdpwm,
+							wapwm, icost)
 	wbstart, wbstop = get_start_stop(wbg_info)
 	apcgen_isos = get_apcgen_info(seq, apcgen_gff, wbstart, wbstop, dpwm, apwm)
 	apcgen_isos = check_CDS(apcgen_isos)
@@ -282,7 +283,7 @@ def amass_info(fasta, wb_gff, apcgen_gff, elen,
 # ch.241 has 3 CDS, 2nd isoform has correct firt and last exons
 # but middle exon is cut out as an intron, then goes out of frame
 
-# section to write txt iso view files
+###### section to write txt iso view files #####
 
 def mod_seq(seq):
 	

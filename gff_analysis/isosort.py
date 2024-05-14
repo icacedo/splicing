@@ -59,50 +59,33 @@ with open(args.weights, 'r') as fp:
 		welen = line[5]
 		wilen = line[6]
 		icost = line[7]
-		gid = line[8]
-		gwts[f'ch.{gid}'] = {
+		gid = line[8].split('.')[1]
+		gwts[gid] = {
 			'fit': fit,
-			'wdpwm': wdpwm,
-			'wapwm': wapwm,
-			'wemm': wemm,
-			'wimm': wimm,
-			'welen': welen,
-			'wilen': wilen
+			'wdpwm': float(wdpwm),
+			'wapwm': float(wapwm),
+			'wemm': float(wemm),
+			'wimm': float(wimm),
+			'welen': float(welen),
+			'wilen': float(wilen),
+			'icost': float(icost)
 			}
 
 os.makedirs('sort_out/', exist_ok=True)
 
 for gID in paths:
-	if gID == 'ch.4567': continue
-	fa = paths[gID][0]
-	wb_gff = paths[gID][1]
-	abcgen_gff = paths[gID][2]
-	seq = isl.get_seq(fa)
-	wbginfo = isl.get_wbgene_info(wb_gff, seq)
-	wbginfo = isl.score_wb_iso(
-		seq, wbginfo, 
-		args.elen, args.ilen, args.emm, 
-		args.imm, args.dpwm, args.apwm, 
-		gwts[gID]['welen'], gwts[gID]['wilen'], gwts[gID]['wemm'], 
-		gwts[gID]['wimm'], gwts[gID]['wdpwm'], gwts[gID]['wapwm'],
-		gwts[gID]['icost']
-	)
-	print(wbginfo)
-	break
-
-
-'''
-for gID in paths:
 	fa = paths[gID][0]
 	wb_gff = paths[gID][1]
 	apcgen_gff = paths[gID][2]
 	isoforms_info = isl.amass_info(fa, wb_gff, apcgen_gff, args.elen, 
-									args.ilen, args.emm, args.imm, 
-									args.dpwm, args.apwm, gwts[gid])
+							args.ilen, args.emm, args.imm, args.dpwm, 
+							args.apwm, gwts[gID]['welen'], 
+							gwts[gID]['wilen'], gwts[gID]['wemm'], 
+							gwts[gID]['wimm'], gwts[gID]['wdpwm'], 
+							gwts[gID]['wapwm'], gwts[gID]['icost'])
 	jstr = json.dumps(isoforms_info, indent = 4)
-	with open(f'out/{gID}.json', 'w') as outfile:
+	with open(f'sort_out/{gID}.json', 'w') as outfile:
 		outfile.write(jstr)
-'''
 
 
 

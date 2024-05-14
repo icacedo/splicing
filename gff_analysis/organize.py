@@ -1,27 +1,43 @@
 import argparse
 import os
-'''
+import json
+
 parser = argparse.ArgumentParser()
-parser.add_argument('gdir', type=str, metavar='<director>',
+parser.add_argument('short_gffs', type=str, metavar='<directory>',
     help = 'directory with short abcgen gff files')
+parser.add_argument('sorted_isos', type=str, metavar='<directory>',
+    help = 'directory with sorted gene json files')
 parser.add_argument('weights', type=str, metavar='<file>',
     help = 'file with individual gene weights and fitness')
 
 args = parser.parse_args()
-'''
-'''
+
 wbgs = {}
-for file in os.listdir(args.gdir):
+for file in os.listdir(args.short_gffs):
     gid = 'ch.'+file.split('.')[1]
-    with open(args.gdir+file, 'r') as fp:
+    with open(args.short_gffs+file, 'r') as fp:
         for line in fp.readlines():
             line = line.rstrip()
             if 'wb id:' in line:
                 wbg = line.split(' ')[3]
                 wbgs[gid] = wbg
 
-print(f'gid,wdpwm,wapwm,wemm,wimm,welen,wilen,icost,fitness,wbgene')
-'''
+
+wb_isos = {}
+for file in os.listdir(args.sorted_isos):
+    gid = 'ch.' + file.split('.')[0]
+    wb_isos[gid] = None
+    with open(args.sorted_isos+file, 'r') as j:
+        info = json.load(j)
+        for iso in info:
+            gid = iso.split('-')[0]
+            if 'wb' in iso: continue
+            if info[iso]['wb_frame'] == True:
+                wbi = iso.split('-')[1]
+                wb_isos[gid] = wbi
+
+print(f'gid,wdpwm,wapwm,wemm,wimm,welen,wilen,icost,fitness,wbgene,wbiso')
+
 with open(args.weights, 'r') as fp:
     for line in fp.readlines():
         line = line.rstrip()
@@ -35,37 +51,8 @@ with open(args.weights, 'r') as fp:
         wilen = line[6]
         icost = line[7]
         gid = line[8]
-        '''
         print(
-            f'{gid},{wdpwm},{wapwm},{wemm},{wimm},'
-            f'{welen},{wilen},{icost},{fit},{wbgs[gid]}'
+            f'{gid},{wdpwm},{wapwm},{wemm},{wimm},{welen},'
+            f'{wilen},{icost},{fit},{wbgs[gid]},{wb_isos[gid]}'
         )
-        '''
 
-#add if there are matching wormbase isoforms to list of genes
-
-import isosort_lib as isl
-import argparse
-
-parser = argparse.ArgumentParser()
-parser.add_argument('weights')
-parser.add_argument('--elen')
-parser.add_argument('--ilen')
-parser.add_argument('--emm')
-parser.add_argument('--imm')
-parser.add_argument('--dpwm')
-parser.add_argument('--apwm')
-
-args = parser.parse_args()
-
-fasta = '../../isoforms/apc/ch.10010.fa'
-wb_gff = '../../isoforms/apc/ch.10010.gff3'
-seq = isl.get_seq(fasta)
-
-wbginfo = isl.get_wbgene_info(wb_gff, seq)
-
-isl.score_wb_iso(
-    seq, wbginfo, args.elen, args.ilen, args.emm, 
-    args.imm, args.dpwm, args.apwm, icost,
-    welen, wilen, wemm, wimm, wdpwm, wapwm
-    )

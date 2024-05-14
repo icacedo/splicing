@@ -120,6 +120,7 @@ for iso in abc_isoforms:
 		iso['score'] += escores[exon]
 	for intron in iso['introns']:
 		iso['score'] += iscores[intron]
+	iso['score'] -= len(iso['introns']) * args.icost * 100
 
 abc_isoforms = sorted(abc_isoforms, key=lambda iso: iso['score'], reverse=True)
 
