@@ -36,7 +36,7 @@ for file in os.listdir(args.sorted_isos):
                 wbi = iso.split('-')[1]
                 wb_isos[gid] = wbi
 
-print(f'gid,wdpwm,wapwm,wemm,wimm,welen,wilen,icost,fitness,wbgene,wbiso')
+#print(f'gid,wdpwm,wapwm,wemm,wimm,welen,wilen,icost,fitness,wbgene,wbiso')
 
 with open(args.weights, 'r') as fp:
     for line in fp.readlines():

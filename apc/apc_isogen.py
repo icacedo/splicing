@@ -5,6 +5,7 @@ import csv
 import sys
 import math
 import json
+import itertools
 
 parser = argparse.ArgumentParser(
 	description='generate and score alternative isoforms')
@@ -123,6 +124,7 @@ for iso in abc_isoforms:
 	iso['score'] -= len(iso['introns']) * args.icost * 100
 
 abc_isoforms = sorted(abc_isoforms, key=lambda iso: iso['score'], reverse=True)
+abc_isoforms = abc_isoforms[:args.limit]
 
 '''
 for a in abc_isoforms:
