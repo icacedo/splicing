@@ -3,7 +3,7 @@ import os
 import json
 
 parser = argparse.ArgumentParser()
-parser.add_argument('short_gffs', type=str, metavar='<directory>',
+parser.add_argument('abcgen_gffs', type=str, metavar='<directory>',
     help = 'directory with short abcgen gff files')
 parser.add_argument('sorted_isos', type=str, metavar='<directory>',
     help = 'directory with sorted gene json files')
@@ -13,9 +13,9 @@ parser.add_argument('weights', type=str, metavar='<file>',
 args = parser.parse_args()
 
 wbgs = {}
-for file in os.listdir(args.short_gffs):
+for file in os.listdir(args.abcgen_gffs):
     gid = 'ch.'+file.split('.')[1]
-    with open(args.short_gffs+file, 'r') as fp:
+    with open(args.abcgen_gffs+file, 'r') as fp:
         for line in fp.readlines():
             line = line.rstrip()
             if 'wb id:' in line:
@@ -36,7 +36,7 @@ for file in os.listdir(args.sorted_isos):
                 wbi = iso.split('-')[1]
                 wb_isos[gid] = wbi
 
-#print(f'gid,wdpwm,wapwm,wemm,wimm,welen,wilen,icost,fitness,wbgene,wbiso')
+print(f'gid,wdpwm,wapwm,wemm,wimm,welen,wilen,icost,fitness,wbgene,wbmatch')
 
 with open(args.weights, 'r') as fp:
     for line in fp.readlines():
