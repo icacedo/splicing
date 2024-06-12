@@ -1,0 +1,10 @@
+---
+root.dir: /home/carl/Code/isoforms/apc/
+---
+
+```{r}
+# need to run the entire block at once to get correct directory
+setwd("/home/carl/Code/isoforms/apc/")
+chtest <- read.table("ch.10010.gff3", header = FALSE, sep = "\t")
+```
+
