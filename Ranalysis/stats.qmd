@@ -3,8 +3,28 @@ root.dir: /home/carl/Code/isoforms/apc/
 ---
 
 ```{r}
-# need to run the entire block at once to get correct directory
-setwd("/home/carl/Code/isoforms/apc/")
-chtest <- read.table("ch.10010.gff3", header = FALSE, sep = "\t")
+apc_dir <- "/home/carl/Code/isoforms/apc/"
+g_files <- list.files(apc_dir, pattern = ".gff3")
+g_paths <- sapply(seq_along(g_files), function(x) {
+  paste(apc_dir, g_files[x], sep = "")
+})
+rm(g_files)
 ```
+```{r}
+ch14005 <- read.table("/home/carl/Code/isoforms/apc/ch.14005.gff3", 
+                      header = FALSE, sep = "\t")
+comb <- rbind(ch10010, ch14005)
+```
+
+```{r}
+gffs_df = data.frame()
+lapply(g_paths, function(x) {
+  bigdf <- rbind(gffs_df, read.table(x, header = FALSE, sep = "\t"))
+}) 
+```
+
+
+
+
+
 
