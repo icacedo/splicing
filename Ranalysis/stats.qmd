@@ -29,24 +29,37 @@ colnames(gffs_df) <- c("seqid", "source", "type", "start", "end", "score",
 ```{r}
 tmp1 <- gffs_df
 tmp2 <- tmp1 %>%
-  select(start, end) %>%
+  select(seqid, start, end) %>% # need ids to create unique introns
   unite(., "start_end", sep = ",")
 
-gdf2 <- mutate(tmp1, tmp2)
+gdata <- mutate(tmp1, tmp2)
 rm(tmp1, tmp2)
 ```
-Create a vector with all introns that are wormbase introns
+Use case_when() in mutate() to add a new column to a df based on a comparison 
+between other columns in the df.
 ```{r}
-
-```
-
-Use case_when() in mutate() to add a new column to a df based on a comparison between other columns in the df.
-
-```{r}
-gdf2 %>% 
+gdata <- gdata %>% 
   mutate(wb_int = case_when(
     source == "WormBase" & type == "intron" ~ TRUE,
                             TRUE ~ FALSE))
-
-
 ```
+Create a vector with all introns that are wormbase introns. Which gene each 
+intron belongs to is also included.
+```{r}
+# subset using logicals T/F
+wb_ints <- gdata$start_end[gdata$wb_int]
+```
+
+```{r}
+# labels all the top scoring isoforms
+gdata <- gdata %>% 
+  mutate(int_score = case_when(
+    start_end %in% wb_ints & source == "RNASeq_splice" ~ TRUE,
+    TRUE ~ FALSE
+  ))
+```
+
+
+
+
+
