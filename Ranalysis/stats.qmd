@@ -3,28 +3,50 @@ root.dir: /home/carl/Code/isoforms/apc/
 ---
 
 ```{r}
-apc_dir <- "/home/carl/Code/isoforms/apc/"
+apc_dir <- "/home/carl/Code/splicing/Ranalysis/sub/"
 g_files <- list.files(apc_dir, pattern = ".gff3")
 g_paths <- sapply(seq_along(g_files), function(x) {
   paste(apc_dir, g_files[x], sep = "")
 })
 rm(g_files)
 ```
+
 ```{r}
-ch14005 <- read.table("/home/carl/Code/isoforms/apc/ch.14005.gff3", 
-                      header = FALSE, sep = "\t")
-comb <- rbind(ch10010, ch14005)
+library(dplyr)
+library(tidyr)
 ```
 
 ```{r}
-gffs_df = data.frame()
-lapply(g_paths, function(x) {
-  bigdf <- rbind(gffs_df, read.table(x, header = FALSE, sep = "\t"))
-}) 
+gffs_df <- lapply(g_paths, function(x) {
+  read.table(x, header = FALSE, sep = "\t")
+}) %>%
+  do.call('rbind',.) 
+
+colnames(gffs_df) <- c("seqid", "source", "type", "start", "end", "score", 
+                       "strand", "phase", "attributes")
 ```
 
+```{r}
+tmp1 <- gffs_df
+tmp2 <- tmp1 %>%
+  select(start, end) %>%
+  unite(., "start_end", sep = ",")
+
+gdf2 <- mutate(tmp1, tmp2)
+rm(tmp1, tmp2)
+```
+Create a vector with all introns that are wormbase introns
+```{r}
+
+```
+
+Use case_when() in mutate() to add a new column to a df based on a comparison between other columns in the df.
+
+```{r}
+gdf2 %>% 
+  mutate(wb_int = case_when(
+    source == "WormBase" & type == "intron" ~ TRUE,
+                            TRUE ~ FALSE))
 
 
-
-
-
+```
