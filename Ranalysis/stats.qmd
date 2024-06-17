@@ -4,6 +4,8 @@ root.dir: /home/carl/Code/isoforms/apc/
 
 ```{r}
 apc_dir <- "/home/carl/Code/splicing/Ranalysis/sub/"
+# full data
+apc_dir <- "/home/carl/Code/isoforms/apc/"
 g_files <- list.files(apc_dir, pattern = ".gff3")
 g_paths <- sapply(seq_along(g_files), function(x) {
   paste(apc_dir, g_files[x], sep = "")
@@ -35,16 +37,18 @@ tmp2 <- tmp1 %>%
 gdata <- mutate(tmp1, tmp2)
 rm(tmp1, tmp2)
 ```
-Use case_when() in mutate() to add a new column to a df based on a comparison 
-between other columns in the df.
+
+Use case_when() in mutate() to add a new column to a df based on a comparison between other columns in the df.
+
 ```{r}
 gdata <- gdata %>% 
   mutate(wb_int = case_when(
     source == "WormBase" & type == "intron" ~ TRUE,
                             TRUE ~ FALSE))
 ```
-Create a vector with all introns that are wormbase introns. Which gene each 
-intron belongs to is also included.
+
+Create a vector with all introns that are wormbase introns. Which gene each intron belongs to is also included.
+
 ```{r}
 # subset using logicals T/F
 wb_ints <- gdata$start_end[gdata$wb_int]
@@ -59,7 +63,23 @@ gdata <- gdata %>%
   ))
 ```
 
+Very useful: https://dplyr.tidyverse.org/articles/rowwise.html Can do operations on a per row basis install of all columns
 
+```{r}
+# don't forget comma; ,] means all columns
+# df[rows, columns]
+# automatically gets the true columns
+top_ints <- gdata[gdata$int_score,] 
 
+get_len <- function(beg, end) {
+  return(end - beg + 1)
+}
 
+top_ints <- top_ints %>% 
+  rowwise() %>% 
+  mutate(length = get_len(start, end))
+```
 
+```{r}
+hist(top_ints$length)
+```
