@@ -3,9 +3,9 @@ root.dir: /home/carl/Code/isoforms/apc/
 ---
 
 ```{r}
-apc_dir <- "/home/carl/Code/splicing/Ranalysis/sub/"
+#apc_dir <- "/home/carl/Code/splicing/Ranalysis/sub/"
 # full data
-#apc_dir <- "/home/carl/Code/isoforms/apc/"
+apc_dir <- "/home/carl/Code/isoforms/apc/"
 g_files <- list.files(apc_dir, pattern = ".gff3")
 g_paths <- sapply(seq_along(g_files), function(x) {
   paste(apc_dir, g_files[x], sep = "")
@@ -83,9 +83,12 @@ top_ints <- top_ints %>%
 
 ```{r}
 library(ggplot2)
-
+# all canonical introns, score not considered 
 p <- ggplot(data = top_ints, aes(x = length)) +
-  geom_histogram()
+  geom_histogram(bins = length(unique(top_ints$length))) +
+  labs(title = "canonical introns",
+       x = "intron length",
+       y = "counts (eg 103 introns of length45 ")
 
 p
 ```
@@ -112,6 +115,16 @@ tx_counts <- uniq_lens %>%
 
 ```
 
+```{r}
+p_int <- ggplot(data = tx_counts, aes(x = length, y = counts)) +
+  geom_bar(stat = "identity") +
+  labs(title = "all introns",
+       x = "intron length",
+       y = "transcript counts (score)") +
+  ylim(0, max(tx_counts$counts) + 10) +
+  xlim(0, max(tx_counts$length) + 10)
+p_int
+```
 
 
 
