@@ -5,7 +5,7 @@ root.dir: /home/carl/Code/isoforms/apc/
 ```{r}
 apc_dir <- "/home/carl/Code/splicing/Ranalysis/sub/"
 # full data
-apc_dir <- "/home/carl/Code/isoforms/apc/"
+#apc_dir <- "/home/carl/Code/isoforms/apc/"
 g_files <- list.files(apc_dir, pattern = ".gff3")
 g_paths <- sapply(seq_along(g_files), function(x) {
   paste(apc_dir, g_files[x], sep = "")
@@ -79,15 +79,36 @@ top_ints <- top_ints %>%
   rowwise() %>% 
   mutate(length = get_len(start, end))
 ```
-```{r}
 
+
+```{r}
+library(ggplot2)
+
+p <- ggplot(data = top_ints, aes(x = length)) +
+  geom_histogram()
+
+p
 ```
-
+Make histogram with all introns that appear in the APC dataset
 ```{r}
-hist(top_ints$length)
-```
+all_ints <- gdata[gdata$source == "RNASeq_splice",]
 
-```{r}
+all_ints <- all_ints %>% 
+  rowwise() %>% 
+  mutate(length = get_len(start, end))
+
+uniq_lens <- data.frame(unique(all_ints$length))
+colnames(uniq_lens) <- c('length')
+
+tx_counter <- function(x, df) {
+  tmp <- df[df$length == x,]
+  return(sum(as.numeric(tmp$score)))
+}
+
+# !! calls global variable, instead of piped df values
+tx_counts <- uniq_lens %>% 
+  rowwise() %>% 
+  mutate(counts = tx_counter(length, !!all_ints))
 
 ```
 
