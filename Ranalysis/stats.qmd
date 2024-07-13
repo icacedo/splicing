@@ -125,6 +125,17 @@ p_int <- ggplot(data = tx_counts, aes(x = length, y = counts)) +
   xlim(0, max(tx_counts$length) + 10)
 p_int
 ```
+Graph number of isoforms vs sequence length (in random sequences)
+```{r}
+library(reticulate)
+# default reticulate uses an isolated python environment
+use_python("/home/carl/miniforge3/bin/python")
+```
+
+```{python}
+for i in 'wow':
+  print(i)
+```
 
 
 

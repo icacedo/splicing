@@ -1,6 +1,5 @@
 import argparse
 import isomod as im
-import apc_model_lib as aml
 import csv
 import sys
 import math

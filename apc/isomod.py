@@ -2,7 +2,7 @@ import sys
 import gzip
 import math
 import os
-import openturns as ot
+#import openturns as ot
 from itertools import combinations
 
 ################################
@@ -21,7 +21,6 @@ def read_fasta(fastafile):
 			if line.startswith('>'): seqid = line[1:]
 			else: seq += line
 		return (seqid, seq)			
-	fp.close()	
 
 def read_gff_sites(seq, gff, gtag=True):
 
@@ -42,8 +41,7 @@ def read_gff_sites(seq, gff, gtag=True):
 						accs.append(end-1)
 				if not gtag: 
 					dons.append(beg-1)
-					accs.append(end-1)
-	fp.close()	
+					accs.append(end-1)	
 
 	return sorted(set(dons)), sorted(set(accs))
 
