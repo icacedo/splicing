@@ -2,7 +2,6 @@ import sys
 import gzip
 import math
 import os
-#import openturns as ot
 from itertools import combinations
 
 ################################
@@ -208,6 +207,9 @@ def frechet_pdf(x, a, b, g):
 	term3 = math.exp(-z**-a)
 	return term1 * term2 * term3
 
+# moved this to make_models.py
+# don't need to load in openturns in this file
+'''
 def fdist_params(exinseqs, nbins=None, pre=None, size_limit=None):
 
 	exinlens = get_exinbins(exinseqs, nbins=None, pre=None)[2]
@@ -225,6 +227,7 @@ def fdist_params(exinseqs, nbins=None, pre=None, size_limit=None):
 	g = distFrechet.getGamma()
 	
 	return exinlens, a, b, g, size_limit
+'''
 
 # at size_limit 500-max exon/intron fit frechet dist
 # lower than 500, no longer frechet dist

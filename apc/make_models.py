@@ -20,6 +20,24 @@ parser.add_argument('-len', action='store_true', help='make only len')
 
 args = parser.parse_args()
 
+def fdist_params(exinseqs, nbins=None, pre=None, size_limit=None):
+
+	exinlens = im.get_exinbins(exinseqs, nbins=None, pre=None)[2]
+	
+	if size_limit:
+		sample = ot.Sample([[x] for x in exinlens if x < size_limit])
+	else:
+		size_limit = max(exinlens)
+		sample = ot.Sample([[x] for x in exinlens if x < size_limit])	
+
+	distFrechet = ot.FrechetFactory().buildAsFrechet(sample)
+
+	a = distFrechet.getAlpha()
+	b = distFrechet.getBeta()
+	g = distFrechet.getGamma()
+	
+	return exinlens, a, b, g, size_limit
+
 def len_tsv_write(data, a, b, g, size_limit, fp, outdir=None):
 	
 	exinlen_yscores, exinlen_yvalues = aml.memoize_fdist(
