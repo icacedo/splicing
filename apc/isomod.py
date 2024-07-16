@@ -45,7 +45,7 @@ def read_gff_sites(seq, gff, gtag=True):
 	return sorted(set(dons)), sorted(set(accs))
 
 # get exon/intron/donor/acceptor training seqs from gffs
-'''
+# work in progress
 def get_gff_tn_seqs(seq, gff):
 
 	iseqs = []
@@ -76,7 +76,7 @@ def get_gff_tn_seqs(seq, gff):
 				eseqs.append(eseq)
 
 	return eseqs, iseqs, dseqs, aseqs
-'''
+
 # work in progress
 def get_top_exins(seq, gff):
 
