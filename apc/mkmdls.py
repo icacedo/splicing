@@ -58,15 +58,32 @@ def write_len(data, a, b, g, size_limit, fp, outdir=None):
 
 #eseqs, iseqs, dseqs, aseqs = im.get_all_tn_seqs(args.wb_dir)
 
-def get_gff_tn_seqs(seq, gff):
+def get_subseqs(seq, gff):
 
 	eseqs = []
+	iseqs = []
+	dseqs = []
+	aseqs = []
 	with open(gff, 'r') as fp:
 		for line in fp.readlines():
 			line = line.rstrip()
 			line = line.split('\t')
-			if line[1] == 'WormBase':
-				print(line)
+			if line[1] == 'WormBase' and line[2] == 'exon':
+				beg = int(line[3])
+				end = int(line[4])
+				eseq = seq[beg-1:end]
+				eseqs.append(eseq)
+			if line[1] == 'WormBase' and line[2] == 'intron':
+				beg = int(line[3])
+				end = int(line[4])
+				iseq = seq[beg-1:end]
+				iseqs.append(iseq)
+				dseq = seq[beg-1:beg+4]
+				dseqs.append(dseq)
+				aseq = seq[end-6:end]
+				aseqs.append(aseq)
+
+	return [eseqs, iseqs, dseqs, aseqs]
 
 gffs = {}
 fastas = {}
@@ -77,38 +94,40 @@ for file in os.listdir(args.wb_dir):
 	if file.endswith('fa'):
 		fastas[id] = f'{args.wb_dir}{file}'
 
-seq = im.read_fasta(fastas['3068'])
-print(seq[0])
-
-get_gff_tn_seqs(seq[1], gffs['3068'])
-
-'''
-for gene in gffs:
-	seq = im.read_fasta(fastas[gene])
-	#eseqs, iseqs, dseqs, aseqs = get_gff_tn_seqs(seq[1], gffs[gene])
-	eseqs = get_gff_tn_seqs(seq[1], gffs[gene])
-	print(eseqs)
-	#print(iseqs)
-	#print(dseqs)
-	#print(aseqs)
-	print(seq[0])
+for gid in gffs:
+	seq = im.read_fasta(fastas[gid])
+	get_subseqs(seq[1], gffs[gid])
 	break
-'''
-
-# testing isoforms/modelbuilder
 
 import genome
 
-
 exons = []
+introns = []
+dons = []
+accs = []
 genome = genome.Reader(gff=gffs['3068'], fasta=fastas['3068'])
 tx = next(genome).ftable.build_genes()[0].transcripts()[0]
 for f in tx.exons: exons.append(f.seq_str())
+for f in tx.introns:
+	iseq = f.seq_str()
+	dons.append(iseq[0:5])
+	accs.append(iseq[-6:])
+	introns.append(iseq)
 
-print(exons)
+print('###')
+# need to get only annotated introns
+#e, i, d, a = im.get_gff_tn_seqs(seq[1], gffs['3068'])
 
-e, i, d, a = im.get_gff_tn_seqs(seq[1], gffs['3068'])
-print(e)
+s = im.read_fasta(fastas['3068'])
+subs = get_subseqs(s[1], gffs['3068'])
+
+if exons == subs[0]: print('same e')
+if introns == subs[1]: print('same i')
+if dons == subs[2]: print('same d')
+if accs == subs[3]: print('same a')
+
+print(accs)
+print(subs[3])
 
 # ch.6441 overlaps with another gene
 # ch.3068 is on the + strand on WB
