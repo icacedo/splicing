@@ -54,16 +54,11 @@ for gid in gffs:
 	for d in subseqs[2]: dons.append(d)
 	for a in subseqs[3]: accs.append(a)
 
-exons = exons[:10]
 elens, a, b, g = fdist_params(exons, 1000)
 
-v = im.memoize_fdist(elens, a, b, g, 1, 1000)
+v = im.memoize_fdist(elens, a, b, g, 25, 1000)
 
 print(v)
-
-
-
-print(exons)
 
 
 import math
@@ -94,9 +89,14 @@ def create_length_model(seqs, lmin, lmax):
 
 	return pdf
 
-pdf = create_length_model(exons, 1, 20)
-print(pdf)
+pdf = create_length_model(exons, 25, 1000)
+pdf2 = []
+for p in pdf:
+	pdf2.append(f'{p:.{6}f}')
 
+print(pdf2)
+
+if v == pdf2: print('wow')
 
 
 
