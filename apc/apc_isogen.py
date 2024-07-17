@@ -101,7 +101,8 @@ for iso in abc_isoforms:
 		else:
 			ilen_score = 0
 		if args.imm:
-			imm_score = im.score_mm(re_imm, intron, seq, re_dpwm, re_apwm) * args.wimm
+			imm_score = im.score_mm(re_imm, intron, seq, re_dpwm, re_apwm) \
+				* args.wimm
 		else:
 			imm_score = 0
 		dseq, aseq = im.get_daseq(intron, seq)

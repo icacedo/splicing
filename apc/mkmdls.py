@@ -54,12 +54,75 @@ for gid in gffs:
 	for d in subseqs[2]: dons.append(d)
 	for a in subseqs[3]: accs.append(a)
 
-elens, a, b, g = fdist_params(exons, 1000)
+elens, ea, eb, eg = fdist_params(exons, 1000)
+ilens, ia, ib, ig = fdist_params(introns, 1000)
 
+elen_data = im.memoize_fdist(elens, ea, eb, eg, 25, 1000)
+ilen_data = im.memoize_fdist(ilens, ia, ib, ig, 35, 1000)
+
+if args.outdir:
+	out = args.outdir
+	if not os.path.exists(out):
+		os.mkdir(out)
+else:
+	out = f'{os.getcwd()}/'
+
+im.len_write(elen_data, 'exon', outdir=out)
+im.len_write(ilen_data, 'intron', outdir=out)
+
+
+
+
+
+
+
+
+
+
+
+
+
+# same as isoforms/isoform.py
+# on full dataset, small differences at end of numbers
+'''
+exons = exons[:2]
+
+probs = im.make_mm(exons)
+
+print(probs)
+
+def create_markov(seqs, order, beg, end):
+	count = {}
+	for seq in seqs:
+		for i in range(beg+order, len(seq) - end):
+			ctx = seq[i-order:i]
+			nt = seq[i]
+			if ctx not in count: count[ctx] = {'A':0, 'C':0, 'G':0, 'T':0}
+			count[ctx][nt] += 1
+
+	# these need to be probabilities
+	mm = {}
+	for kmer in count:
+		mm[kmer] = {}
+		total = 0
+		for nt in count[kmer]: total += count[kmer][nt]
+		for nt in count[kmer]: mm[kmer][nt] = count[kmer][nt] / total
+
+	return mm
+
+mm = create_markov(exons, 3, 0, 0)
+
+sorted_d = {}
+for key in sorted(mm):
+	sorted_d[key] = mm[key]
+print('#####')
+print(sorted_d)
+'''
+
+'''
 v = im.memoize_fdist(elens, a, b, g, 25, 1000)
 
 print(v)
-
 
 import math
 
@@ -97,13 +160,7 @@ for p in pdf:
 print(pdf2)
 
 if v == pdf2: print('wow')
-
-
-
-
-
-
-
+'''
 # testing code from isoforms/modelbuilder
 '''
 import genome

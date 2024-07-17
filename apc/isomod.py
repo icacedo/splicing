@@ -198,8 +198,6 @@ def frechet_pdf(x, a, b, g):
 
 # at size_limit 500-max exon/intron fit frechet dist
 # lower than 500, no longer frechet dist
-# pre stands for precision (decimals)
-
 def memoize_fdist(data, a, b, g, minlen, maxlen):
 
 	assert maxlen >= 500, "max length too small for frechet"
@@ -225,6 +223,53 @@ def memoize_fdist(data, a, b, g, minlen, maxlen):
 
 	return yvals2
 
+def len_write(data, fname, outdir=None):
+
+	assert fname == 'exon' or fname == 'intron', 'file name not valid'
+
+	if outdir:
+		fpath = outdir + f'{fname}.len'
+	else:
+		fpath = f'{fname}.len'
+
+	with open(fpath, 'w', newline='') as file:
+		file.write(f'% LEN models/{fname}.len {len(data)}\n')
+		for prob in data:
+			file.write(f'{prob}\n')
+
+################################
+##### Markov Model Section #####
+################################
+
+def make_mm(exinseqs, order=3):
+
+	context = {}
+	for seq in exinseqs:
+		for i in range(len(seq)-order):
+			prev = seq[i:i+order]
+			now = seq[i+order]
+			if prev not in context:
+				context[prev] = now
+			else:
+				context[prev] += now
+
+	mm_probs = {}
+	for nts in sorted(context):	
+		A = 0
+		C = 0
+		G = 0
+		T = 0
+		for nt in context[nts]:
+			if nt == 'A': A += 1
+			if nt == 'C': C += 1
+			if nt == 'G': G += 1
+			if nt == 'T': T += 1
+			d = int(len(context[nts]))
+		if nts not in mm_probs:
+			#mm_probs[nts] = [A/d, C/d, G/d, T/d]
+			mm_probs[nts] = [float(f'{x:.6f}') for x in [A/d, C/d, G/d, T/d]]		
+
+	return mm_probs
 
 
 ###########################
@@ -329,18 +374,6 @@ def get_entropy(probs):
 	for p in probs:
 		h -= p * math.log2(p)
 	return h
-
-
-
-
-
-
-
-
-
-
-
-
 
 ##### Markov Model scoring #####
 
