@@ -265,9 +265,7 @@ def make_mm(exinseqs, order=3):
 			if nt == 'G': G += 1
 			if nt == 'T': T += 1
 			d = int(len(context[nts]))
-		if nts not in mm_probs:
-			#mm_probs[nts] = [A/d, C/d, G/d, T/d]
-			mm_probs[nts] = [float(f'{x:.6f}') for x in [A/d, C/d, G/d, T/d]]		
+		mm_probs[nts] = [float(f'{x:.6f}') for x in [A/d, C/d, G/d, T/d]]		
 
 	return mm_probs
 
@@ -288,9 +286,43 @@ def mm_write(data, fname, outdir=None):
 				file.write(f'{cxt}{alph[i]} {data[cxt][i]}\n')
 			if cxt != list(data)[-1]:
 				file.write('\n')
-	
-		
 
+################################
+##### PWM Model Section ########
+################################
+
+def make_pwm(seqs):
+	
+	pfm = [{'A': 0, 'C': 0, 'G': 0, 'T':0} for x in range(len(seqs[0]))]
+	for i in range(len(seqs)):
+		for j in range(len(seqs[i])):
+			pfm[j][seqs[i][j]] += 1
+
+	ppm = [{'A': 0, 'C': 0, 'G': 0, 'T':0} for x in range(len(pfm))]
+	for i in range(len(pfm)):
+		for n in pfm[i]:
+			frequency = pfm[i][n]/len(seqs)		
+			ppm[i][n] = frequency	
+
+	for i in range(len(ppm)):
+		for n in ppm[i]:
+			ppm[i][n] = f'{ppm[i][n]:.6f}'	
+
+	return ppm
+
+def pwm_write(data, fname, outdir=None):
+
+	assert fname == 'donor' or fname == 'acceptor', 'file name not valid'
+
+	if outdir:
+		fpath = outdir + f'{fname}.pwm'
+	else:
+		fpath = f'{fname}.pwm'
+
+	with open(fpath, 'w', newline='') as file:
+		file.write(f'% PWM models/{fname}.pwm {len(data)}\n')
+		for site in data:
+			file.write(f'{site['A']} {site['C']} {site['G']} {site['T']}\n')
 
 ###########################
 ##### Scoring Section #####	
@@ -424,15 +456,8 @@ def read_pwm(pwm_model):
 	
 	return pwm_scores
 
-
-
-
-
-
-
-
 #######################################
-##### All Biological Combinations #####
+##### All Possible Combinations #####
 #######################################
 
 def get_gtag(seq, flank, minex):
@@ -499,12 +524,12 @@ def get_introns(dsites, asites):
 
 	return introns
 
-def abc(dons, accs, maxs, minin, minex, flank, seq):
+def apc(dons, accs, maxs, minin, minex, flank, seq):
 	
 	# use .copy() when appending dictionaries to lists
-	abc_isoforms = []
+	apc_isoforms = []
 
-	abc_isoform = {
+	apc_isoform = {
 		'seq': '',
 		'beg': '',
 		'end': '',
@@ -522,13 +547,13 @@ def abc(dons, accs, maxs, minin, minex, flank, seq):
 				trials += 1
 				if short_introns(dsites, asites, minin): continue
 				if short_exons(dsites, asites, flank, minex, seq): continue
-				abc_isoform['seq'] = seq
-				abc_isoform['beg'] = flank
-				abc_isoform['end'] = len(seq) - flank - 1
-				abc_isoform['exons'] = get_exons(dsites, asites, flank, seq)
-				abc_isoform['introns'] = get_introns(dsites, asites)
-				abc_isoforms.append(abc_isoform.copy())	
-	return abc_isoforms, trials
+				apc_isoform['seq'] = seq
+				apc_isoform['beg'] = flank
+				apc_isoform['end'] = len(seq) - flank - 1
+				apc_isoform['exons'] = get_exons(dsites, asites, flank, seq)
+				apc_isoform['introns'] = get_introns(dsites, asites)
+				apc_isoforms.append(apc_isoform.copy())	
+	return apc_isoforms, trials
 
 
 

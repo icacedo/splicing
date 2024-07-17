@@ -68,7 +68,7 @@ if args.gff:
 else:
 	dons, accs = im.get_gtag(seq, args.flank, args.minex)
 
-abc_isoforms, trials = im.abc(dons, accs, args.maxs, args.minin, 
+abc_isoforms, trials = im.apc(dons, accs, args.maxs, args.minin, 
 							  args.minex, args.flank, seq)
 
 re_elen = im.read_len(args.elen) if args.elen else None
