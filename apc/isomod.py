@@ -271,6 +271,26 @@ def make_mm(exinseqs, order=3):
 
 	return mm_probs
 
+def mm_write(data, fname, outdir=None):
+
+	assert fname == 'exon' or fname == 'intron', 'file name not valid'
+
+	if outdir:
+		fpath = outdir + f'{fname}.mm'
+	else:
+		fpath = f'{fname}.mm'
+
+	with open(fpath, 'w', newline='') as file:
+		file.write(f'% MM models/{fname}.mm {len(data)*4}\n')
+		alph = ['A', 'C', 'G', 'T']
+		for cxt in data:
+			for i in range(len(data[cxt])):
+				file.write(f'{cxt}{alph[i]} {data[cxt][i]}\n')
+			if cxt != list(data)[-1]:
+				file.write('\n')
+	
+		
+
 
 ###########################
 ##### Scoring Section #####	

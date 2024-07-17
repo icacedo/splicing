@@ -59,6 +59,8 @@ ilens, ia, ib, ig = fdist_params(introns, 1000)
 
 elen_data = im.memoize_fdist(elens, ea, eb, eg, 25, 1000)
 ilen_data = im.memoize_fdist(ilens, ia, ib, ig, 35, 1000)
+emm_data = im.make_mm(exons)
+imm_data = im.make_mm(introns)
 
 if args.outdir:
 	out = args.outdir
@@ -69,9 +71,8 @@ else:
 
 im.len_write(elen_data, 'exon', outdir=out)
 im.len_write(ilen_data, 'intron', outdir=out)
-
-
-
+im.mm_write(emm_data, 'exon', outdir=out)
+im.mm_write(imm_data, 'intron', outdir=out)
 
 
 
