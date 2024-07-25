@@ -34,18 +34,13 @@ parser.add_argument('--seed', required=False, type=int, default=1,
 
 args = parser.parse_args()
 
-# referencing this help doc
-# https://realpython.com/python-subprocess/
-
-for i in range(args.beg_len, args.end_len + args.inc, args.inc):
-    print(i)
-    subprocess.run([
-        "isorandom", str(i), str(args.count), "--min_exon", str(args.min_exon),
-        "--min_intron", str(args.min_intron), "--max_splice", 
-        str(args.max_splice), "--flank", str(args.flank)
-    ])
-    break
-
-
+with open('isorandom.out', 'w') as file:
+    for i in range(args.beg_len, args.end_len + args.inc, args.inc):
+        result = subprocess.run([
+            "isorandom", str(i), str(args.count), "--min_exon", str(args.min_exon),
+            "--min_intron", str(args.min_intron), "--max_splice", 
+            str(args.max_splice), "--flank", str(args.flank)
+        ], check=True, text=True, capture_output=True)
+        file.write(result.stdout)
 
 
