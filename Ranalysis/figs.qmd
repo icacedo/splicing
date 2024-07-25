@@ -1,0 +1,55 @@
+```{r}
+df <- read.table("../random/isorandom.out", header = FALSE, sep = "\t")
+colnames(df) <- c("seq_len", "dons", "accs", "trials", "isoforms")
+df$trials <- abs(df$trials)
+head(df)
+# don't forget the comma
+# df[df$seq_len == 300,]
+```
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+p <- df %>%
+  ggplot(.,aes(x=seq_len, y=isoforms)) +
+  geom_point() +
+  geom_smooth() +
+  theme_minimal()
+
+p
+```
+
+```{r}
+d500 <- df[df$seq_len == 500,]
+d500
+
+p500 <- d500 %>%
+  ggplot(.,aes(x=trials,y=isoforms)) +
+  geom_point()
+
+p500
+```
+```{r}
+p2 <- df %>%
+  ggplot(., aes(x=trials, y=isoforms, color=seq_len)) +
+  geom_point()
+
+p2
+```
+```{r}
+boxp1 <- df %>%
+  ggplot(., aes(x=seq_len, y=trials, group=seq_len)) +
+  geom_boxplot()
+
+boxp1
+```
+```{r}
+boxp2 <- df %>%
+  ggplot(., aes(x=seq_len, y=isoforms, group=seq_len)) +
+  geom_boxplot()
+
+boxp2
+```
+
