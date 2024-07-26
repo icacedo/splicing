@@ -13,9 +13,10 @@ library(dplyr)
 
 ```{r}
 p <- df %>%
-  ggplot(.,aes(x=seq_len, y=isoforms)) +
+  ggplot(.,mapping = aes(x=seq_len, y=isoforms)) +
   geom_point() +
-  geom_smooth() +
+  geom_smooth(method = "nls", formula = y ~ a * exp(b * x), 
+              se = FALSE, method.args = list(start = list(a = 0.1, b = 0.1))) +
   theme_minimal()
 
 p
