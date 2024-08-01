@@ -1,8 +1,8 @@
 ```{r}
-df <- read.table("../random/isorandom.out", header = FALSE, sep = "\t")
-colnames(df) <- c("seq_len", "dons", "accs", "trials", "isoforms")
-df$trials <- abs(df$trials)
-head(df)
+df <- read.table("../random/randata.csv", header = FALSE, sep = ",")
+colnames(df) <- c("seq_len", "dons", "accs", "isoforms")
+
+times <- read.table("../random/times.csv", header = FALSE, sep = ",")
 # don't forget the comma
 # df[df$seq_len == 300,]
 ```
@@ -15,37 +15,11 @@ library(dplyr)
 p <- df %>%
   ggplot(.,mapping = aes(x=seq_len, y=isoforms)) +
   geom_point() +
-  geom_smooth(method = "nls", formula = y ~ a * exp(b * x), 
-              se = FALSE, method.args = list(start = list(a = 0.1, b = 0.1))) +
   theme_minimal()
 
 p
 ```
 
-```{r}
-d500 <- df[df$seq_len == 500,]
-d500
-
-p500 <- d500 %>%
-  ggplot(.,aes(x=trials,y=isoforms)) +
-  geom_point()
-
-p500
-```
-```{r}
-p2 <- df %>%
-  ggplot(., aes(x=trials, y=isoforms, color=seq_len)) +
-  geom_point()
-
-p2
-```
-```{r}
-boxp1 <- df %>%
-  ggplot(., aes(x=seq_len, y=trials, group=seq_len)) +
-  geom_boxplot()
-
-boxp1
-```
 ```{r}
 boxp2 <- df %>%
   ggplot(., aes(x=seq_len, y=isoforms, group=seq_len)) +
@@ -53,4 +27,73 @@ boxp2 <- df %>%
 
 boxp2
 ```
+```{r}
+tplot <- times %>%  
+  ggplot(, mapping = aes(x=V1, y=V2)) + 
+  geom_point()
+
+tplot
+```
+
+```{r}
+# https://stackoverflow.com/questions/31851936/exponential-curve-fitting-in-r
+# https://sites.uwm.edu/jrb5/exponential-growth/
+# https://www.mathsisfun.com/algebra/exponential-growth.html
+# this is the equation we are interested in
+# y(t) = a * (e ** (k*t))
+# so b = k and t = x
+# we can write function(t) since it is a function of time
+# code from chat gpt
+
+
+# https://www.r-bloggers.com/2020/02/a-collection-of-self-starters-for-nonlinear-regression-in-r/
+# initial values for model parameters need to be guessed
+
+# Fit the exponential model
+# why do these initial values work and not others?
+# from khan academy
+# initial value is the value of the function when input is 0
+# f(0) = 1 * exp(0.01 * x)
+# ask chat gpt how it got the initial values
+# when I use those formulas, i can choose different initial values other than
+# a = 1 and b = 0.01
+# estimate what initial values are using simpler models
+# it also suggests linearlizing a model to get initials as well
+exp_model <- nls(y ~ a * exp(b * x), data = times, start = list(a = 0.0007, b = 0.0157))
+
+# Extract coefficients
+coefficients <- coef(exp_model)
+a <- coefficients["a"]
+b <- coefficients["b"]
+
+# Plot with ggplot2
+ggplot(data, aes(x = x, y = y)) +
+  geom_point() +  # Plot the original data
+  stat_function(
+    fun = function(x) a * exp(b * x),  # Define the exponential function
+    color = "blue"  # Color of the exponential curve
+  ) +
+  theme_minimal() +
+  labs(title = "Scatterplot with Exponential Fit", x = "x", y = "y")
+
+
+
+```
+```{r}
+exp_model <- nls(y ~ a * exp(b * x), data = times, start = list(a = 0.0007, b = 0.0157))
+
+# let's try this
+# can use aomisc package to get self-starting nls function
+# https://www.statforbiology.com/2020/stat_nls_usefulfunctions/#exponential-function
+
+# how to install
+# https://rdrr.io/github/OnofriAndreaPG/aomisc/
+
+# need to install a ton of dependencies
+
+```
+
+
+
+
 
