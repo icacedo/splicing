@@ -59,7 +59,9 @@ tplot
 # a = 1 and b = 0.01
 # estimate what initial values are using simpler models
 # it also suggests linearlizing a model to get initials as well
-exp_model <- nls(y ~ a * exp(b * x), data = times, start = list(a = 0.0007, b = 0.0157))
+colnames(times) <- c("x", "y")
+exp_model <- nls(y ~ a * exp(b * x), data = times, start = list(a = 1, 
+                                                                b = 0.01))
 
 # Extract coefficients
 coefficients <- coef(exp_model)
@@ -67,7 +69,7 @@ a <- coefficients["a"]
 b <- coefficients["b"]
 
 # Plot with ggplot2
-ggplot(data, aes(x = x, y = y)) +
+ggplot(times, aes(x = x, y = y)) +
   geom_point() +  # Plot the original data
   stat_function(
     fun = function(x) a * exp(b * x),  # Define the exponential function
@@ -80,7 +82,7 @@ ggplot(data, aes(x = x, y = y)) +
 
 ```
 ```{r}
-exp_model <- nls(y ~ a * exp(b * x), data = times, start = list(a = 0.0007, b = 0.0157))
+emod2 <- nls(y ~ a * exp(b * x), data = times, start = list(a = 0.0007, b = 0.0157))
 
 # let's try this
 # can use aomisc package to get self-starting nls function
@@ -90,10 +92,43 @@ exp_model <- nls(y ~ a * exp(b * x), data = times, start = list(a = 0.0007, b = 
 # https://rdrr.io/github/OnofriAndreaPG/aomisc/
 
 # need to install a ton of dependencies
+# let's not try this, too many dependencies and R doesn't install them 
+# automatically
+
+# https://mhasoba.github.io/TheMulQuaBio/notebooks/20-ModelFitting-NLLS.html
 
 ```
 
+Things to explore:
+Two sets of models for one set of data?
+For a larger gene, the time to compute would be impossible large
+for 2000bp
+for 10000bp, how long?
 
+Notes for Tidy Modeling with R 2022
+
+Predictive models
+```{r}
+# Data preparation
+x <- c(1000, 1050, 1100, 1150, 1200, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950)
+y <- c(7407.881836, 10177.641602, 15048.281250, 20104.904297, 28351.025391, 0.079411, 0.174502, 1.300968, 5.627512, 19.221985, 33.477383, 90.288712, 297.898438, 619.718323, 1152.308350, 1368.855957, 1965.873291, 3006.698242, 4602.867676)
+
+# Fit the quadratic model
+quad_model <- lm(y ~ poly(x, 2, raw = TRUE))
+
+# Get the model summary
+summary(quad_model)
+
+# Predicted values
+fitted_values <- predict(quad_model)
+
+# Plot the data and the quadratic fit
+plot(x, y, main = "Quadratic Fit", xlab = "x", ylab = "y", pch = 16)
+lines(sort(x), fitted_values[order(x)], col = "blue", lwd = 2)
+```
+```{r}
+times_sorted <- times[order(times$x),]
+```
 
 
 
