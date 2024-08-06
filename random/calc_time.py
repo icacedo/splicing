@@ -33,4 +33,3 @@ for i in range(500, l+50, 50):
 # each time you increase the length by 100
 # time to finish doubles
 # hence 2 ^ n
-
