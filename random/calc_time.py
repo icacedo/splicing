@@ -19,7 +19,7 @@ b = 0.007036078
 # l for max length to test
 # n for number of simulations
 l = 10000
-n = 1000
+n = 500
 
 for i in range(500, l+50, 50):
     total_time = 0
