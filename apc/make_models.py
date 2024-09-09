@@ -1,34 +1,29 @@
 import argparse
+import os
 import gzip
 import isomod as im
 import openturns as ot 
 import csv
+import glob
 
-parser = argparse.ArgumentParser(
-	description='Generates len, MM, and PWM models for apc')
-
-parser.add_argument('--len_limit', type=int, metavar='<int>',
-	required=False, help='size limit for length model')
-parser.add_argument('--dntxt', type=str, metavar='<file>',
-	required=False, help='input text file with donor site sequences')
-parser.add_argument('--actxt', type=str, metavar='<file>',
-	required=False, help='input text file with acceptor site sequences')
+parser = argparse.ArgumentParser(description='Generates len, MM, and PWM \
+	models for apc based on sequences in the apc dataset')
+parser.add_argument('wb_dir', type=str, metavar='<directory>', 
+	help='directory with apc dataset gff and fasta files')
 parser.add_argument('--outdir', type=str, metavar='<directory>',
 	required=False, help='output directory name')
-parser.add_argument('-mm', action='store_true', help='make only mm')
-parser.add_argument('-len', action='store_true', help='make only len')
 
 args = parser.parse_args()
 
-def fdist_params(exinseqs, nbins=None, pre=None, size_limit=None):
+def fdist_params(exinseqs, len_limit):
 
-	exinlens = im.get_exinbins(exinseqs, nbins=None, pre=None)[2]
+	exinlens = im.get_exinbins(exinseqs)[0]
 	
-	if size_limit:
-		sample = ot.Sample([[x] for x in exinlens if x < size_limit])
+	if len_limit:
+		sample = ot.Sample([[x] for x in exinlens if x < len_limit])
 	else:
-		size_limit = max(exinlens)
-		sample = ot.Sample([[x] for x in exinlens if x < size_limit])	
+		len_limit = max(exinlens)
+		sample = ot.Sample([[x] for x in exinlens if x < len_limit])	
 
 	distFrechet = ot.FrechetFactory().buildAsFrechet(sample)
 
@@ -36,156 +31,169 @@ def fdist_params(exinseqs, nbins=None, pre=None, size_limit=None):
 	b = distFrechet.getBeta()
 	g = distFrechet.getGamma()
 	
-	return exinlens, a, b, g, size_limit
+	return exinlens, a, b, g
 
-def len_tsv_write(data, a, b, g, size_limit, fp, outdir=None):
-	
-	exinlen_yscores, exinlen_yvalues = aml.memoize_fdist(
-		data, a, b, g, size_limit, pre=6)
+gffs = {}
+fastas = {}
+for file in os.listdir(args.wb_dir):
+	id = file.split('.')[1]
+	if file.endswith('gff3'):
+		gffs[id] = f'{args.wb_dir}{file}'
+	if file.endswith('fa'):
+		fastas[id] = f'{args.wb_dir}{file}'
 
-	path = fp.split('/')
-	root, ext = path[-1].split('.')
-	if outdir:
-		filename = outdir + root + '_len' + '.tsv'
-	else:
-		filename = root + '_len' + '.tsv'
+exons = []
+introns = []
+dons = []
+accs = []
+for gid in gffs:
+	seq = im.read_fasta(fastas[gid])
+	subseqs = im.get_subseqs(seq[1], gffs[gid])
+	for e in subseqs[0]: exons.append(e)
+	for i in subseqs[1]: introns.append(i)
+	for d in subseqs[2]: dons.append(d)
+	for a in subseqs[3]: accs.append(a)
 
-	with open(filename, 'w', newline='') as tsvfile:
-		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow(['% EVD params: '+'a: '+str(a)+' b: '+str(b)+' g '
-				   +str(g)])
-		writer.writerow(['% len '+root+' P', root+' log2(P/expect)'])
-		for i in range(len(exinlen_yscores)):
-			writer.writerow([exinlen_yvalues[i], exinlen_yscores[i]])
-	tsvfile.close()
+elens, ea, eb, eg = fdist_params(exons, 1000)
+ilens, ia, ib, ig = fdist_params(introns, 1000)
 
-def mm_tsv_write(exins, fp, outdir=None):
+elen_data = im.memoize_fdist(elens, ea, eb, eg, 25, 1000)
+ilen_data = im.memoize_fdist(ilens, ia, ib, ig, 35, 1000)
+emm_data = im.make_mm(exons)
+imm_data = im.make_mm(introns)
+dpwm_data = im.make_pwm(dons)
+apwm_data = im.make_pwm(accs)
 
-	exinmm_scores, exinmm_probs, order = aml.make_mm(exins)
-	
-	path = fp.split('/')
-	root, ext = path[-1].split('.')
-	if outdir:
-		filename = outdir + root + '_mm' + '.tsv'
-	else:
-		filename = root + '_mm' + '.tsv'
-
-	with open(filename, 'w', newline='') as tsvfile:
-		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow(['% mm '+root+' '+str(order+1)+'mer', 'mm '+root+' P',
-			'mm '+root+' log2(P/0.25)'])
-		for key in exinmm_scores:
-			writer.writerow([key + 'A', exinmm_probs[key][0], 
-				exinmm_scores[key][0]])
-			writer.writerow([key + 'C', exinmm_probs[key][1], 
-				exinmm_scores[key][1]])
-			writer.writerow([key + 'G', exinmm_probs[key][2], 
-				exinmm_scores[key][2]])
-			writer.writerow([key + 'T', exinmm_probs[key][3], 
-				exinmm_scores[key][3]])
-	tsvfile.close()
-
-if args.len_limit:
-	len_limit = args.len_limit
+if args.outdir:
+	out = args.outdir
+	if not os.path.exists(out):
+		os.mkdir(out)
 else:
-	len_limit = None
+	out = f'{os.getcwd()}/'
 
-if args.extxt and args.mm:
-	exons = aml.read_txt_seqs(args.extxt)
-	mm_tsv_write(exons, args.extxt, args.outdir)
-elif args.extxt and args.len:
-	exons = aml.read_txt_seqs(args.extxt)
-	data, a, b, g, limit = aml.fdist_params(exons, size_limit=len_limit) #***
-	len_tsv_write(data, a, b, g, limit, args.extxt, args.outdir) #***
-	#len_tsv_write(exons, args.extxt, args.outdir)	
-elif args.extxt:
-	exons = aml.read_txt_seqs(args.extxt)
-	data, a, b, g, limit = aml.fdist_params(exons, size_limit=len_limit) #***
-	len_tsv_write(data, a, b, g, limit, args.extxt, args.outdir) #***
-	#len_tsv_write(exons, args.extxt, args.outdir)
-	mm_tsv_write(exons, args.extxt, args.outdir)
-							
-if args.intxt and args.mm:
-	introns = aml.read_txt_seqs(args.intxt)
-	mm_tsv_write(introns, args.intxt, args.outdir)
-elif args.intxt and args.len:
-	introns = aml.read_txt_seqs(args.intxt)
-	data, a, b, g, limit = aml.fdist_params(introns, size_limit=len_limit) #***
-	len_tsv_write(introns, a, b, g, limit, args.intxt, args.outdir) #***
-	#len_tsv_write(introns, args.intxt, args.outdir)
-elif args.intxt:
-	introns = aml.read_txt_seqs(args.intxt)
-	data, a, b, g, limit = aml.fdist_params(introns, size_limit=len_limit) #***
-	len_tsv_write(data, a, b, g, limit, args.intxt, args.outdir) #***
-	#len_tsv_write(introns, args.intxt, args.outdir)
-	mm_tsv_write(introns, args.intxt, args.outdir)
+im.len_write(elen_data, 'exon', outdir=out)
+im.len_write(ilen_data, 'intron', outdir=out)
+im.mm_write(emm_data, 'exon', outdir=out)
+im.mm_write(imm_data, 'intron', outdir=out)
+im.pwm_write(dpwm_data, 'donor', outdir=out)
+im.pwm_write(apwm_data, 'acceptor', outdir=out)
 
-####################################################
 
-def pdread(dictionary):
 
-	for site in dictionary:
-		A = None
-		C = None
-		G = None
-		T = None
-		for key in site:
-			if key == 'A':
-				A = site[key]
-			if key == 'C':
-				C = site[key]
-			if key == 'G':
-				G = site[key]
-			if key == 'T':
-				T = site[key]
-		yield [A, C, G, T]
 
-def de(num, pre=6):
+
+
+
+
+
+# same as isoforms/isoform.py
+# on full dataset, small differences at end of numbers
+'''
+exons = exons[:2]
+
+probs = im.make_mm(exons)
+
+print(probs)
+
+def create_markov(seqs, order, beg, end):
+	count = {}
+	for seq in seqs:
+		for i in range(beg+order, len(seq) - end):
+			ctx = seq[i-order:i]
+			nt = seq[i]
+			if ctx not in count: count[ctx] = {'A':0, 'C':0, 'G':0, 'T':0}
+			count[ctx][nt] += 1
+
+	# these need to be probabilities
+	mm = {}
+	for kmer in count:
+		mm[kmer] = {}
+		total = 0
+		for nt in count[kmer]: total += count[kmer][nt]
+		for nt in count[kmer]: mm[kmer][nt] = count[kmer][nt] / total
+
+	return mm
+
+mm = create_markov(exons, 3, 0, 0)
+
+sorted_d = {}
+for key in sorted(mm):
+	sorted_d[key] = mm[key]
+print('#####')
+print(sorted_d)
+'''
+
+'''
+v = im.memoize_fdist(elens, a, b, g, 25, 1000)
+
+print(v)
+
+import math
+
+def create_length_model(seqs, lmin, lmax):
+	# get the lengths
+	lens = [len(seq) for seq in seqs]
+
+	# train Frechet
+	sample = ot.Sample([[x] for x in lens if x < lmax])
+	f = ot.FrechetFactory().buildAsFrechet(sample)
+	a = f.getAlpha()
+	b = f.getBeta()
+	g = f.getGamma()
 	
-	num2 = f'{num:.{pre}f}'
-	return num2
+	# create histogram from frechet
+	pdf = []
+	for x in range(lmax):
+		if x < g: pdf.append(0)
+		else:
+			z = (x-g)/b
+			pdf.append((a/b) * z**(-1-a) * math.exp(-z**-a))
 
-def pwm_tsv_write(donacc, fp, outdir=None):
+	# create leading zeros and rescale
+	for i in range(lmin): pdf[i] = 0
+	total = sum(pdf)
+	for i in range(len(pdf)): pdf[i] /= total	
 
-	pwm, ppm = aml.make_pwm(donacc)
+	return pdf
 
-	path = fp.split('/')
-	root, ext = path[-1].split('.')
-	if outdir:
-		filename = outdir + root + '_pwm' + '.tsv'
-	else:
-		filename = root + '_pwm' + '.tsv'
+pdf = create_length_model(exons, 25, 1000)
+pdf2 = []
+for p in pdf:
+	pdf2.append(f'{p:.{6}f}')
 
-	with open(filename, 'w', newline='') as tsvfile:
-		writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
-		writer.writerow(['% pwm '+root+' log2(PA/0.25)', 'log2(PC/0.25)', \
-			'log2(PG/0.25)', 'log2(PT/0.25)'])
-		for site in pdread(pwm):
-			a = de(site[0])
-			c = de(site[1])
-			g = de(site[2])
-			t = de(site[3])	
-			writer.writerow([a, c, g, t])
-		writer.writerow(['% ppm '+root+' PA', 'PC', 'PG', 'PT'])
-		for site in pdread(ppm):
-			a = de(site[0])
-			c = de(site[1])
-			g = de(site[2])
-			t = de(site[3])
-			writer.writerow([a, c, g, t])
-		tsvfile.close()
+print(pdf2)
 
-if args.dntxt:
-	donors = aml.read_txt_seqs(args.dntxt)
-	pwm_tsv_write(donors, args.dntxt, args.outdir)
+if v == pdf2: print('wow')
+'''
+# testing code from isoforms/modelbuilder
+'''
+import genome
 
-if args.actxt:
-	acceptors = aml.read_txt_seqs(args.actxt)
-	pwm_tsv_write(acceptors, args.actxt, args.outdir)
+exons = []
+introns = []
+dons = []
+accs = []
+genome = genome.Reader(gff=gffs['3068'], fasta=fastas['3068'])
+tx = next(genome).ftable.build_genes()[0].transcripts()[0]
+for f in tx.exons: exons.append(f.seq_str())
+for f in tx.introns:
+	iseq = f.seq_str()
+	dons.append(iseq[0:5])
+	accs.append(iseq[-6:])
+	introns.append(iseq)
 
+s = im.read_fasta(fastas['3068'])
+subs = im.get_subseqs(s[1], gffs['3068'])
 
+if exons == subs[0]: print('same e')
+if introns == subs[1]: print('same i')
+if dons == subs[2]: print('same d')
+if accs == subs[3]: print('same a')
 
 
-
+'''
+# ch.6441 overlaps with another gene
+# ch.3068 is on the + strand on WB
+# ch.862 is on the - strand on WB
 
 

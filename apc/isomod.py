@@ -72,6 +72,9 @@ def get_subseqs(seq, gff):
 	return [eseqs, iseqs, dseqs, aseqs]
 
 # work in progress
+# wormbase gffs have more than the canonical exon/intron/donor/acceptor
+# all sequences are considered equal when training feature models
+# would it be worth it to only train on the features with the most transcripts?
 def get_top_exins(seq, gff):
 
 	wb_ints = []
@@ -172,7 +175,7 @@ def get_exinbins(exinseqs):
 	total = len(sizes)
 	for count in sizes:
 		fq = count/total
-		fq2 = f'{fq:.{6}f}'
+		fq2 = f"{fq:.{6}f}"
 		freqs.append(float(fq2))
 	
 	count_bins = [0 for x in range(max(sizes)+1)]
@@ -182,7 +185,7 @@ def get_exinbins(exinseqs):
 	freq_bins = []
 	for i in range(len(count_bins)):
 		fqb = count_bins[i]/total_obs	
-		fqb2 = f'{fqb:.{6}f}'
+		fqb2 = f"{fqb:.{6}f}"
 		freq_bins.append(float(fqb2))	
 
 	return sizes, freqs
@@ -219,7 +222,7 @@ def memoize_fdist(data, a, b, g, minlen, maxlen):
 			total += yvals[i]
 
 	for i in range(len(yvals2)):
-		yvals2[i] = f'{yvals2[i]/total:.{6}f}'
+		yvals2[i] = f"{yvals2[i]/total:.{6}f}"
 
 	return yvals2
 
@@ -228,14 +231,14 @@ def len_write(data, fname, outdir=None):
 	assert fname == 'exon' or fname == 'intron', 'file name not valid'
 
 	if outdir:
-		fpath = outdir + f'{fname}.len'
+		fpath = outdir + f"{fname}.len"
 	else:
-		fpath = f'{fname}.len'
+		fpath = f"{fname}.len"
 
 	with open(fpath, 'w', newline='') as file:
-		file.write(f'% LEN models/{fname}.len {len(data)}\n')
+		file.write(f"% LEN models/{fname}.len {len(data)}\n")
 		for prob in data:
-			file.write(f'{prob}\n')
+			file.write(f"{prob}\n")
 
 ################################
 ##### Markov Model Section #####
@@ -265,7 +268,7 @@ def make_mm(exinseqs, order=3):
 			if nt == 'G': G += 1
 			if nt == 'T': T += 1
 			d = int(len(context[nts]))
-		mm_probs[nts] = [float(f'{x:.6f}') for x in [A/d, C/d, G/d, T/d]]		
+		mm_probs[nts] = [float(f"{x:.6f}") for x in [A/d, C/d, G/d, T/d]]		
 
 	return mm_probs
 
@@ -274,16 +277,16 @@ def mm_write(data, fname, outdir=None):
 	assert fname == 'exon' or fname == 'intron', 'file name not valid'
 
 	if outdir:
-		fpath = outdir + f'{fname}.mm'
+		fpath = outdir + f"{fname}.mm"
 	else:
-		fpath = f'{fname}.mm'
+		fpath = f"{fname}.mm"
 
 	with open(fpath, 'w', newline='') as file:
-		file.write(f'% MM models/{fname}.mm {len(data)*4}\n')
+		file.write(f"% MM models/{fname}.mm {len(data)*4}\n")
 		alph = ['A', 'C', 'G', 'T']
 		for cxt in data:
 			for i in range(len(data[cxt])):
-				file.write(f'{cxt}{alph[i]} {data[cxt][i]}\n')
+				file.write(f"{cxt}{alph[i]} {data[cxt][i]}\n")
 			if cxt != list(data)[-1]:
 				file.write('\n')
 
@@ -306,7 +309,7 @@ def make_pwm(seqs):
 
 	for i in range(len(ppm)):
 		for n in ppm[i]:
-			ppm[i][n] = f'{ppm[i][n]:.6f}'	
+			ppm[i][n] = f"{ppm[i][n]:.6f}"	
 
 	return ppm
 
@@ -315,14 +318,14 @@ def pwm_write(data, fname, outdir=None):
 	assert fname == 'donor' or fname == 'acceptor', 'file name not valid'
 
 	if outdir:
-		fpath = outdir + f'{fname}.pwm'
+		fpath = outdir + f"{fname}.pwm"
 	else:
-		fpath = f'{fname}.pwm'
+		fpath = f"{fname}.pwm"
 
 	with open(fpath, 'w', newline='') as file:
-		file.write(f'% PWM models/{fname}.pwm {len(data)}\n')
+		file.write(f"% PWM models/{fname}.pwm {len(data)}\n")
 		for site in data:
-			file.write(f'{site['A']} {site['C']} {site['G']} {site['T']}\n')
+			file.write(f"{site['A']} {site['C']} {site['G']} {site['T']}\n")
 
 ###########################
 ##### Scoring Section #####	

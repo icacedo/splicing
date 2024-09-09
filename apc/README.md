@@ -1,9 +1,12 @@
 # Running the APC algorithm on our curated dataset
-Download APC dataset from github:
+Download the APC dataset from github, into the appropriate location
 ```
+├── Code/
+│   ├── splicing/
+│   ├── isoforms/
+│   │   ├── apc/
+|   |   |   ├── fastas & gffs
+
 git clone https://github.com/KorfLab/isoforms.git
 ```
-
-- Code/
-    - splicing/
-    - isoforms/
+Create feature models from APC gene set
