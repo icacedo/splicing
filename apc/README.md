@@ -23,3 +23,15 @@ Run APC on multiple threads
 ```
 python3 multi_apc.py apc_cmds.txt --cpus 15
 ```
+
+This is how long it took spifire to run the APC algorithm on the 1045 dataset using 32 threads:  
+time: 494.5164587497711  
+real    8m14.742s  
+user    198m58.396s  
+sys     3m32.204s
+
+This is how long it took lightning to run the APC algorithm on the 1045 dataset using 15 threads:  
+time: 1047.4677140712738  
+real    17m27.511s  
+user    225m42.328s  
+sys     1m31.272s
