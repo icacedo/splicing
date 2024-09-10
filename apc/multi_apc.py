@@ -28,7 +28,7 @@ with open(args.file, 'r') as fp:
 	for cmd in fp:
 		path = cmd.split('>')[1]
 		path = path.split('/')[1:-1]
-		dpath = '/' + '/'.join(path) + '/'	
+		dpath = '/'.join(path) + '/'	
 		jobs.append(cmd.rstrip())
 
 os.makedirs(dpath, exist_ok=True)
