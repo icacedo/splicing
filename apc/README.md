@@ -11,6 +11,7 @@ git clone https://github.com/KorfLab/isoforms.git
 ```
 Create feature models from APC gene set  
 *small differences between isoformer/ and splicing/ length models
+Make sure you run this in a conda environment that has openturns installed
 ```
 python3 make_models.py ../../isoforms/apc/ --outdir models/
 ```
