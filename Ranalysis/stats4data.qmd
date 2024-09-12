@@ -1,0 +1,11 @@
+Practical statistics for data scientists: 50+ essential concepts using R and python
+Also look at this later:
+Essential Math for Data Science: Take Control of Your Data with Fundamental Linear Algebra,
+Probability, and Statistics, by Thomas Nield, 2022
+
+Is what we are doing with APC anomaly detection? See definition in book
+```{r}
+
+```
+Task: summarize the APC data set into a dataframe that can be read into R
+
