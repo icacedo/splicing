@@ -38,20 +38,17 @@ for fname in os.listdir(args.apc_dir):
                     intron_counts[intron] = reads
     genes[gid] = intron_counts
 
-for gid in genes:
-    pool = {}
-    count = 0
-    for intron in genes[gid]:
-        read_count = int(float(genes[gid][intron]))
-        ilist = [count for x in range(read_count)]
-        if count == 0:
-            pool[gid] = ilist
-            count += 1
-        else:
-            pool[gid].append(ilist)
-            count += 1
-    random.shuffle(pool)
-    break
+for gene in genes:
+    total = 0
+    for intron in genes[gene]:
+        total += float(genes[gene][intron])
+    for intron in genes[gene]:
+        genes[gene][intron] = float(genes[gene][intron])/total
+        #print(gene, intron, genes[gene][intron])
+
+# each intron for each gene now has a probability
+
+#
                     
 
 
