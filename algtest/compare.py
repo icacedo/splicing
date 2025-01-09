@@ -6,6 +6,8 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument('fasta', type=str, metavar='<file>',
                     help='single APC gene to test')
+parser.add_argument('apc_dir', type=str, metavar='<directory>',
+                    help='directory with APC dataset')
 
 args = parser.parse_args()
 
@@ -16,10 +18,11 @@ seqid, seq = im.read_fasta(args.fasta)
 
 # compare these two
 # backtracking algorithm may have issue with first exon position
-seq = 'CCCCCCCGTCCCAGCCCCCGTCCCGTGTCCCAGCCCCCCCAGCCCCCCC'
-seq = 'CCCCCCGTCCCAGCCCCGTGTCCCAGCCCAGCCCCCCC'
+#seq = 'CCCCCCCGTCCCAGCCCCCGTCCCGTGTCCCAGCCCCCCCAGCCCCCCC'
+#seq = 'CCCCCCGTCCCAGCCCCGTGTCCCAGCCCAGCCCCCCC'
 
 seq = 'CCCCCCGTCCCCAGCCCGTCCCGTCCCAGCCCCCC'
+
 
 maxs = 3
 minin = 3
@@ -84,53 +87,87 @@ for mRNA in sorted(bmRNAs):
 # large discrepency between number of isoforms with larger genes
 # not sure if trials is reported in the same way
 
+# coding a recursive backtracking algorithm with help from youtube
 
-don = []
-acc = []
-isoforms = []
+print('##########')
 
+set1 = [6, 17, 22]
+set2 = [13, 28]
+
+# test with 100 items freezes my vm
+test = [x for x in range(100)]
+nums = set1
+
+n = len(nums)
+res, sol = [], []
+
+# i for index
 def backtrack(i):
+    
+    # base case, index is at end of list (length n of list)
+    if i == n:
+        # append copy of sol not reference
+        res.append(sol[:])
+        return
+    
+    # left path, don't pick nums[i]
+    # move on to next index
+    backtrack(i+1)
 
-    if i == maxs * 2: return
+    # right path, pick nums[i]
+    sol.append(nums[i])
+    # move on to next leaf
+    backtrack(i+1)
+    # undo changes, recursively backtrack
+    # removes item at last position
+    sol.pop()
 
-    if i % 2 == 0:
 
-        for ds in bdons:
-            if don and ds <= acc[-1]: continue
-            else:
-                if ds - 1 - flank < minex:
-                    continue
-            if acc and ds < acc[-1] + minex + 2:
-                continue
+# start at index 0
+#backtrack(0)
+print(sorted(res))
 
-            don.append(ds)
-            backtrack(i + 1)
-            don.pop()
-        
+r, s = [2], [3]
+
+r.append(s[:])
+
+import itertools
+
+combos = []
+for i in range(len(nums)+1):
+    for combo in itertools.combinations(nums, i):
+        combos.append(combo)
+
+print(sorted(combos))
+# backtracking is another way to do all combinations
+
+# itertools will not limit recursion depth, will crash your computer instead
+# does this matter in practical applications?
+
+# what is the most amount of donor/acceptor sites in an apc gene?
+
+import os
+
+minex = 35
+flank = 100
+
+sdons, saccs = im.get_gtag(seq, flank, minex)
+
+lengths = []
+for file in os.listdir(args.apc_dir):
+    if file.endswith('gff3'): continue
     else:
+        seqid, seq = im.read_fasta(f"{args.apc_dir}{file}")
+        dons, accs = im.get_gtag(seq, flank, minex)
+        lengths.append(len(dons))
+        lengths.append(len(accs))
 
-        for ac in acc:
+print(max(lengths))
 
-            if ac <= don[-1]: continue
-            if ac < don[-1] + minin - 1:
-                continue
-
-            acc.append(ac)
-
-            if len(seq) - flank - ac + 1 >= minex:
-                tx = bp.build_mRNA(seq, flank, len(seq) - flank - 1, don, acc)
-                isoforms.append(tx)
-                backtrack(i + 1)
-                acc.pop()
-            else:
-                acc.pop()
-                continue
-
-backtrack(0)
-
-print(isoforms, info)
-            
-
-
-
+# at most there are 95 dons/accs sites in one gene
+# so don't need to worry about hitting recursion depth with backtracking
+# my vm with 8 cores freezes when i track backtracking with a list of 100
+# itertools runs just fine
+# not sure why the dif, need to limit cores used
+# not sure how many gtag sites Gong tested
 
