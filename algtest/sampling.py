@@ -36,7 +36,7 @@ for fname in os.listdir(args.apc_dir):
                     intron = (line[3], line[4])
                     reads = line[5]
                     intron_counts[intron] = reads
-    genes[gid] = intron_counts
+            genes[gid] = intron_counts
 
 for gene in genes:
     total = 0
@@ -48,10 +48,50 @@ for gene in genes:
 
 # each intron for each gene now has a probability
 
-n_samples = 10
-increment = 1
-start = 1
+n_samples = 15
+increment = 5
+start = 5
 
+gene_samples = {}
+for g in genes:
+    pop = []
+    #probs = []
+    probs = [0.2, 0.2, 0.3, 0.3]
+    for i in genes[g]:
+        pop.append(i)
+        #probs.append(genes[g][i])
+    sampled_introns = []
+    for j in range(start, n_samples+increment, increment):
+        sample = random.choices(pop, weights=probs, k=j)
+        sampled_introns.append(sample)
+    gene_samples[g] = sampled_introns
+    break
+
+data = {}
+for g in gene_samples:
+    run_info = {}
+    for int_group in gene_samples[g]:
+        sums = {}
+        for intron in int_group:
+            if intron not in sums:
+                sums[intron] = 1
+            else:
+                sums[intron] += 1
+        run_info[len(int_group)] = sums
+    data[g] = run_info
+
+for d in data:
+    print(d, data[d])
+    for f in data[d]:
+        print(d, f, data[d][f])
+
+     
+
+
+
+
+
+'''
 all_data = {}
 for gene in genes:
     data = {}
@@ -71,6 +111,8 @@ for gene in genes:
                 sampled_introns[intron] = 1
             else:
                 sampled_introns[intron] += 1
+        print(sampled_introns, '$$$')
+        print(len(sample), '@@@')
         data[i] = sampled_introns
     all_data[gene] = data
     break
@@ -78,9 +120,11 @@ for gene in genes:
 # write to csv file for import to R
 print(all_data)
 for i in all_data:
+    print(i)
     for j in all_data[i]:
         print(j)
-
+        break
+'''
 
 
 
