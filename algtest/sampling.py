@@ -51,6 +51,7 @@ for g in genes:
     sampled_introns = []
     for j in range(start, n_samples+increment, increment):
         sample = random.choices(pop, weights=probs, k=j)
+        print(f'{g} sampling done')
         sampled_introns.append(sample)
     gene_samples[g] = sampled_introns
 
