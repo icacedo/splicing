@@ -1,27 +1,12 @@
 import random
 import argparse
 import os
+import csv
 
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_dir', type=str, help='directory with APC genes')
 
 args = parser.parse_args()
-
-'''
-introns = []
-count = 0
-for i in range(10, 40, 10):
-    int_list = [count for x in range(i)]
-    for num in int_list:
-        introns.append(num)
-    count += 1
-   
-random.shuffle(introns)
-
-sub_ints = []
-for i in range(15):
-    sub_ints.append(random.choice(introns))
-'''
 
 genes = {}
 for fname in os.listdir(args.apc_dir):
@@ -59,6 +44,7 @@ for g in genes:
     probs = [0.2, 0.2, 0.3, 0.3]
     for i in genes[g]:
         pop.append(i)
+        # use test probs
         #probs.append(genes[g][i])
     sampled_introns = []
     for j in range(start, n_samples+increment, increment):
@@ -80,10 +66,16 @@ for g in gene_samples:
         run_info[len(int_group)] = sums
     data[g] = run_info
 
-for d in data:
-    print(d, data[d])
-    for f in data[d]:
-        print(d, f, data[d][f])
+# write to csv file for import into R
+with open('depth_sim.csv', 'w') as csvfile:
+    datawriter = csv.writer(csvfile)
+    datawriter.writerow(['gene_id', 'sim_num', 'intron', 'icount'])
+    for gene in data:
+        for info in data[gene]:
+            for intron in data[gene][info]:
+                datawriter.writerow([gene, info, 
+                                    f'b{int(intron[0])}e{int(intron[1])}', 
+                                    data[gene][info][intron]])
 
      
 
@@ -91,40 +83,6 @@ for d in data:
 
 
 
-'''
-all_data = {}
-for gene in genes:
-    data = {}
-    for i in range(start, n_samples+start, increment):
-        pop = []
-        probs = []
-        for intron in genes[gene]:
-            pop.append(intron)
-            probs.append(genes[gene][intron])
-       
-        # i don't understand how cumulitive weights work 
-        sample = random.choices(pop, weights=probs, k=i)
-
-        sampled_introns = {}
-        for intron in sample:
-            if intron not in sampled_introns:
-                sampled_introns[intron] = 1
-            else:
-                sampled_introns[intron] += 1
-        print(sampled_introns, '$$$')
-        print(len(sample), '@@@')
-        data[i] = sampled_introns
-    all_data[gene] = data
-    break
-
-# write to csv file for import to R
-print(all_data)
-for i in all_data:
-    print(i)
-    for j in all_data[i]:
-        print(j)
-        break
-'''
 
 
 
