@@ -48,7 +48,77 @@ for gene in genes:
 
 # each intron for each gene now has a probability
 
-#
-                    
+n_samples = 10
+increment = 1
+start = 1
+
+all_data = {}
+for gene in genes:
+    data = {}
+    for i in range(start, n_samples+start, increment):
+        pop = []
+        probs = []
+        for intron in genes[gene]:
+            pop.append(intron)
+            probs.append(genes[gene][intron])
+       
+        # i don't understand how cumulitive weights work 
+        sample = random.choices(pop, weights=probs, k=i)
+
+        sampled_introns = {}
+        for intron in sample:
+            if intron not in sampled_introns:
+                sampled_introns[intron] = 1
+            else:
+                sampled_introns[intron] += 1
+        data[i] = sampled_introns
+    all_data[gene] = data
+    break
+
+# write to csv file for import to R
+print(all_data)
+for i in all_data:
+    for j in all_data[i]:
+        print(j)
+
+
+
+
+'''
+pop = [1, 2, 3, 4]
+w = [0.1, 0.3, 0.2, 0.4]
+
+sums = {}
+for i in range(1000):
+    num = random.choices(pop, weights=w, k=1)[0]
+    #nummers = random.choices(pop, weights=w, k=3)
+    if num not in sums:
+        sums[num] = 1
+    else:
+        sums[num] += 1
+
+total = sum(sums.values())
+probs = {key: num / total for key, num in sums.items()}
+
+# sampled probs are roughly equal 
+# to weights
+print(dict(sorted(probs.items())))
+
+numbers = random.choices(pop, weights=w, k=1000)
+
+all = {}
+for n in numbers:
+    if n not in all:
+        all[n] = 1
+    else:
+        all[n] += 1
+
+print(all)
+tot = sum(all.values())
+print(tot)
+ps = {key: n / tot for key, n in all.items()}
+# everything looks correct
+print(dict(sorted(ps.items())))
+'''
 
 
