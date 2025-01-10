@@ -49,7 +49,6 @@ for g in genes:
         sample = random.choices(pop, weights=probs, k=j)
         sampled_introns.append(sample)
     gene_samples[g] = sampled_introns
-    break
 
 data = {}
 for g in gene_samples:
