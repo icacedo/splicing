@@ -40,12 +40,10 @@ start = 5
 gene_samples = {}
 for g in genes:
     pop = []
-    #probs = []
-    probs = [0.2, 0.2, 0.3, 0.3]
+    probs = []
     for i in genes[g]:
         pop.append(i)
-        # use test probs
-        #probs.append(genes[g][i])
+        probs.append(genes[g][i])
     sampled_introns = []
     for j in range(start, n_samples+increment, increment):
         sample = random.choices(pop, weights=probs, k=j)
