@@ -5,6 +5,10 @@ import csv
 
 parser = argparse.ArgumentParser()
 parser.add_argument('apc_dir', type=str, help='directory with APC genes')
+parser.add_argument('--n_samples', type=int, 
+                    help='choose how many times a population is sampled')
+parser.add_argument('--increment', type=int, help='increment sampling number')
+parser.add_argument('--start', type=int, help='sample starting size')
 
 args = parser.parse_args()
 
@@ -33,9 +37,9 @@ for gene in genes:
 
 # each intron for each gene now has a probability
 
-n_samples = 15
-increment = 5
-start = 5
+n_samples = args.n_samples
+increment = args.increment
+start = args.start
 
 gene_samples = {}
 for g in genes:
