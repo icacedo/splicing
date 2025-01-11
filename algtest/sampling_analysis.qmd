@@ -1,0 +1,32 @@
+---
+title: "Sequencing depth sampling experiment"
+format: html
+editor: source
+---
+
+```{r}
+data <- read.csv("depth_sim.csv", ) #nrow = 100)
+
+library("dplyr")
+
+# subset dataframe with entries that have unique intron values
+sub <- data %>% 
+  distinct(intron, .keep_all = TRUE)
+
+# problem: there are only 1022 unique genes, what happended to 1045?
+sub2 <- sub %>% 
+  distinct(gene_id, .keep_all = TRUE)
+```
+  
+
+
+
+
+
+
+
+
+
+
+
+
