@@ -41,6 +41,7 @@ n_samples = args.n_samples
 increment = args.increment
 start = args.start
 
+scount = 0
 gene_samples = {}
 for g in genes:
     pop = []
@@ -53,7 +54,9 @@ for g in genes:
         sample = random.choices(pop, weights=probs, k=j)
         sampled_introns.append(sample)
     print(f'{g} sampling done')
+    scount += 1
     gene_samples[g] = sampled_introns
+print(f'total {scount} genes')
 
 data = {}
 for g in gene_samples:
@@ -76,7 +79,8 @@ with open('depth_sim.csv', 'w') as csvfile:
         for info in data[gene]:
             for intron in data[gene][info]:
                 datawriter.writerow([gene, info, 
-                                    f'b{int(intron[0])}e{int(intron[1])}', 
+                                    # each intron label needs to be unique
+                                    f'{gene}b{int(intron[0])}e{int(intron[1])}', 
                                     data[gene][info][intron]])
 
      

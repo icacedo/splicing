@@ -13,9 +13,11 @@ library("dplyr")
 sub <- data %>% 
   distinct(intron, .keep_all = TRUE)
 
-# problem: there are only 1022 unique genes, what happended to 1045?
-sub2 <- sub %>% 
-  distinct(gene_id, .keep_all = TRUE)
+# check that there are 1045 genes
+
+#sub2 <- sub %>% 
+#  distinct(gene_id, .keep_all = TRUE)
+
 ```
   
 
