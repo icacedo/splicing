@@ -7,6 +7,8 @@ editor: source
 ```{r}
 data <- read.csv("depth_sim.csv", ) #nrow = 100)
 
+# need to install make, gcc, and g++
+# i guess this is where all the dependencies start
 library("dplyr")
 
 # subset dataframe with entries that have unique intron values
@@ -19,8 +21,36 @@ sub <- data %>%
 #  distinct(gene_id, .keep_all = TRUE)
 
 ```
-  
 
+```{r}
+# find out which gene has the most amount of annotated introns
+
+most <- sub %>% 
+  count(gene_id) %>% 
+  arrange(desc(n)) %>% 
+  slice(1) 
+
+most
+
+# 12775 has 24 annotated introns
+```
+
+```{r}
+most_sim <- data %>% 
+  filter(gene_id == 12775)
+
+int_counts <- most_sim %>% 
+  count(sim_num)
+```
+
+```{r}
+library("ggplot2")
+
+ggplot(int_counts, aes(x=sim_num, y=n)) + geom_point()
+
+```
+
+  
 
 
 

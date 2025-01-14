@@ -171,3 +171,8 @@ print(max(lengths))
 # not sure why the dif, need to limit cores used
 # not sure how many gtag sites Gong tested
 
+# notes for writing a backtracking algorithm
+# suffix tree and built and pruned as needed
+# isoforms/geniso2/ is the suffix tree algorithm
+# pick a donor, see what acceptors fit with it, not actually building a suffix tree
+# i am confuse
