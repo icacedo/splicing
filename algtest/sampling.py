@@ -41,22 +41,32 @@ n_samples = args.n_samples
 increment = args.increment
 start = args.start
 
-scount = 0
+gcount = 0
 gene_samples = {}
+c = 0
 for g in genes:
     pop = []
     probs = []
     for i in genes[g]:
         pop.append(i)
         probs.append(genes[g][i])
-    sampled_introns = []
+    #sampled_introns = []
+    # no duplicates in sets
+    sampled_introns = set()
     for j in range(start, n_samples+increment, increment):
         sample = random.choices(pop, weights=probs, k=j)
-        sampled_introns.append(sample)
+        #sampled_introns.append(sample)
+        for intron in sample:
+            sampled_introns.add(intron)
     print(f'{g} sampling done')
-    scount += 1
+    gcount += 1
     gene_samples[g] = sampled_introns
-print(f'total {scount} genes')
+    break
+    #if c == 10: break
+    c += 1
+print(f'total {gcount} genes')
+
+print(gene_samples)
 
 data = {}
 for g in gene_samples:

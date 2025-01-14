@@ -39,6 +39,8 @@ most
 most_sim <- data %>% 
   filter(gene_id == 12775)
 
+# need to sample
+
 int_counts <- most_sim %>% 
   count(sim_num)
 ```
