@@ -16,6 +16,7 @@ rule all:
         #expand("fastq/1pct.{sample}_{r}.fastq", sample=samples, r=[1, 2]),
         #expand("1pct.{n}.ht2", n=[1, 2, 3, 4, 5, 6, 7, 8])
         expand("sra/{sample}", sample=samples)
+        expand("fastq/")
 
 rule prefetch:
     params:
