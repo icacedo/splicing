@@ -1,0 +1,119 @@
+import os
+import subprocess
+
+if os.cpu_count() <= 2:
+    cores = 1
+else:
+    cores = os.cpu_count() - 2
+
+samples = ["ERR13244179"]
+
+# takes forever to download from database
+# use pre loaded files for testing
+
+rule all:
+    input:
+        #expand("fastq/1pct.{sample}_{r}.fastq", sample=samples, r=[1, 2]),
+        #expand("1pct.{n}.ht2", n=[1, 2, 3, 4, 5, 6, 7, 8])
+        expand("sra/{sample}", sample=samples)
+
+rule prefetch:
+    params:
+        outdir="sra/"
+    output:
+        directory("sra/{sample}")
+    shell:
+        "prefetch {wildcards.sample} -O {params.outdir}"
+
+rule fasterq_dump:
+    params:
+        outdir="fastq/"
+    input:
+        "sra/{sample}"
+    output:
+        directory("fastq/1pct.{sample}_{r}.fastq")
+    shell:
+        "fasterq-dump {input} --outdir {params.outdir}"
+
+
+# maybe need to write something that verifies all reads are the same length?
+'''
+r_len = 0
+for file in os.listdir("fastq/"):
+    command = f"head -n 1 fastq/{file} | awk '{{print $3}}'"
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    r_len = result.stdout.rstrip().split("=")[1]
+    break
+
+overhang = int(r_len) - 1
+
+# following this tutorial:
+# https://hbctraining.github.io/Intro-to-rnaseq-hpc-O2/lessons/03_alignment.html
+# ask to add a 1pct gtf file to datacore2024?
+# no gtf file, can't use sjdbOverhang
+# this parameter is importnat, need to get gtf file
+rule STAR_index:
+    input:
+        "genome/1pct_elegans.fa"
+    output:
+        directory("indices/")
+    shell:
+        """
+        mkdir {output}
+        STAR --runThreadN {cores} --runMode genomeGenerate --genomeDir {output} --genomeFastaFiles {input} 
+        """
+
+# use this to make smaller fastq files for testing
+# lines=$(cat fastq/ERR13244179_1.fastq | wc -l) && cat fastq/ERR13244179_1.fastq | head -n $((((lines / 4) / 10000) * 4)) > fastq/small.ERR13244179_1.fastq
+'''
+# i'm going to switch to using minimap2
+# it seems to not neet the index making step or gtfs like STAR
+# minimap2 is so much quicker than STAR
+# let's try 1 percent again
+
+# -a generates CIGAR and SAM as output
+# -x allows multiple options, lke sr
+# sr for short single end reads without splicing
+
+# i just read that minimap2 does not work well with short spliced reads
+# Next look at HISAT2, which has spliced alignment options
+# https://www.reneshbedre.com/blog/hisat2-sequence-aligner.html
+
+# use hisat2-build to index reference genome
+
+# use --config on command line or build a config file for initial inputs
+
+'''
+rule all:
+    input:
+        expand("index/1pct.{n}.ht2", n=[1, 2, 3, 4, 5, 6, 7, 8]),
+        expand("{sample}.sam", sample=samples),
+        expand("{sample}.log", sample=samples)
+
+rule index:
+    input:
+        "genome/1pct_elegans.fa"
+    params:
+        prefix="index/1pct"
+    output:
+        "index/1pct.{n}.ht2"
+    shell:
+        "hisat2-build -f {input} {params.prefix}"
+
+rule align:
+    input:
+        r1=expand("small_fastq/0.1pct.{sample}_1.fastq.gz", sample=samples),
+        r2=expand("small_fastq/0.1pct.{sample}_2.fastq.gz", sample=samples)
+    output:
+        log="{sample}.log",
+        sam="{sample}.sam"
+    # output of alignment can be sent directly to stdout
+    # you can define extra flags as params
+    shell:
+        'hisat2 -x index/1pct -1 {input.r1} -2 {input.r2} > {output.sam} '
+        '2> {output.log}'
+'''
+# next need to write a script that gets only aligned reads from the sam file
+        
+ 
+
