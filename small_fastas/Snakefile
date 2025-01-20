@@ -15,8 +15,8 @@ rule all:
     input:
         #expand("fastq/1pct.{sample}_{r}.fastq", sample=samples, r=[1, 2]),
         #expand("1pct.{n}.ht2", n=[1, 2, 3, 4, 5, 6, 7, 8])
-        expand("sra/{sample}", sample=samples)
-        expand("fastq/")
+        #expand("sra/{sample}", sample=samples)
+        expand("fastq/{sample}_{r}", sample=samples, r=[1, 2])
 
 rule prefetch:
     params:
@@ -32,7 +32,7 @@ rule fasterq_dump:
     input:
         "sra/{sample}"
     output:
-        directory("fastq/1pct.{sample}_{r}.fastq")
+        directory("fastq/{sample}_{r}.fastq")
     shell:
         "fasterq-dump {input} --outdir {params.outdir}"
 
