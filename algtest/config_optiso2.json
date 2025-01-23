@@ -1,0 +1,16 @@
+{
+    "gene": "test.fa",
+    "models": {
+        "dpwm": "../../isoforms/models/don.pwm",
+        "apwm": "../../isoforms/models/acc.pwm",
+        "emm": "../../isoforms/models/exon.mm",
+        "imm": "../../isoforms/models/intron.mm",
+        "elen": "../../isoforms/models/exon.len",
+        "ilen": "../../isoforms/models/intron.len"
+    },
+    "params": {
+        "minin": 3,
+        "minex": 3,
+        "flank": 3
+    }
+}
