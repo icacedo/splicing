@@ -1,5 +1,5 @@
 {
-    "gene": "test.fa",
+    "genes": "test.fa",
     "models": {
         "dpwm": "../../isoforms/models/don.pwm",
         "apwm": "../../isoforms/models/acc.pwm",

@@ -1,8 +1,13 @@
 import argparse
 import subprocess
 import random
+import json
 
 parser = argparse.ArgumentParser()
+#parser.add_argument('config', required=True, type=str, metavar='<json>',
+#    help='configuration file with all genes')
+parser.add_argument('apc_gen_gene', type=str, metavar='<file>',
+    help='apc generated gff file')
 parser.add_argument('--program', required=False, type=str, default='geniso2',
 	metavar='<exec>', help='path to program [%(default)s]')
 
@@ -50,6 +55,22 @@ def random_start():
             'fitness' : None
         }
 
+# since all isoforms will be generated before hand
+# geniso2 does not need to be called here
+# input a list with all geniso2 output
+
+# run this to get a test gff
+'''
+subprocess.run([
+    'geniso2', '../../isoforms/apc/ch.13301.fa',
+    '--dpwm', '../../isoforms/models/don.pwm',
+    '--apwm', '../../isoforms/models/acc.pwm',
+    '--emm', '../../isoforms/models/exon.mm', 
+    '--imm', '../../isoforms/models/intron.mm', 
+    '--elen', '../../isoforms/models/exon.len',
+    '--ilen', '../../isoforms/models/intron.len',
+], stdout=open('ch.13301.geniso2.gff', 'w'))
+'''
 
 '''
 class Evo:
