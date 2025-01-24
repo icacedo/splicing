@@ -1,5 +1,6 @@
 {
-    "genes": "test.fa",
+    "apc_dir": "../../isoforms/apc/",
+    "genes": ["ch.13301.fa"],
     "models": {
         "dpwm": "../../isoforms/models/don.pwm",
         "apwm": "../../isoforms/models/acc.pwm",
@@ -9,8 +10,9 @@
         "ilen": "../../isoforms/models/intron.len"
     },
     "params": {
-        "minin": 3,
-        "minex": 3,
-        "flank": 3
+        "minin": 35,
+        "minex": 25,
+        "flank": 99,
+        "limit": 1000000
     }
 }
