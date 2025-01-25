@@ -8,7 +8,6 @@ import json
 import isoform
 from isoform import Locus
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('config', type=str, metavar='<json>',
     help='configuration file with all genes')
@@ -50,6 +49,7 @@ with open(args.config, 'r') as file:
 minin = data['params']['minin']
 minex = data['params']['minex']
 flank = data['params']['flank']
+limit = data['params']['limit']
 
 dpwm = isoform.read_pwm(data['models']['dpwm'])
 apwm = isoform.read_pwm(data['models']['apwm'])
@@ -59,86 +59,40 @@ emm = isoform.read_markov(data['models']['emm'])
 imm = isoform.read_markov(data['models']['imm'])
 
 models = (dpwm, apwm, emm, imm, elen, ilen)
+models = (None, None, None, None, None, None)
 weights = (1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
+weights = (None, None, None, None, None, None)
 
 # converted with log2(p/0.25)
 # 0.25 doesn't matter, just need to convert to score
 icost = isoform.prob2score(0.001)
+icost = 0
 
 for gene in data['genes']:
-    fasta = data['apc_dir'] + gene
+    fasta = data['apc_dir'] + data['genes'][gene][0]
+    gff3 = data['apc_dir'] + data['genes'][gene][1]
+    print(gff3)
     name, seq = next(isoform.read_fasta(fasta))
     locus = Locus(name, seq, minin, minex, flank, models, weights, 
                   icost, limit=100)
-    #locus.isoforms(sys.stdout)
-    
-    
+    isos = locus.isoforms
+    for tx in isos:
+        print(tx)
+        s = 0 
+        s += isoform.score_apwm(apwm, tx) * wacc
+        s += isoform.score_apwm(apwm, tx) * wacc
+        s += isoform.score_apwm(apwm, tx) * wacc
+        s += isoform.score_apwm(apwm, tx) * wacc
+        s += isoform.score_apwm(apwm, tx) * wacc
+        s += isoform.score_apwm(apwm, tx) * wacc
 
 
-
-
-
-
-
-
-
-'''
-dpwm = isoform.read_pwm(arg.dpwm)   if arg.dpwm else None
-apwm = isoform.read_pwm(arg.apwm)   if arg.apwm else None
-elen = isoform.read_len(arg.elen)   if arg.elen else None
-ilen = isoform.read_len(arg.ilen)   if arg.ilen else None
-emm  = isoform.read_markov(arg.emm) if arg.emm  else None
-imm  = isoform.read_markov(arg.imm) if arg.imm  else None
-name, seq = next(isoform.read_fasta(arg.fasta))
-models = (dpwm, apwm, emm, imm, elen, ilen)
-weights = (arg.wdpwm, arg.wapwm, arg.wemm, arg.wimm, arg.welen, arg.wilen)
-if arg.countonly:
-	locus = Locus(name, seq, arg.min_intron, arg.min_exon, arg.flank,
-		models, weights, icost, gff=arg.introns, limt=arg.limit, countonly=True)
-	print(locus.name, locus.isocount, sep='\t')
-else:
-	locus = Locus(name, seq, arg.min_intron, arg.min_exon, arg.flank,
-		models, weights, icost, limit=arg.limit, gff=arg.introns)
-	locus.gff(sys.stdout)
-'''
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-g_info = []
-isos = {}
-with open('ch.13301.geniso2.gff', 'r') as fp:
-    count = 1
-    for line in fp.readlines():
-        line = line.rstrip()
-        if line.startswith('#'): g_info.append(line)
-        if line == '':
-            if count not in isos:
-                isos[count] = []
-            isos[count] == line
-
-
-
-import isoform
-'''
 
 # schema
 '''
 need a starting population, default 100 like in optiso
-what is an individual?
+each individual is a set of weights
+100 sets of weights, each set scores the isoform space
 the genes are the weights, and the fitness is the score of the isoform
 we are tyring to decrease the manhattan distance
 default 50% of population dies after each generation, like in optiso 

@@ -1,6 +1,8 @@
 {
     "apc_dir": "../../isoforms/apc/",
-    "genes": ["ch.13301.fa"],
+    "genes": {
+        "ch.13301": ["ch.13301.fa", "ch.13301.gff3"]
+    },
     "models": {
         "dpwm": "../../isoforms/models/don.pwm",
         "apwm": "../../isoforms/models/acc.pwm",
@@ -13,6 +15,6 @@
         "minin": 35,
         "minex": 25,
         "flank": 99,
-        "limit": 1000000
+        "limit": "None"
     }
 }
