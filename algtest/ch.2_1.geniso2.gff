@@ -2,24 +2,31 @@
 # length: 525
 # donors: 12
 # acceptors: 13
-# isoforms: 2
-# rejected: 266
-# maxprob: 0.5783
-# minprob 0.4217
-# complexity: 0.982
+# isoforms: 3
+# rejected: 264
+# maxprob: 0.4842
+# minprob 0.04988
+# complexity: 1.236
 ch.2_1	apc	gene	100	426	.	+	.	ID=Gene-ch.2_1
 
-ch.2_1	apc	mRNA	100	426	0.5783	+	.	ID=tx-ch.2_1-1;Parent=Gene-ch.2_1
-ch.2_1	apc	exon	100	147	0.5783	+	.	Parent=tx-ch.2_1-1
-ch.2_1	apc	exon	194	248	0.5783	+	.	Parent=tx-ch.2_1-1
-ch.2_1	apc	exon	320	426	0.5783	+	.	Parent=tx-ch.2_1-1
-ch.2_1	apc	intron	148	193	0.5783	+	.	Parent=tx-ch.2_1-1
-ch.2_1	apc	intron	249	319	0.5783	+	.	Parent=tx-ch.2_1-1
+ch.2_1	apc	mRNA	100	426	0.4842	+	.	ID=tx-ch.2_1-1;Parent=Gene-ch.2_1
+ch.2_1	apc	exon	100	147	0.4842	+	.	Parent=tx-ch.2_1-1
+ch.2_1	apc	exon	194	269	0.4842	+	.	Parent=tx-ch.2_1-1
+ch.2_1	apc	exon	320	426	0.4842	+	.	Parent=tx-ch.2_1-1
+ch.2_1	apc	intron	148	193	0.4842	+	.	Parent=tx-ch.2_1-1
+ch.2_1	apc	intron	270	319	0.4842	+	.	Parent=tx-ch.2_1-1
 
-ch.2_1	apc	mRNA	100	426	0.4217	+	.	ID=tx-ch.2_1-2;Parent=Gene-ch.2_1
-ch.2_1	apc	exon	100	147	0.4217	+	.	Parent=tx-ch.2_1-2
-ch.2_1	apc	exon	194	269	0.4217	+	.	Parent=tx-ch.2_1-2
-ch.2_1	apc	exon	320	426	0.4217	+	.	Parent=tx-ch.2_1-2
-ch.2_1	apc	intron	148	193	0.4217	+	.	Parent=tx-ch.2_1-2
-ch.2_1	apc	intron	270	319	0.4217	+	.	Parent=tx-ch.2_1-2
+ch.2_1	apc	mRNA	100	426	0.4659	+	.	ID=tx-ch.2_1-2;Parent=Gene-ch.2_1
+ch.2_1	apc	exon	100	147	0.4659	+	.	Parent=tx-ch.2_1-2
+ch.2_1	apc	exon	194	248	0.4659	+	.	Parent=tx-ch.2_1-2
+ch.2_1	apc	exon	320	426	0.4659	+	.	Parent=tx-ch.2_1-2
+ch.2_1	apc	intron	148	193	0.4659	+	.	Parent=tx-ch.2_1-2
+ch.2_1	apc	intron	249	319	0.4659	+	.	Parent=tx-ch.2_1-2
+
+ch.2_1	apc	mRNA	100	426	0.04988	+	.	ID=tx-ch.2_1-3;Parent=Gene-ch.2_1
+ch.2_1	apc	exon	100	125	0.04988	+	.	Parent=tx-ch.2_1-3
+ch.2_1	apc	exon	194	269	0.04988	+	.	Parent=tx-ch.2_1-3
+ch.2_1	apc	exon	320	426	0.04988	+	.	Parent=tx-ch.2_1-3
+ch.2_1	apc	intron	126	193	0.04988	+	.	Parent=tx-ch.2_1-3
+ch.2_1	apc	intron	270	319	0.04988	+	.	Parent=tx-ch.2_1-3
 

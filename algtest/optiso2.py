@@ -27,7 +27,7 @@ args = parser.parse_args()
 
 # run this to get a test gff
 # ch.13301 is fast to test
-
+'''
 subprocess.run([
     'geniso2', '../../datacore2024/project_splicing/smallgenes/ch.2_1.fa',
     '--dpwm', '../../isoforms/models/don.pwm',
@@ -39,7 +39,7 @@ subprocess.run([
     '--limit', '2'
 ], stdout=open('ch.2_1.geniso2.gff', 'w'))
 sys.exit()
-
+'''
 
 # store all isoforms in memory
 # don't want to read and store a ton of gffs
@@ -80,6 +80,36 @@ ilen = isoform.read_len(data['models']['ilen'])
 emm = isoform.read_markov(data['models']['emm'])
 imm = isoform.read_markov(data['models']['imm'])
 
+single = random_start()
+
+# make sure that intron probabilities for cmpiso are used in the
+# same way that uses input gffs
+command = (
+    f'geniso2 ../../datacore2024/project_splicing/smallgenes/ch.2_1.fa '
+    f'--dpwm ../../isoforms/models/don.pwm '
+    f'--apwm ../../isoforms/models/acc.pwm '
+    f'--emm ../../isoforms/models/exon.mm '
+    f'--imm ../../isoforms/models/intron.mm '
+    f'--elen ../../isoforms/models/exon.len '
+    f'--ilen ../../isoforms/models/intron.len '
+    f'--wdpwm {single['genotype']['wdpwm']} '
+    f'--wapwm {single['genotype']['wapwm']} '
+    f'--wemm {single['genotype']['wemm']} '
+    f'--wimm {single['genotype']['wimm']} '
+    f'--welen {single['genotype']['welen']} '
+    f'--wilen {single['genotype']['wilen']} '
+    f'--icost {single['genotype']['icost']} '
+    f'--limit 3'
+)
+
+res = subprocess.run([command], shell=True, text=True, 
+                     stdout=open('ch.2_1.geniso2.gff', 'w'))
+
+sys.exit()
+
+
+
+
 # converted with log2(p/0.25)
 # 0.25 doesn't matter, just need to convert to score
 icost = isoform.prob2score(0.001)
@@ -92,9 +122,9 @@ for gene in data['genes']:
     models = (None, None, None, None, None, None)
     weights = (1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
     locus = Locus(name, seq, minin, minex, flank, models, weights, 
-                  icost, limit=3)
+                  icost, limit=2)
     isos = locus.isoforms
-    single = random_start()
+    #single = random_start()
     weight = []
     total = 0
     for tx in isos:
@@ -113,6 +143,12 @@ for gene in data['genes']:
         tx['prob'] = w
     for tx in isos:
         tx['prob'] = tx['prob'] / total
+    print('###')
+    print(isos)
+    print('###')
+    for x in isos:
+        for intron in x['introns']:
+            print(intron, x['prob'])
         
 
 
@@ -127,6 +163,7 @@ need to write cmpiso into this script so i don't need to read in two gffs
 # for apc generated isoforms with multiple introns
 # the intron score for each intron is the same as the mRNA score
 
+print('##########')
 def mdist(apc_gff, g2):
 
     i1 = isoform.get_introns(apc_gff)
@@ -157,7 +194,6 @@ def random_start():
     return solo
 
 
-print(isoform.manhattan([0.5, 0.5], [1, 0]))
 '''
 class Evo:
 
