@@ -13,29 +13,33 @@ parser.add_argument('config', type=str, metavar='<json>',
     help='configuration file with all genes')
 #parser.add_argument('apc_gen_gene', type=str, metavar='<file>',
 #    help='apc generated gff file')
-parser.add_argument('--program', required=False, type=str, default='geniso2',
-	metavar='<exec>', help='path to program [%(default)s]')
+parser.add_argument('--apc_prog', required=False, type=str, default='geniso2',
+	metavar='<exec>', help='path to apc program [%(default)s]')
+parser.add_argument('--cmp_prog', required=False, type=str, default='cmpiso',
+    metavar='<exec>', help='path to isoform comparison program \
+        [%(default)s]')
 
 args = parser.parse_args()
 
-# add geniso2 to path
+# add geniso2 and cmpiso to path
 # only need to add this to .bashrc
 # export PATH=$PATH:/home/carlos/Code/isoforms
 
 # run this to get a test gff
 # ch.13301 is fast to test
-'''
+
 subprocess.run([
-    'geniso2', '../../isoforms/apc/ch.13301.fa',
+    'geniso2', '../../datacore2024/project_splicing/smallgenes/ch.2_1.fa',
     '--dpwm', '../../isoforms/models/don.pwm',
     '--apwm', '../../isoforms/models/acc.pwm',
     '--emm', '../../isoforms/models/exon.mm', 
     '--imm', '../../isoforms/models/intron.mm', 
     '--elen', '../../isoforms/models/exon.len',
     '--ilen', '../../isoforms/models/intron.len',
-], stdout=open('ch.13301.geniso2.gff', 'w'))
+    '--limit', '2'
+], stdout=open('ch.2_1.geniso2.gff', 'w'))
 sys.exit()
-'''
+
 
 # store all isoforms in memory
 # don't want to read and store a ton of gffs
@@ -43,6 +47,24 @@ sys.exit()
 # fortnite the genetic algorithm
 # check if true isoform is in population to start with
 # this might ignore important lower prob isoforms
+
+def random_start():
+
+    single = {
+            'genotype': {
+                'wdpwm': random.random(),
+                'wapwm': random.random(),
+                'wemm': random.random(),
+                'wimm': random.random(),
+                'welen': random.random(),
+                'wilen': random.random(),
+                'icost': random.random()
+            },
+            'fitness' : None
+        }
+    
+    return single
+
 with open(args.config, 'r') as file:
     data = json.load(file)
 
@@ -58,11 +80,6 @@ ilen = isoform.read_len(data['models']['ilen'])
 emm = isoform.read_markov(data['models']['emm'])
 imm = isoform.read_markov(data['models']['imm'])
 
-models = (dpwm, apwm, emm, imm, elen, ilen)
-models = (None, None, None, None, None, None)
-weights = (1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
-weights = (None, None, None, None, None, None)
-
 # converted with log2(p/0.25)
 # 0.25 doesn't matter, just need to convert to score
 icost = isoform.prob2score(0.001)
@@ -71,34 +88,54 @@ icost = 0
 for gene in data['genes']:
     fasta = data['apc_dir'] + data['genes'][gene][0]
     gff3 = data['apc_dir'] + data['genes'][gene][1]
-    print(gff3)
     name, seq = next(isoform.read_fasta(fasta))
+    models = (None, None, None, None, None, None)
+    weights = (1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
     locus = Locus(name, seq, minin, minex, flank, models, weights, 
-                  icost, limit=100)
+                  icost, limit=3)
     isos = locus.isoforms
+    single = random_start()
+    weight = []
+    total = 0
     for tx in isos:
-        print(tx)
         s = 0 
-        s += isoform.score_apwm(apwm, tx) * wacc
-        s += isoform.score_apwm(apwm, tx) * wacc
-        s += isoform.score_apwm(apwm, tx) * wacc
-        s += isoform.score_apwm(apwm, tx) * wacc
-        s += isoform.score_apwm(apwm, tx) * wacc
-        s += isoform.score_apwm(apwm, tx) * wacc
-
+        s += isoform.score_apwm(apwm, tx) * single['genotype']['wdpwm']
+        s += isoform.score_apwm(apwm, tx) * single['genotype']['wapwm']
+        s += isoform.score_apwm(apwm, tx) * single['genotype']['wemm']
+        s += isoform.score_apwm(apwm, tx) * single['genotype']['wimm']
+        s += isoform.score_apwm(apwm, tx) * single['genotype']['welen']
+        s += isoform.score_apwm(apwm, tx) * single['genotype']['wilen']
+        s += len(tx['introns']) * single['genotype']['icost']
+        tx['score'] = s
+        w = 2 ** s
+        weight.append(w)
+        total += w
+        tx['prob'] = w
+    for tx in isos:
+        tx['prob'] = tx['prob'] / total
+        
 
 
 # schema
 '''
-need a starting population, default 100 like in optiso
-each individual is a set of weights
-100 sets of weights, each set scores the isoform space
-the genes are the weights, and the fitness is the score of the isoform
-we are tyring to decrease the manhattan distance
-default 50% of population dies after each generation, like in optiso 
+starting population of 100 singles
+for each gene, there X number of isoforms
+fitness is the manhattan distance between apc and wormbase introns
+need to write cmpiso into this script so i don't need to read in two gffs
 '''
+# ??????????????????????????????????????????????????????????????
+# for apc generated isoforms with multiple introns
+# the intron score for each intron is the same as the mRNA score
 
+def mdist(apc_gff, g2):
 
+    i1 = isoform.get_introns(apc_gff)
+    i2 = isoform.get_introns(g2)
+
+    print(i1, '@')
+    print(i2, '@')
+
+mdist(gff3, 'ch.2_1.geniso2.gff')
 
 popn = 10
 
@@ -116,9 +153,11 @@ def random_start():
             },
             'fitness' : None
         }
+    
+    return solo
 
 
-
+print(isoform.manhattan([0.5, 0.5], [1, 0]))
 '''
 class Evo:
 
@@ -152,6 +191,4 @@ evo.
 '''
 
 
-
-     
 
