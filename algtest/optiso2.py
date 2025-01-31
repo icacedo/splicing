@@ -96,6 +96,13 @@ command = (
     f'--imm ../../isoforms/models/intron.mm '
     f'--elen ../../isoforms/models/exon.len '
     f'--ilen ../../isoforms/models/intron.len '
+    #f'--wdpwm 1.0 '
+    #f'--wapwm 1.0 '
+    #f'--wemm 1.0 '
+    #f'--wimm 1.0 '
+    #f'--welen 1.0 '
+    #f'--wilen 1.0 '
+    #f'--icost 0.0 '
     f'--wdpwm {single['genotype']['wdpwm']} '
     f'--wapwm {single['genotype']['wapwm']} '
     f'--wemm {single['genotype']['wemm']} '
@@ -103,9 +110,11 @@ command = (
     f'--welen {single['genotype']['welen']} '
     f'--wilen {single['genotype']['wilen']} '
     f'--icost {single['genotype']['icost']} '
-    f'--limit 3'
+    f'--limit 2'
 )
 
+# should get subprocess to report non-zero exit
+# script will still run if command is broken
 res = subprocess.run([command], shell=True, text=True, 
                      stdout=open('ch.2_1.geniso2.gff', 'w'))
 
@@ -116,8 +125,7 @@ res = subprocess.run([command], shell=True, text=True,
 # 0.25 doesn't matter, just need to convert to score
 #icost = isoform.prob2score(0.001)
 icost = 0
-print(isoform.prob2score(0), '!')
-icost = single['genotype']['icost']
+icost = isoform.prob2score(0)
 
 for gene in data['genes']:
     fasta = data['apc_dir'] + data['genes'][gene][0]
@@ -127,7 +135,7 @@ for gene in data['genes']:
     models = (dpwm, apwm, emm, imm, elen, ilen)
     weights = (1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
     locus = Locus(name, seq, minin, minex, flank, models, weights, 
-                  icost, limit=3)
+                  icost, limit=2)
     isos = locus.isoforms
     print('@@@@@@@@')
     print(isos)
@@ -135,8 +143,6 @@ for gene in data['genes']:
         for intron in x['introns']:
             print(intron, x['prob'])
     #single = random_start()
-    weight = []
-    total = 0
     for tx in isos:
         s = 0 
         s += isoform.score_dpwm(dpwm, tx) * single['genotype']['wdpwm']
@@ -147,15 +153,16 @@ for gene in data['genes']:
         s += isoform.score_ilen(ilen, tx) * single['genotype']['wilen']
         #s += len(tx['introns']) * single['genotype']['icost']
         s += len(tx['introns']) * isoform.prob2score(single['genotype']['icost'])
-    '''
         tx['score'] = s
+    weight = []
+    total = 0
+    for tx in isos:
         w = 2 ** s
         weight.append(w)
         total += w
-        tx['prob'] = w
-    for tx in isos:
-        tx['prob'] = tx['prob'] / total
-    '''
+    prob = [w / total for w in weight]       
+    for p, tx in zip(prob, isos):
+        tx['prob'] = p
     print('###')
     print(isos)
     print('###')
@@ -176,7 +183,7 @@ need to write cmpiso into this script so i don't need to read in two gffs
 # for apc generated isoforms with multiple introns
 # the intron score for each intron is the same as the mRNA score
 
-print('##########')
+#print('##########')
 def mdist(apc_gff, g2):
 
     i1 = isoform.get_introns(apc_gff)
@@ -185,7 +192,7 @@ def mdist(apc_gff, g2):
     print(i1, '@')
     print(i2, '@')
 
-mdist(gff3, 'ch.2_1.geniso2.gff')
+#mdist(gff3, 'ch.2_1.geniso2.gff')
 
 popn = 10
 

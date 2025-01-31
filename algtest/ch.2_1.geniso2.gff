@@ -2,25 +2,24 @@
 # length: 525
 # donors: 12
 # acceptors: 13
-# isoforms: 3
-# rejected: 260
-# maxprob: 0.7353
-# minprob 0.02729
-# complexity: 0.960
+# isoforms: 2
+# rejected: 263
+# maxprob: 0.8848
+# minprob 0.1152
+# complexity: 0.515
 ch.2_1	apc	gene	100	426	.	+	.	ID=Gene-ch.2_1
 
-ch.2_1	apc	mRNA	100	426	0.7353	+	.	ID=tx-ch.2_1-1;Parent=Gene-ch.2_1
-ch.2_1	apc	exon	100	147	0.7353	+	.	Parent=tx-ch.2_1-1
-ch.2_1	apc	exon	194	426	0.7353	+	.	Parent=tx-ch.2_1-1
-ch.2_1	apc	intron	148	193	0.7353	+	.	Parent=tx-ch.2_1-1
+ch.2_1	apc	mRNA	100	426	0.8848	+	.	ID=tx-ch.2_1-1;Parent=Gene-ch.2_1
+ch.2_1	apc	exon	100	125	0.8848	+	.	Parent=tx-ch.2_1-1
+ch.2_1	apc	exon	194	248	0.8848	+	.	Parent=tx-ch.2_1-1
+ch.2_1	apc	exon	320	426	0.8848	+	.	Parent=tx-ch.2_1-1
+ch.2_1	apc	intron	126	193	0.8848	+	.	Parent=tx-ch.2_1-1
+ch.2_1	apc	intron	249	319	0.8848	+	.	Parent=tx-ch.2_1-1
 
-ch.2_1	apc	mRNA	100	426	0.2374	+	.	ID=tx-ch.2_1-2;Parent=Gene-ch.2_1
-ch.2_1	apc	exon	100	125	0.2374	+	.	Parent=tx-ch.2_1-2
-ch.2_1	apc	exon	194	426	0.2374	+	.	Parent=tx-ch.2_1-2
-ch.2_1	apc	intron	126	193	0.2374	+	.	Parent=tx-ch.2_1-2
-
-ch.2_1	apc	mRNA	100	426	0.02729	+	.	ID=tx-ch.2_1-3;Parent=Gene-ch.2_1
-ch.2_1	apc	exon	100	248	0.02729	+	.	Parent=tx-ch.2_1-3
-ch.2_1	apc	exon	320	426	0.02729	+	.	Parent=tx-ch.2_1-3
-ch.2_1	apc	intron	249	319	0.02729	+	.	Parent=tx-ch.2_1-3
+ch.2_1	apc	mRNA	100	426	0.1152	+	.	ID=tx-ch.2_1-2;Parent=Gene-ch.2_1
+ch.2_1	apc	exon	100	147	0.1152	+	.	Parent=tx-ch.2_1-2
+ch.2_1	apc	exon	194	248	0.1152	+	.	Parent=tx-ch.2_1-2
+ch.2_1	apc	exon	320	426	0.1152	+	.	Parent=tx-ch.2_1-2
+ch.2_1	apc	intron	148	193	0.1152	+	.	Parent=tx-ch.2_1-2
+ch.2_1	apc	intron	249	319	0.1152	+	.	Parent=tx-ch.2_1-2
 

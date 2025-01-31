@@ -31,10 +31,11 @@ weights = (1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
 # the problem was you needed to transform icost before passing it to Locus
 icost = isoform.prob2score(0.0)
 locus = Locus(name, seq, minin, minex, flank, models, weights, 
-                  icost, limit=3)
+                  icost, limit=2)
 print('###############################')
 print(locus.gff(sys.stdout))
 print('###############################')
+# are introns offset by 1 base? internal isoform index starts at 0
 
 weight = []
 total = 0
@@ -43,6 +44,7 @@ print(len(isos))
 for i in isos:
     print(i, '$$$')
 print('###########')
+print(isos, '1')
 for tx in isos:
     s = 0 
     s += isoform.score_apwm(apwm, tx) * 1.0
@@ -52,13 +54,29 @@ for tx in isos:
     s += isoform.score_apwm(apwm, tx) * 1.0
     s += isoform.score_apwm(apwm, tx) * 1.0
     s += len(tx['introns']) * isoform.prob2score(0.0)
-    tx['score'] = s
-    print(tx, '&&&&')
-    #for tx in isos:
-    #    print(tx)
-    #    for intron in tx['introns']:
-    #        print(intron, tx['prob'])
-
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!
+    # big problem: isos is not getting updated after exiting the loop
+    tx['score'] = 100
+    #print(tx, '&&&&')
+print(isos, '2')
+'''
+    for tx in isos:
+        #print(tx)
+        for intron in tx['introns']:
+            print(intron, tx['prob'], '@wow')
+    weight = []
+    total = 0
+    for tx in isos:
+        w = 2 ** s
+        weight.append(w)
+        total += w
+    prob = [w / total for w in weight]       
+    for p, tx in zip(prob, isos):
+        tx['prob'] = p
+    for tx in isos:
+        for intron in tx['introns']:
+            print(intron, tx['prob'], '@@@')
+'''
 
  
 subprocess.run([
@@ -76,6 +94,6 @@ subprocess.run([
     '--welen', '1.0',
     '--wilen', '1.0',
     '--icost', '0.0',
-    '--limit', '3'
-], stdout=open('ch.2_1.geniso2.gff', 'w'))
+    '--limit', '2'
+], stdout=open('test.ch.2_1.geniso2.gff', 'w'))
 
