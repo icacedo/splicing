@@ -84,6 +84,10 @@ single = random_start()
 
 # make sure that intron probabilities for cmpiso are used in the
 # same way that uses input gffs
+
+# all introns / len of all exon sequences together
+# icost is log2 of that probility
+
 command = (
     f'geniso2 ../../datacore2024/project_splicing/smallgenes/ch.2_1.fa '
     f'--dpwm ../../isoforms/models/don.pwm '
@@ -105,37 +109,45 @@ command = (
 res = subprocess.run([command], shell=True, text=True, 
                      stdout=open('ch.2_1.geniso2.gff', 'w'))
 
-sys.exit()
-
-
+#sys.exit()
 
 
 # converted with log2(p/0.25)
 # 0.25 doesn't matter, just need to convert to score
-icost = isoform.prob2score(0.001)
+#icost = isoform.prob2score(0.001)
 icost = 0
+print(isoform.prob2score(0), '!')
+icost = single['genotype']['icost']
 
 for gene in data['genes']:
     fasta = data['apc_dir'] + data['genes'][gene][0]
     gff3 = data['apc_dir'] + data['genes'][gene][1]
     name, seq = next(isoform.read_fasta(fasta))
-    models = (None, None, None, None, None, None)
+    #models = (None, None, None, None, None, None)
+    models = (dpwm, apwm, emm, imm, elen, ilen)
     weights = (1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
     locus = Locus(name, seq, minin, minex, flank, models, weights, 
-                  icost, limit=2)
+                  icost, limit=3)
     isos = locus.isoforms
+    print('@@@@@@@@')
+    print(isos)
+    for x in isos:
+        for intron in x['introns']:
+            print(intron, x['prob'])
     #single = random_start()
     weight = []
     total = 0
     for tx in isos:
         s = 0 
-        s += isoform.score_apwm(apwm, tx) * single['genotype']['wdpwm']
+        s += isoform.score_dpwm(dpwm, tx) * single['genotype']['wdpwm']
         s += isoform.score_apwm(apwm, tx) * single['genotype']['wapwm']
-        s += isoform.score_apwm(apwm, tx) * single['genotype']['wemm']
-        s += isoform.score_apwm(apwm, tx) * single['genotype']['wimm']
-        s += isoform.score_apwm(apwm, tx) * single['genotype']['welen']
-        s += isoform.score_apwm(apwm, tx) * single['genotype']['wilen']
-        s += len(tx['introns']) * single['genotype']['icost']
+        s += isoform.score_emm(emm, tx) * single['genotype']['wemm']
+        s += isoform.score_imm(imm, tx, dpwm, apwm) * single['genotype']['wimm']
+        s += isoform.score_elen(elen, tx) * single['genotype']['welen']
+        s += isoform.score_ilen(ilen, tx) * single['genotype']['wilen']
+        #s += len(tx['introns']) * single['genotype']['icost']
+        s += len(tx['introns']) * isoform.prob2score(single['genotype']['icost'])
+    '''
         tx['score'] = s
         w = 2 ** s
         weight.append(w)
@@ -143,6 +155,7 @@ for gene in data['genes']:
         tx['prob'] = w
     for tx in isos:
         tx['prob'] = tx['prob'] / total
+    '''
     print('###')
     print(isos)
     print('###')
