@@ -1,0 +1,13 @@
+{
+    "apc_dir": "../../datacore2024/project_splicing/smallgenes/",
+    "genes": {
+        "ch.1_1": ["ch.2_1.fa", "ch.2_1.gff3"]
+    },
+    "models": "../../isoforms/models/worm.splicemodel",
+    "constraints": {
+        "minin": 35,
+        "minex": 25,
+        "flank": 99,
+        "limit": 2
+    }
+}
