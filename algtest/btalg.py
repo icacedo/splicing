@@ -86,11 +86,37 @@ check_iso(bad_iso)
 
 
 
+############
+'''
+Don't need models, weights to generate isoforms
+self.exons/introns = [coordinates]
+transcript class just computes score
+Locus class contains isoforms
+self.worst whatever is currently the worst isoform is stored, skips over bad stuff
+this just tells code to end if you are over the isoform limit (after looping a few times)
+if self.countonly and self.limit and self.isocount >= self.limit: return
+recursion
+list of donors gets smaller
+list(a) constructs new list, or can use copy.copy(a)
+copy doesn't need to know it's a list
+deep copy is for whole data structures
+don't need base case, not trying to create a single value like other recursions
+builds onto a list called self.isoforms
+instead when no more donors, enumerate([]) returns nothing
+'''
 
 
 
+print('#####')
 
+seq = 'CCCCCCGTCCCCAGCCCGTCCCGTCCCAGCCCCCC'
 
+maxs = 3
+minin = 3
+minex = 3
+flank = 3
 
+dons, accs = isoform2.gtag_sites(seq, flank, minex)
 
-
+# test this in function and see if it returns/breaks out
+enumerate([])
