@@ -120,3 +120,52 @@ dons, accs = isoform2.gtag_sites(seq, flank, minex)
 
 # test this in function and see if it returns/breaks out
 enumerate([])
+
+# recursion
+
+def a():
+    return "hello " + b()
+
+def b():
+    return "my " + c()
+
+def c():
+    return "friends"
+
+print(a())
+
+input = 'snake'
+output = 'ekans'
+
+def revS(s):
+
+    if s == "":
+        return ""
+
+    return revS(s[1:]) + s[0]
+
+print(revS('snake'))
+
+def isPal(s):
+
+    if len(s) == 0 or len(s) == 1:
+        return True
+
+    if s[0] == s[-1]:
+        return isPal(f'{s[1:-1]}')
+
+    return False
+
+print(isPal('kayak'))
+
+def d2b(dec, res):
+
+    if dec == 0: 
+        return res
+
+    res = f'{dec%2}' + res
+    return d2b(int(dec/2), res)
+
+
+print(d2b(233, ''))
+
