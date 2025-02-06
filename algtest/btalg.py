@@ -169,3 +169,33 @@ def d2b(dec, res):
 
 print(d2b(233, ''))
 
+#30 minutes
+
+
+dons = [6, 18, 24]
+accs = [12, 30]
+
+isos = []
+
+# ians' code
+def buildIsos(dons, accs, introns):
+
+    don = dons[0]
+    for aix, acc in enumerate(accs):
+        if acc - don + 1 < 3: continue
+        intron = (don, acc)
+        iso = copy.copy(introns)
+        iso.append(intron)
+        isos.append(iso)
+
+        for dix, ndon in enumerate(dons):
+            elen = ndon - acc - 1
+            if elen >= 3:
+                ext = copy.copy(iso)
+                buildIsos(dons[dix:], accs[aix:], ext)
+
+buildIsos(dons, accs, [])
+print(isos)
+
+
+
