@@ -197,5 +197,55 @@ def buildIsos(dons, accs, introns):
 buildIsos(dons, accs, [])
 print(isos)
 
+# sum of natural numbers
+# 10: 1 + 2 + 3...+ 9 + 10 == 55
 
+def recSum(n):
 
+    if n <= 1:
+        return n
+    # shrink down the problem space
+    return n + recSum(n - 1)
+
+print(recSum(10))
+
+# find 10 in sorted list
+A = [-1, 0, 1, 2, 3, 4, 7, 9, 10, 20]
+
+def binarySearch(A, left, right, x):
+
+    if left > right:
+        return -1
+    
+    mid = int((left + right) / 2)
+
+    if x == A[mid]:
+        return mid
+    
+    if x < A[mid]:
+        return binarySearch(A, left, mid - 1, x)
+
+    return binarySearch(A, mid + 1, right, x)
+
+print(binarySearch(A, 0, len(A) - 1, 10))
+
+# fibonacci 
+# 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144...
+
+def fib(n):
+
+    if n == 0 or n == 1:
+        return n
+    
+    else:
+        return fib(n - 1) + fib(n - 2)
+    
+print(fib(10))
+
+# trees 1:29:00
+
+# binary search tree 
+# print all leaf nodes
+# depth first search
+# optimize with memoizing and caching
+# tail-call recursion
