@@ -249,3 +249,50 @@ print(fib(10))
 # depth first search
 # optimize with memoizing and caching
 # tail-call recursion
+
+print('#####')
+
+seq = 'CCCCCCGTCCCCAGCCCGTCCCGTCCCAGCCCCCC'
+
+maxs = 3
+minin = 3
+minex = 3
+flank = 3
+
+dons, accs = isoform2.gtag_sites(seq, flank, minex)
+
+introns = []
+for d in dons:
+    for a in accs:
+        introns.append((d, a))
+
+print(introns)
+
+nums = [1, 2, 3]
+# leetcode 78
+
+def subsets(nums):
+    n = len(nums)
+    res, sol = [], []
+
+    def backtrack(i):
+        if i == n:
+            res.append(sol[:])
+            return
+
+        backtrack(i+1)
+
+        sol.append(nums[i])
+        backtrack(i+1)
+        sol.pop()
+
+    backtrack(0)
+    return res
+
+print(subsets(nums))
+
+
+
+
+
+
