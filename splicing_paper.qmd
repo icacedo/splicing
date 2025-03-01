@@ -4,4 +4,89 @@ format: html
 editor: visual
 ---
 
+Describing the APC algorithm
+Position weight matrix
+The quality of donor and acceptor sites are evaluated using a position weight matrix (PWM). PWMs that cover the length of a spcific motif give insight into the prevalence of each nucleotide base at a given position.
+
+https://www.sciencedirect.com/topics/medicine-and-dentistry/position-weight-matrix
+According to this, Position Specific Scoring Matrix is the same as a PWM.
+
+Why do we used 5 bases for donor, 6 for acceptor?
+
+Papers in support of PWM:
+Methods to define and locate patterns of motifs in sequences, Rodger Staden, 1988
+Identification of sequence pattersn, motifs and domains, Michael Gribskov, 2019, Encyclopedia of bioinformatics and computational biology
+
+
+```{r}
+library(reticulate)
+
+myenvs=conda_list()
+# myenvs
+
+# need to select python interpreter in tools>global options
+use_condaenv('Renv', required = TRUE)
+```
+
+
+```{python}
+# need to load conda environment first
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+import logomaker
+```
+
+logomaker should allow me to import our pwm instead of calculating the values itself
+https://logomaker.readthedocs.io/en/latest/examples.html#splice-site-probability-logo
+
+to run python code that is more than one line, need to run the top line first and then the second one.
+
+```{python}
+crp_df = logomaker.get_example_matrix(
+  'crp_energy_matrix', print_description=False)
+
+crp_logo = logomaker.Logo(crp_df, shade_below=.5,
+fade_below=.5)
+
+crp_logo.style_spines(visible=False)
+crp_logo.style_spines(spines=['left', 'bottom'], visible=True)
+crp_logo.style_xticks(rotation=90, fmt='%d', anchor=0)
+
+crp_logo.ax.set_ylabel("ylabel", labelpad=-1)
+crp_logo.ax.xaxis.set_ticks_position('none')
+crp_logo.ax.xaxis.set_tick_params(pad=-1)
+
+# it works, but not sure how
+# logomaker is creating a plt object? but not explicitly named
+plt.show()
+```
+# will probably need to reformat things into csvs for R
+```{r}
+nuc <- c("A", "C", "G", "T")
+p1 <- c(0, 0, 1, 0)
+p2 <- c(0, 0, 0, 1)
+p3 <- c(0.6, 0, 0.2, 0.2)
+p4 <- c(0.7, 0, 0.1, 0.2)
+p5 <- c(0.1, 0, 0.8, 0.1)
+
+pwm <- data.frame(p1, p2)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
