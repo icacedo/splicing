@@ -1,0 +1,10 @@
+1. According to the *.faa file, how many proteins does it encode?
+grep ">" GCF_000005845.2_ASM584v2_protein.faa | wc -l
+4298
+
+2. According to the *.gbff file, how many coding sequences are there?
+grep "CDS" GCF_000005845.2_ASM584v2_genomic.gbff | wc -l
+4357
+
+3. Reconcile the differences between the previous 2 questions
+IDK how
