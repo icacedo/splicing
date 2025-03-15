@@ -20,10 +20,15 @@ int main(int argc, char* argv[]) {
     while (getline (MyReadFile, line)) {
         if (line[0] == '>') {
             cout << line << '\n';
+        } else {
+            cout << line.substr(0, 5);
         }
     }
+
+    cout << "wow";
 
     MyReadFile.close();
 
     return 0;
 }
+
