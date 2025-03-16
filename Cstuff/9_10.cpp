@@ -163,8 +163,140 @@ grade >=60 ? std::cout << "Do thing" : std::cout << "Don't do";
 // if(!sunny){} checks if not sunny
 
 // 17.Useful string methods
+/*
+int main()
+{
+    std::string name;
 
+    std::cout << "Enter your name: ";
+    std::getline(std::cin, name);
 
+    if(name.empty()){
+        std::cout << "You didn't enter your name\n";
+    }
+
+    if(name.length() > 12){
+        std::cout << "Your name can't be over 12 characters\n";
+    }
+    else{
+        std::cout << "Welcome " << name << "\n";
+    }
+
+    // use name.clear() to clear the name
+
+    name.append("@gmail.com");
+
+    std::cout << "Your username is now " << name << "\n";
+
+    // get character at a particular position
+    std::cout << name.at(0);
+
+    // insert string at certain position
+    name.insert(0, "@@@");
+
+    std::cout << name;
+
+    // get positon of a character
+    // name.find(' ') where is there a white space?
+    // name.erase(0, 3) deletes the first 3 characters, not inclusive
+
+    return 0;
+}
+*/
+
+// 18.While loops
+/*
+int main()
+{
+    std::string name;
+
+    // can only continue with program if 
+    // name is not empty
+    while(name.empty()){
+        std::cout << "Enter your name: ";
+        std::getline(std::cin, name);
+    }
+
+    std::cout << "Hello" << name;
+}
+*/
+
+// 19.Do while loops
+/*
+int main()
+{
+    // do while loop = do some block of code first
+    // then repeat again if condition is true
+
+    int number;
+
+    // with a do while loop, don't need these here
+    //std::cout << "Enter a positive #: " << std::endl;
+    //std::cin >> number;
+
+    do{
+        std::cout << "Enter a positive #: " << std::endl;
+        std::cin >> number;
+    }while(number < 0);
+
+    std::cout << "The # is: " << number << std::endl;
+
+    return 0;
+
+}
+*/
+
+// 20.For loops
+/*
+int main()
+{
+    // first part is index, then a stopping condition
+    // need to increment your index
+    // can increment by different amounts
+    // i += 2 increments by 2
+    // can also decrment i-- or i-=2
+    for(int i = 1; i <= 3; i++){
+        std::cout << i << std::endl;
+    }
+
+    std::cout << "WOW\n";
+
+    return 0;
+}
+*/
+
+// 21.Break and continue
+// beak out of a loop
+// skip current iteration of loop
+// use an if statement and continue to skip or break
+
+// 22.Nested loops
+/*
+int main()
+{
+    int rows;
+    int columns;
+    char symbol;
+
+    std::cout << "How many rows?: \n";
+    std::cin >> rows;
+
+    std::cout << "How many columns?: \n";
+    std::cin >> columns;
+
+    std::cout << "Enter a symbol to use: \n";
+    std::cin >> symbol;
+
+    for(int i = 1; i <= rows; i++){
+        for(int j = 1; j <= columns; j++){
+            std::cout << symbol << ' ';
+        }
+        std::cout << '\n';
+    }
+}
+*/
+
+// 23.Random number generator
 
 
 

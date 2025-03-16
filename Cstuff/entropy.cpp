@@ -2,6 +2,8 @@
 #include <fstream>
 #include <vector>
 #include <typeinfo>
+
+// need a make file to compile and call libraries in to your program
 // uisng std includes hundreds of functions, names may clash
 using namespace std;
 
@@ -13,19 +15,17 @@ int main(int argc, char* argv[]) {
     string line;
     ifstream MyReadFile(argv[1]);
 
-    vector<char> sequence;
-
-    
+    string sequence;
 
     while (getline (MyReadFile, line)) {
         if (line[0] == '>') {
             cout << line << '\n';
         } else {
-            cout << line.substr(0, 5);
+            sequence.append(line);
         }
     }
 
-    cout << "wow";
+    cout << sequence.substr(5, 11);
 
     MyReadFile.close();
 
