@@ -298,9 +298,104 @@ int main()
 
 // 23.Random number generator
 
+/*
+#include <ctime>
+
+int main()
+{
+    srand(time(NULL));
+
+    int num1 = (rand() % 6) +1 ;
+    int num2 = (rand() % 6) +1 ;
+    int num3 = (rand() % 6) +1 ;
+
+    std::cout << num1 << '\n';
+    std::cout << num2 << '\n';
+    std::cout << num3 << '\n';
+
+    return 0;
+}
+*/
+
+// 24.Random event generator
+/*
+#include <ctime>
+
+int main()
+{
+    srand(time(0));
+    int randNum = rand() % 5 + 1;
+
+    // execute code depending on different case
+    switch(randNum){
+        case 1: std::cout << "You win a bumper sticker!\n";
+            // exit out of switch after one statement
+            break;
+        case 2: std::cout << "You win a t-shirt!\n";
+    }
+}
+*/
+
+// 25. Number guessing game
+// do-while loop
+/*
+do{
+i++ can increment in do part
+}while();
+*/
+/*
+#include <ctime>
+
+int main()
+{
+    int randNum = rand() % 100 + 1;
+
+    std::cout << randNum << "\n";
+
+    int num;
+    int tries;
+
+    do{
+        std::cout << "Guess number!\n";
+        std::cin >> num;
+        if(num < randNum){
+            std::cout << "Too low!\n";
+        }
+        else if(num > randNum){
+            std::cout << "Too high!\n";
+        }
+        else{
+            std::cout << "Correct! # of tries: " << tries << "\n";
+        }
+        tries++;
+    }while (num != randNum); 
+
+    std::cout << num << "\n";
 
 
 
+    return 0;
+}
+*/
+
+// 26.User defined functions
+
+#include <iostream>
+
+void happyBirthday(){
+    std::cout << "HBDTY";
+}
+
+int main()
+{
+
+    happyBirthday();
+
+    return 0;
+}
+
+// functions should be declared BEFORE the main function
+// functions are usually defined AFTER the main function
 
 
 
