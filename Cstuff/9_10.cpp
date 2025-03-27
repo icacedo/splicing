@@ -382,18 +382,24 @@ int main()
 
 #include <iostream>
 
-void happyBirthday(){
-    std::cout << "HBDTY";
-}
+
+void happyBirthday(std::string name);
 
 int main()
 {
 
-    happyBirthday();
+    std::string name = "Bro";
+
+    happyBirthday(name);
 
     return 0;
 }
 
+
+// functions can't use variables in other functions
+void happyBirthday(std::string name){
+    std::cout << "HBDTY" << name << "\n";
+}    
 // functions should be declared BEFORE the main function
 // functions are usually defined AFTER the main function
 
