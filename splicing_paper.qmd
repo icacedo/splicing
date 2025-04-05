@@ -105,16 +105,49 @@ Length model
 
 The length of an intron
 
-Create histogram of distances
+Create histogram of distances https://www.datacamp.com/tutorial/make-histogram-ggplot2
+
 ```{r}
-mdists <- read.csv("../isoforms/APCanalysis/nmd.res")
+mdists <- read.csv("../isoforms/APCanalysis/cdist_sorted.csv", header = FALSE)
 
 library(ggplot2)
+library(dplyr)
+
+head(mdists)
 ```
 
+```{r}
+dstats <- mdists %>% 
+  summarize(mean_dist = mean(V2), median_dist = median(V2))
 
+ggplot(data = mdists, aes(x = V2)) +
+  geom_histogram(bins = 100) +
+  geom_vline(aes(xintercept = mean_dist), dstats, color = "red") +
+  #geom_vline(aes(xintercept = median_dist), dstats, color = "green") +
+  #geom_density(color = "blue") +
+  labs(x = "Manhattan Distance", y = "Counts")
+```
 
+correlation between intron length and distance, intron count and distance? intron count is independent variable x axis intron count y axis is all the manhattan distances, each one gets a single point on the graph will the points cluster? or not cluster? if they do cluster, they do correlate make a box plot, can do pairwise comparison and a linear regression also do MD vs avg intron length
 
+BLAST has a probability model...95 percent of things are predicted from being different
+
+use the bli algorithm to compute all possible isoforms compare bli to apc
+
+```{r}
+mdists$introns <- sub("ch.(\\d+)_.*", "\\1", mdists$V1)
+
+ggplot(mdists, aes(x = introns, y = V2)) + geom_point() +
+  geom_smooth(method=lm, color="red") +
+  labs(y = "Manhattan Distance")
+```
+
+```{r}
+
+ggplot(mdists, aes(x = V3, y = V2)) + geom_point() +
+  geom_smooth(method=lm, color="red")
+
+```
 
 
 
