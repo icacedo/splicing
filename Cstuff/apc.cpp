@@ -2,19 +2,23 @@
 #include <fstream>
 
 std::string desc;
+std::string seq;
 std::string line;
 
 void readFasta(std::string faFile);
+int gtag() {
+	int num = 42;
+	return num;
+} 
 
-// argc is a count of arguments on the line
-// argv is a character array
-// char* is a pointer to a char
-// char** is a point to a pointer of char
-// char** is a memory address with char*
 int main(int argc, char** argv) 
 {		
-	readFasta(argv[1]);
-
+	readFasta(argv[1]);	
+	std::cout << desc << "\n";
+	std::cout << seq << "\n";
+	int result = gtag();
+	std::cout << result << "\n";
+	
 	return 0;
 }
 
@@ -23,14 +27,12 @@ void readFasta(std::string faFile){
 	while (getline (MyReadFile, line)) {
 		if (line.rfind(">", 0) == 0) {
 			desc += line;
-			std::cout << desc << "\n";
 		}
 		else {
-			std::cout << line << "\n";
+			seq += line;
 		}
 	}
 }
-
 
 
 
