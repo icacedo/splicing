@@ -4,10 +4,14 @@
 #include <vector>
 // some guy on reddit said std::list has poor performance, never use
 // some guy on stack overflow said malloc + array is not safe
+// i need a way to handle problems like forgetting a input file
 
 std::string desc;
 std::string seq;
 std::string line;
+int flank = 99;
+int minex = 25;
+int minin = 35;
 std::vector<int> dons;
 std::vector<int> accs;
 
@@ -26,12 +30,13 @@ int main(int argc, char** argv)
 	for (const int& i : dons) {
 		std::cout << i << "\n";
 	} 
-	std::cout << "#####\n";
-
+	std::cout << flank << "#####\n";
+	
 	for (const int& i : accs) {
 		std::cout << i << "\n";
 	}
 	return 0;
+
 }
 
 void readFasta(std::string faFile){
@@ -47,7 +52,7 @@ void readFasta(std::string faFile){
 }
 
 void gtag(std::string seq){
-	for (int i = 0; i < seq.length(); i++) {
+	for (int i = minex+flank; i < seq.length()-flank-minex; i++) {
 		if (seq.substr(i, 2) == "GT") {
 			dons.push_back(i);
 		};
