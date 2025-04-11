@@ -59,6 +59,7 @@ void gtag(std::string seq){
 }
 
 // the tuple plus vector thing is very hard to do in C++
+// look into using std::pair for tuples
 // not really sure when const and & are needed
 void apc(const std::vector<int>& dons, const std::vector<int>& accs, 
 		//std::vector<int> introns){
