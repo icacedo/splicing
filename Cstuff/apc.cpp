@@ -9,32 +9,28 @@
 std::string desc;
 std::string seq;
 std::string line;
-int flank = 99;
-int minex = 25;
-int minin = 35;
+//int flank = 99;
+//int emin = 25;
+//int imin = 35;
+int flank = 3;
+int emin = 3;
+int imin = 3;
 std::vector<int> dons;
 std::vector<int> accs;
+//std::vector<int> introns;
+std::vector<std::vector<int>> introns;
 
 void readFasta(std::string faFile);
 void gtag(std::string seq);
-
+void apc(const std::vector<int>& dons, const std::vector<int>& accs, 
+		//std::vector<int> introns);
+		std::vector<std::vector<int>> introns);
 int main(int argc, char** argv) 
 {		
-	readFasta(argv[1]);	
-	std::cout << desc << "\n";
-	std::cout << seq << "\n";
+	readFasta(argv[1]);		
 	gtag(seq);	
-	// range based for loop
-	// const makes variable immutable
-	// & declares i as a reference
-	for (const int& i : dons) {
-		std::cout << i << "\n";
-	} 
-	std::cout << flank << "#####\n";
+	apc(dons, accs, introns);	
 	
-	for (const int& i : accs) {
-		std::cout << i << "\n";
-	}
 	return 0;
 
 }
@@ -52,7 +48,7 @@ void readFasta(std::string faFile){
 }
 
 void gtag(std::string seq){
-	for (int i = minex+flank; i < seq.length()-flank-minex; i++) {
+	for (int i = emin+flank; i < seq.length()-flank-emin; i++) {
 		if (seq.substr(i, 2) == "GT") {
 			dons.push_back(i);
 		};
@@ -60,5 +56,24 @@ void gtag(std::string seq){
 			accs.push_back(i);
 		};
 	}
+}
+
+// the tuple plus vector thing is very hard to do in C++
+// not really sure when const and & are needed
+void apc(const std::vector<int>& dons, const std::vector<int>& accs, 
+		//std::vector<int> introns){
+		std::vector<std::vector<int>> introns){
+	int don = dons[0];
+	for (int aix = 0; aix < accs.size(); aix++) {
+		if (accs[aix] - don + 1 < imin) {
+			continue;
+		}
+		std::vector<int> intron = {don, accs[aix]};
+		introns.push_back(intron);
+	}
+	// fun with vectors
+	std::vector<std::vector<int>> vec1;
+	std::vector<int> vec2;
+	vec1.push_back(vec2);
 }
 
