@@ -23,15 +23,13 @@ flank = 3
 dons, accs = isoform2.gtag_sites(seq, flank, emin)
 
 isos = []
-introns = []
 def buildIsos(dons, accs, introns):
 
 	don = dons[0]
 	for aix, acc in enumerate(accs):
 		if acc - don + 1 < imin: continue
 		intron = (don, acc)
-		iso = copy.copy(introns)
-		iso.append(intron)
+		iso = introns + [intron]
 		isos.append(iso)
 		for dix, ndon in enumerate(dons):
 			elen = ndon - acc - 1
@@ -40,6 +38,34 @@ def buildIsos(dons, accs, introns):
 				buildIsos(dons[dix:], accs[aix:], ext)
 print(dons)
 print(accs)
-buildIsos(dons, accs, introns)
+buildIsos(dons, accs, [])
 print(isos)
+
+
+# practice recursion here
+# https://www.geeksforgeeks.org/backtracking-algorithms/
+
+nums = [1, 2, 3]
+
+subset = []
+res = []
+def subsetRecur(i, arr, res, subset):
+
+	if i == len(arr):
+		res.append(list(subset))
+		return
+
+	subset.append(arr[i])
+	subsetRecur(i + 1, arr, res, subset)
+
+	subset.pop()
+	subsetRecur(i + 1, arr, res, subset)
+
+subsetRecur(0, nums, res, subset)
+
+print(res)
+
+
+
+
 
