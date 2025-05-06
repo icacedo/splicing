@@ -4,26 +4,33 @@ import math
 # look up that algorithm
 # for cutoff, determine when number starts changing too much
 
-f = {'A': 0.4, 'C': 0.2, 'G': 0.1, 'T': 0.3}
-m = [2, -1]
-
+freq = {'A': 0.25, 'C': 0.25, 'G': 0.25, 'T': 0.25}
+match = 1
+mismatch = -1
+ 
 def qij(l, pi, pj, sij):
 	
 	return pi * pj * math.exp(l * sij)
 	
-def qsum(s1, s2, f, m):
-	
-	for i, j in zip(s1, s2):
-		pi = f[i]
-		pj = f[j]
-		print(pi, pj)
-	
-print(qij(0.99, 0.2, 0.4, 2))
+high = 2
+low = 0
 
-seq1 = 'AAAACCCCGGGGTTTT'
-seq2 = 'ACGTACGTACGTACGT'
+while high - low > 1e-6:
+	l = (high + low)/2
+	print(l)
+	qsum = 0
+	for nt1, p1 in freq.items():
+		for nt2, p2 in freq.items():
+			if nt1 == nt2:
+				qsum += qij(l, p1, p2, match)
+			else:
+				qsum += qij(l, p1, p2, mismatch)
+	if qsum > 1: 
+		high = l
+	else:
+		low = l
 
-qsum(seq1, seq2, f, m)
+		 
 
 	
 	
