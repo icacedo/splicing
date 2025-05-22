@@ -2,30 +2,69 @@ import random
 import statistics
 
 scores = [12, 10, 8, 7, 6, 5, 4, 3, 2, 1]
-scores = [12, 10, 8, 7, 0, 0, 0, 0]
-countries = [x for x in range(6)]
-judges = 4
-trials = 2
+countries = [x for x in range(26)]
+judges = 37 * 2
+trials = 1000
 
-datasets = {}
-for j in range(judges):
-	random.shuffle(countries)
-	for k in range(len(countries)):
-		if k > len(scores)-1:
-			score = 0
-		else:
-			score = scores[k]
-		if countries[k] not in datasets:
-			datasets[countries[k]] = []
-			datasets[countries[k]].append(score)
-		else:
-			datasets[countries[k]].append(score)
+winners = []
+agg_data = []
+for t in range(trials):
+	dataset = {}
+	for j in range(judges):
+		random.shuffle(countries)
+		for k in range(len(countries)):
+			if k > len(scores)-1:
+				score = 0
+			else:
+				score = scores[k]
+			if countries[k] not in dataset:
+				dataset[countries[k]] = 0
+				dataset[countries[k]] += score
+			else:
+				dataset[countries[k]] += score
+	winners.append(max(dataset.values()))
+	for tscore in dataset.values():
+		agg_data.append(tscore)
+
+print('### all countries ###')
+print('mean: ', statistics.mean(agg_data))
+print('stdev: ', statistics.stdev(agg_data))
+print('### winners #########')
+print('mean: ', statistics.mean(winners))
+print('stdev: ', statistics.stdev(agg_data))
 
 
-print(datasets)
 
 
 
+
+'''
+trial_sums = {}
+for t in range(trials):
+	dataset = {}
+	for j in range(judges):
+		random.shuffle(countries)
+		for k in range(len(countries)):
+			if k > len(scores)-1:
+				score = 0
+			else:
+				score = scores[k]
+			if countries[k] not in dataset:
+				dataset[countries[k]] = []
+				dataset[countries[k]].append(score)
+			else:
+				dataset[countries[k]].append(score)
+	trial_sums.append(dataset)
+	
+
+print(dataset)
+averges = {}
+for data in dataset.items():
+	print(data)
+	print(statistics.mean(data[1]))
+	sum_scores = lambda my_list: sum(my_list)
+	print(sum_scores[data[1]])
+'''
 '''
 sims = {}
 for i in range(trials):
