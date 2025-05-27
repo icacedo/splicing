@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import isoform
+import csv
+import copy
+
+parser = argparse.ArgumentParser(
+	description=(
+		'Test different distance equations on APC results, '
+		'get intron frequencies'
+	)
+)
+	
+parser.add_argument('apc', help='APC generated gff files')
+parser.add_argument('smallgenes', 
+	help='Directory with WormBase gff/fasta files')
+parser.add_argument('--outf', required=False, help='outfile name')
+
+args = parser.parse_args()
+
+if not args.apc.endswith('/'):
+	args.apc = args.apc + '/'
+
+if not args.smallgenes.endswith('/'):
+	args.smallgenes = args.smallgenes + '/'
+
+gff_paths = {}
+for fname in os.listdir(args.apc):
+	gid = '.'.join(fname.split('.')[:3])
+	gff_paths[gid] = [f'{args.apc}{fname}']
+	
+def add_zeroes(introns1, introns2):
+	
+	i1 = copy.deepcopy(introns1)
+	i2 = copy.deepcopy(introns2)
+	
+	for i in i1:
+		if i not in i2: i2[i] = 0
+	
+	for i in i2:
+		if i not in i1: i1[i] = 0
+		
+	return i1, i2
+		
+for fname in os.listdir(args.smallgenes):
+	if fname.endswith('.gff3'):
+		gid = '.'.join(fname.split('.')[:3])
+		gff_paths[gid].append(f'{args.smallgenes}{fname}')
+
+frequencies = {}
+for g in gff_paths.items():
+	apc_ints = isoform.get_introns(g[1][0])
+	wb_ints = isoform.get_introns(g[1][1])
+	apc_ints0, wb_ints0 = add_zeroes(apc_ints, wb_ints)
+	frequencies[g[0]] = []
+	for intron in apc_ints0:
+		assert intron in wb_ints0, 'intron not found in RNASeq'
+		# drop 0s only on wormbase side
+		# keep introns APC does not predict, but exists
+		if wb_ints0[intron] == 0: continue
+		frequencies[g[0]].append((intron, apc_ints0[intron], 
+							wb_ints0[intron]))
+								
+def chebyshev(int_freqs):
+
+	return max([abs(int_f[1] - int_f[2]) for int_f in int_freqs])
+
+def manhattan(int_freqs):
+	
+	dist = 0
+	for int_f in int_freqs:
+		dist += abs(int_f[1] - int_f[2])
+		
+	return dist
+
+distances = {}
+for gene_info in frequencies.items():
+	distances[gene_info[0]] = (chebyshev(gene_info[1]), 
+								manhattan(gene_info[1]))
+
+if args.outf: 
+	outname1 = f'{args.outf}.dist'
+	outname2 = f'{args.outf}.freq'
+else: 
+	outname1 = 'out_isodif.dist'
+	outname2 = 'out_isodif.freq'
+	
+with open(outname1, 'w') as csvfile:
+	dist_writer = csv.writer(csvfile)
+	dist_writer.writerow(['gene_id', 'chebyshev', 'manhattan'])
+	for item in distances.items():
+		dist_writer.writerow([item[0], item[1][0], item[1][1]])
+
+# intron information is still in fdists
+with open(outname2, 'w') as csvfile:
+	int_writer = csv.writer(csvfile)
+	int_writer.writerow(['gene_id', 'wb', 'apc'])
+	for item in frequencies.items():
+		for int_info in item[1]:
+			int_writer.writerow([item[0], int_info[1], int_info[2]])
+
+
+
+
+
+
+
+
+
+
+
