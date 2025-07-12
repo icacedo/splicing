@@ -7,19 +7,11 @@
 seq1 = 'GAATTCAGTTA'
 seq2 = 'GGATCGA'
 
-'''
-seq1 = 'ACTGTC'
-seq2 = 'CTAG'
-'''
-
-
 matrix = [[0 for x in range(len(seq1)+1)] for x in range(len(seq2)+1)]
-
 
 match = 5
 mismatch = -3 
 gap = -4
-
 
 for i in range(1, len(matrix)):
 	for j in range(1, len(matrix[i])):
@@ -42,31 +34,8 @@ for i in range(1, len(matrix)):
 			matrix[i][j] = 0
 		else:
 			matrix[i][j] = score
-		
-		
-		
-		
-		
-		
-		
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-##### print results in matrix format #####
+# print matrix 
 score_lengths = []
 for row in matrix:
 	for score in row:
@@ -97,11 +66,16 @@ for i, row in enumerate(matrix):
 	for score in row:
 		row_string += add_space(f'{score}', width+1)
 	print(row_string)
+
+# get tracebacks
+highest = {}
+for i in range(len(matrix)):
+	print(max(matrix[i]), i)
+	highest[i] = max(matrix[i])
 	
 
-
-	
-
+for item in highest.items():
+	print(item)
 	
 	
 	
