@@ -37,13 +37,14 @@ random.seed()
 
 frag1 = (1, gs)
 		
+# randomly generate fragments
 def get_frags(frag1, rl):
 
 	frags = []
 	def cutter(frag1, rl):
 		
 		f_len = frag1[1] - frag1[0] + 1
-		if f_len >= rl * 2:
+		if f_len >= rl * 5:
 			cut = random.randint(frag1[0], frag1[1])
 			frag2 = (frag1[0], cut)
 			frag3 = (cut+1, frag1[1])
@@ -56,21 +57,36 @@ def get_frags(frag1, rl):
 	
 	return frags
 
-multi_gens = []
-f_lens = []
+frag_sets = []
 for i in range(ce):
 	frags = get_frags(frag1, rl)
-	multi_gens.append(frags)
-	for f in frags:
-		f_len = f[1] - f[0] + 1
-	f_lens.append(f_len)
+	frag_sets.append(frags)
 	
-print(sum(f_lens)/len(f_lens))
-	
-#for m in multi_gens:
-#	print(m)
+# sequence each fragment
+seq_frags = []
+for frag_set in frag_sets:
+	for frag in frag_set:
+		if frag[0] + rl > frag[1]: continue
+		seq_frag = (frag[0], frag[0]+rl)
+		seq_frags.append(seq_frag)
 
+read_counts = [0 for x in range(gs+1)]
+for seq in seq_frags:
+	for i in range(seq[0], seq[1]+1):
+		read_counts[i] += 1
 
+print(read_counts)
+
+# coverage = N x L/G
+# N = number of reads
+# L = read len
+# G = lenght of original genome
+
+coverage = len(seq_frags) * (rl / gs)
+
+print(coverage)
+print(max(read_counts))
+print(min(read_counts))
 
 
 
