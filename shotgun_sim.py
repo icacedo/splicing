@@ -75,7 +75,7 @@ for seq in seq_frags:
 	for i in range(seq[0], seq[1]+1):
 		read_counts[i] += 1
 
-print(read_counts)
+
 
 # coverage = N x L/G
 # N = number of reads
@@ -84,9 +84,14 @@ print(read_counts)
 
 coverage = len(seq_frags) * (rl / gs)
 
-print(coverage)
-print(max(read_counts))
-print(min(read_counts))
+
+no_reads = 0
+for count in read_counts:
+	if count == 0:
+		no_reads += 1
+		
+print(100 - (100 * (no_reads/len(read_counts))))
+		
 
 
 
